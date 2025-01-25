@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.talenta"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.talenta"
@@ -22,7 +22,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -71,7 +71,7 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation (libs.okhttp3.logging.interceptor)
+    implementation(libs.okhttp3.logging.interceptor)
 
 
     // Networking
@@ -84,5 +84,13 @@ dependencies {
 
     //Splash API
     implementation(libs.androidx.core.splashscreen)
+
+    // datastore
+    implementation(libs.androidx.datastore.preferences)
+
+    // lottie
+    implementation(libs.lottie.compose)
+
+    implementation(libs.jitsi.meet.sdk.v1020)
 
 }
