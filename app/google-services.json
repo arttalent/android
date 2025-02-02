@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "661310362848",
+    "project_id": "arttalent-61e75",
+    "storage_bucket": "arttalent-61e75.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:661310362848:android:03ae7205ba963ab8136c85",
+        "android_client_info": {
+          "package_name": "com.example.talenta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3dqK30bOXUB9FU7fuYFf0Vx3Q1qVFEo8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

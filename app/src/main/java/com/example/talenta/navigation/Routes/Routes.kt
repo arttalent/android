@@ -3,7 +3,6 @@ package com.example.talenta.navigation.Routes
 sealed class Route(val path: String) {
     object Onboarding : Route("onboarding")
     object Auth : Route("auth")
-    object Home : Route("home")
     object SignUpAs : Route("signup_as")
     object SignUp : Route("signup")
     object OTPVerification : Route("verify_otp")
@@ -11,4 +10,5 @@ sealed class Route(val path: String) {
     object Login : Route("login")
     object ForgotPassword : Route("forgot_password")
     object PasswordResetSuccess : Route("password_reset_success")
+    object EditProfile : Route("edit_profile")
 }

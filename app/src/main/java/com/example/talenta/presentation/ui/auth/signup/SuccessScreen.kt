@@ -1,4 +1,4 @@
-package com.example.talenta.ui.auth.signup
+package com.example.talenta.presentation.ui.auth.signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,7 +27,7 @@ import com.example.talenta.R
 import com.example.talenta.navigation.Routes.Route
 
 @Composable
-fun SuccessScreen(navController: NavController) {
+fun SuccessScreen(onSuccess :() -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -69,7 +69,7 @@ fun SuccessScreen(navController: NavController) {
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { navController.navigate(Route.Home.path) },
+                onClick = onSuccess,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 32.dp),

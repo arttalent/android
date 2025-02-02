@@ -1,73 +1,76 @@
 package com.example.talenta.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.talenta.jitsi.jitsi
+import androidx.navigation.navigation
+import com.example.talenta.navigation.Routes.BottomNavRoute
 import com.example.talenta.navigation.Routes.Route
-import com.example.talenta.ui.auth.AuthScreen
-import com.example.talenta.ui.auth.login.ForgotPasswordScreen
-import com.example.talenta.ui.auth.login.LoginScreen
-import com.example.talenta.ui.auth.login.PasswordResetSuccessScreen
-import com.example.talenta.ui.auth.signup.OTPVerificationScreen
-import com.example.talenta.ui.auth.signup.SignUpAs
-import com.example.talenta.ui.auth.signup.SignUpScreen
-import com.example.talenta.ui.auth.signup.SuccessScreen
-import com.example.talenta.ui.home.HomeScreen
-import com.example.talenta.ui.onboarding.OnboardingScreen
+import com.example.talenta.presentation.ui.screens.ExpertsScreen
+import com.example.talenta.presentation.ui.screens.HostScreen
+import com.example.talenta.presentation.ui.screens.MyBookingsScreen
+import com.example.talenta.presentation.ui.screens.NoticeScreen
+import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
+import com.example.talenta.presentation.ui.screens.profile.ProfileScreen
 
 @Composable
-fun AppNavigation(
-    isLoggedIn: Boolean,
-    navController: NavHostController = rememberNavController()
-) {
+fun AppNavigation(isLoggedIn: Boolean) {
+    val navController = rememberNavController()
+
     NavHost(
         navController = navController,
-        //startDestination = if (isLoggedIn) Route.Home.path else Route.Onboarding.path
-        startDestination = Route.Home.path
+        startDestination = if (isLoggedIn) "host" else "auth_graph"
     ) {
-        composable(Route.Onboarding.path) {
-            OnboardingScreen(
-                onComplete = { navController.navigate(Route.Auth.path) }
+
+        // Auth graph
+        authNavGraph(navController)
+
+        // Host screen with bottom navigation
+        navigation(
+            startDestination = BottomNavRoute.Experts.route,
+            route = "host"
+        ) {
+            composable(BottomNavRoute.Experts.route) {
+                HostScreen(
+                    navController = navController,
+                    content = { ExpertsScreen() }
+                )
+            }
+            composable(BottomNavRoute.MyBookings.route) {
+                HostScreen(
+                    navController = navController,
+                    content = { MyBookingsScreen() }
+                )
+            }
+            composable(BottomNavRoute.Notice.route) {
+                HostScreen(
+                    navController = navController,
+                    content = { NoticeScreen() }
+                )
+            }
+            composable(BottomNavRoute.Profile.route) {
+                HostScreen(
+                    navController = navController,
+                    content = {
+                        ProfileScreen(
+                            onEditProfileClick = {
+                                navController.navigate(Route.EditProfile.path)
+                            }
+                        )
+                    }
+                )
+            }
+        }
+
+        // Screens accessible from anywhere
+        composable(Route.EditProfile.path) {
+            EditProfileScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
             )
         }
-
-        composable(Route.Auth.path) {
-            AuthScreen(navController)
-        }
-
-        composable(Route.Home.path) {
-            HomeScreen()
-        }
-
-        composable(Route.SignUpAs.path) {
-            SignUpAs(navController)
-        }
-
-        composable(Route.SignUp.path) {
-            SignUpScreen(navController)
-        }
-
-        composable(Route.OTPVerification.path) {
-            OTPVerificationScreen(navController)
-        }
-
-        composable(Route.Success.path) {
-            SuccessScreen(navController)
-        }
-
-        composable(Route.Login.path) {
-            LoginScreen(navController)
-        }
-
-        composable(Route.ForgotPassword.path) {
-            ForgotPasswordScreen(navController)
-        }
-
-        composable(Route.PasswordResetSuccess.path) {
-            PasswordResetSuccessScreen(navController)
-        }
     }
+
 }

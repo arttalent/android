@@ -1,21 +1,23 @@
 package com.example.talenta.navigation.Routes
 
-import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.talenta.R
 
 sealed class BottomNavRoute(
     val route: String,
     val title: String,
-    val icon: ImageVector
+    val icon: Int
 ) {
-    object Experts : BottomNavRoute("experts", "Experts", Icons.Default.Person)
-    object MyBookings : BottomNavRoute("my_bookings", "My Bookings", Icons.Default.ThumbUp)
-    object Notice : BottomNavRoute("notice", "Notice", Icons.Default.Notifications)
-    object Profile : BottomNavRoute("profile", "Profile", Icons.Default.Person)
+    object Experts : BottomNavRoute("experts", "Experts", R.drawable.expert)
+    object MyBookings : BottomNavRoute("my_bookings", "My Bookings", R.drawable.save)
+    object Notice : BottomNavRoute("notice", "Notice", R.drawable.notice)
+    object Profile : BottomNavRoute("profile", "Profile", R.drawable.profile)
+
+    companion object {
+        fun getAllRoutes(): List<String> = listOf(
+            Experts.route,
+            MyBookings.route,
+            Notice.route,
+            Profile.route
+        )
+    }
 }

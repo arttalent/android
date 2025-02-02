@@ -1,4 +1,4 @@
-package com.example.talenta.ui.onboarding
+package com.example.talenta.presentation.ui.onboarding
 
 
 import androidx.compose.animation.animateContentSize

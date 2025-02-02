@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         setContent {
             TalentATheme {
-                val isLoggedIn = userPreferences.isLoggedIn.collectAsState(initial = false)
+                val isLoggedIn = userPreferences.isLoggedIn.collectAsState(initial = false).value
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
@@ -38,11 +38,10 @@ class MainActivity : ComponentActivity() {
                         .navigationBarsPadding(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppNavigation(isLoggedIn.value)
+                    AppNavigation(isLoggedIn)
                 }
             }
         }
-
     }
 }
 

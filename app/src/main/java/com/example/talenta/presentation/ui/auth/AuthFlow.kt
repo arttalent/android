@@ -1,4 +1,4 @@
-package com.example.talenta.ui.auth
+package com.example.talenta.presentation.ui.auth
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -13,7 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import com.example.talenta.ui.onboarding.OnboardingScreen
+import com.example.talenta.presentation.ui.onboarding.OnboardingScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

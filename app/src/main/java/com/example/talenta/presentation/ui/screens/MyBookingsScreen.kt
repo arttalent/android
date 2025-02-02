@@ -1,4 +1,4 @@
-package com.example.talenta.ui.home
+package com.example.talenta.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun ExpertsScreen() {
+fun MyBookingsScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
-        Text("Experts Screen")
+        Text("My Bookings Screen")
     }
 }

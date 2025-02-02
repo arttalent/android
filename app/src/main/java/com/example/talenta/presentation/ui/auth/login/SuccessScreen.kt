@@ -1,4 +1,4 @@
-package com.example.talenta.ui.auth.login
+package com.example.talenta.presentation.ui.auth.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
