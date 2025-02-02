@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Theme.CustomSplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/amp_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.TalentA</item>
+    </style>
+
     <style name="Theme.TalentA" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

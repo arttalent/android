@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Jitsi Meet SDK
+-keep class org.jitsi.meet.sdk.** { *; }
+-keep class org.jitsi.meet.** { *; }
+-keep class org.webrtc.** { *; }
+-keep class org.jitsi.meet.sdk.JitsiMeetUserInfo { *; }
