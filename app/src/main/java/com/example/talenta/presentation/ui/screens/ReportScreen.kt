@@ -9,11 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun MyBookingsScreen() {
+fun ReportScreen() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text("Booking Screen", fontWeight = FontWeight.Bold)
+        Text("Report Screen", fontWeight = FontWeight.Bold)
     }
 }

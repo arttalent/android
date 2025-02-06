@@ -49,6 +49,7 @@ fun OTPVerificationScreen(
                 errorMessage = (uiState as AuthUiState.Error).message
                 showError = true
             }
+
             else -> {}
         }
     }
@@ -68,7 +69,7 @@ fun OTPVerificationScreen(
             )
 
             Text(
-                text = "Enter the code sent to your phone number",
+                text = "Enter the passcode you just received on your email address ending with ********in@gmail.com",
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 32.dp),
                 color = Color.Gray
@@ -110,10 +111,11 @@ fun OTPVerificationScreen(
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {
-                    val otp = otpValues.joinToString("")
-                    viewModel.verifyOtp(otp)
+                    navController.navigate(Route.Success.path)
+                    //val otp = otpValues.joinToString("")
+                    //viewModel.verifyOtp(otp)
                 },
-                enabled = otpValues.all { it.isNotEmpty() },
+                //enabled = otpValues.all { it.isNotEmpty() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 24.dp)

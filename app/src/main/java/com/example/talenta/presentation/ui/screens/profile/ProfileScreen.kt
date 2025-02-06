@@ -1,162 +1,223 @@
 package com.example.talenta.presentation.ui.screens.profile
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.example.talenta.R
-import com.example.talenta.data.model.Artist
-import com.example.talenta.presentation.ui.components.ErrorSnackbar
-import com.example.talenta.presentation.ui.components.LoadingDialog
-import com.example.talenta.presentation.viewmodels.ProfileUiState
-import com.example.talenta.presentation.viewmodels.ProfileViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = hiltViewModel(),
     onEditProfileClick: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val artist by viewModel.artist.collectAsState()
-    var showError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadProfile()
-    }
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    val tabs = listOf("Details", "Media", "Reviews")
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Scaffold(
+        topBar = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                // Profile Header
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.padding(top = 10.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .background(Color.LightGray), // Placeholder color
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.singer),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    // Edit Icon
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .background(colorResource(R.color.royal_blue), CircleShape)
+                            .padding(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit Profile",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+
+                // Username
+                Text(
+                    text = "User Name",
+                    modifier = Modifier
+                        .padding(top = 10.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+
+                // Art Form Label
+                Text(
+                    text = "Art form",
+                    modifier = Modifier
+                        .padding(vertical = 8.dp),
+                    color = Color.Gray
+                )
+
+                // Edit Profile Button
+                OutlinedButton(
+                    onClick = onEditProfileClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text("Edit Profile", color = Color.Gray)
+                }
+
+                // Tabs
+                TabRow(
+                    selectedTabIndex = selectedTabIndex,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 5.dp)
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            selected = selectedTabIndex == index,
+                            onClick = { selectedTabIndex = index },
+                            text = { Text(title) },
+                            selectedContentColor = colorResource(R.color.royal_blue)
+                        )
+                    }
+                }
+            }
+        }
+    ) { paddingValues ->
+        // Content based on selected tab
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Box(contentAlignment = Alignment.BottomEnd) {
-                if (artist?.photoUrl?.isNotEmpty() == true) {
-                    AsyncImage(
-                        model = artist?.photoUrl,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape)
-                            .background(Color.Gray)
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.profile),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape)
-                            .background(Color.Gray)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "${artist?.firstName} ${artist?.lastName}",
-                fontSize = 20.sp
-            )
-            Text(
-                text = artist?.profession ?: "",
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = onEditProfileClick) {
-                Text(text = "Edit Profile")
-            }
-
-            // Display other profile information
-            ProfileInfoSection(artist)
-        }
-
-        if (uiState is ProfileUiState.Loading) {
-            LoadingDialog()
-        }
-
-        if (showError) {
-            ErrorSnackbar(
-                message = errorMessage,
-                onDismiss = { showError = false }
-            )
-        }
-    }
-}
-
-@Composable
-private fun ProfileInfoSection(artist: Artist?) {
-    artist?.let {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                ProfileInfoItem("Profession", "${it.profession} - ${it.subProfession}")
-                ProfileInfoItem("Contact", "${it.countryCode} ${it.mobileNumber}")
-                ProfileInfoItem("Gender", it.gender)
-                ProfileInfoItem("Age", it.age.toString())
-                ProfileInfoItem("Birth Year", it.birthYear.toString())
-                ProfileInfoItem("Language", it.language)
-                ProfileInfoItem("Location", "${it.city}, ${it.country}")
-                ProfileInfoItem("Bio", it.bioData)
-
-                // Social Media Links
-                Text(
-                    text = "Social Media",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-                it.socialMediaLinks.let { links ->
-                    if (links.facebook.isNotEmpty()) ProfileInfoItem("Facebook", links.facebook)
-                    if (links.instagram.isNotEmpty()) ProfileInfoItem("Instagram", links.instagram)
-                    if (links.linkedin.isNotEmpty()) ProfileInfoItem("LinkedIn", links.linkedin)
-                }
+            when (selectedTabIndex) {
+                0 -> DetailsTab()
+                1 -> MediaTab()
+                2 -> ReviewsTab()
             }
         }
     }
 }
 
 @Composable
-private fun ProfileInfoItem(label: String, value: String) {
-    Row(
+fun DetailsTab() {
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .fillMaxSize()
+            .background(Color.White),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                painter = painterResource(id = android.R.drawable.ic_dialog_info),
+                contentDescription = "Info Icon",
+                modifier = Modifier.size(50.dp),
+                tint = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("No Details Available", color = Color.Gray)
+        }
     }
 }
 
+@Composable
+fun MediaTab() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                painter = painterResource(id = android.R.drawable.ic_dialog_info),
+                contentDescription = "Info Icon",
+                modifier = Modifier.size(50.dp),
+                tint = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("No Details Available", color = Color.Gray)
+        }
+    }
+}
+
+@Composable
+fun ReviewsTab() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                painter = painterResource(id = android.R.drawable.ic_dialog_info),
+                contentDescription = "Info Icon",
+                modifier = Modifier.size(50.dp),
+                tint = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("No Details Available", color = Color.Gray)
+        }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+private fun wwww() {
+    ProfileScreen { }
+}

@@ -35,7 +35,7 @@ fun OnboardingPageContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(page.backgroundColor)
+            .background(Color.White)
             .padding(24.dp)
             .graphicsLayer {
                 // Add parallax effect to the content
@@ -73,6 +73,7 @@ fun OnboardingPageContent(
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold
                 ),
+                color = Color.Black,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(bottom = 16.dp)
@@ -89,6 +90,7 @@ fun OnboardingPageContent(
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 ),
+                color = Color.Black,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .graphicsLayer {

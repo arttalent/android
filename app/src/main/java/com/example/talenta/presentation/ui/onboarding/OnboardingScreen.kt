@@ -39,11 +39,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.example.talenta.R
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -81,7 +83,9 @@ fun OnboardingScreen(
     )
     val scope = rememberCoroutineScope()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.White)) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
@@ -201,7 +205,7 @@ fun OnboardingScreen(
                     },
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = colorResource(R.color.royal_blue)
                     ),
                     modifier = Modifier
                         .bounceClick()
@@ -211,6 +215,7 @@ fun OnboardingScreen(
                         }
                 ) {
                     Text(
+                        color = Color.White,
                         text = if (pagerState.currentPage == pages.size - 1) "Get Started" else "Next",
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )

@@ -15,6 +15,7 @@ import com.example.talenta.navigation.Routes.BottomNavRoute
 @Composable
 fun AppBottomNavigation(navController: NavController) {
     val items = listOf(
+        BottomNavRoute.DashBoard,
         BottomNavRoute.Experts,
         BottomNavRoute.MyBookings,
         BottomNavRoute.Notice,
@@ -22,6 +23,7 @@ fun AppBottomNavigation(navController: NavController) {
     )
 
     NavigationBar {
+
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 

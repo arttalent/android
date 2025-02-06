@@ -20,6 +20,7 @@ import com.example.talenta.R
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.ui.components.ErrorSnackbar
 import com.example.talenta.presentation.ui.components.LoadingDialog
+import com.example.talenta.presentation.ui.screens.profile.Field
 import com.example.talenta.presentation.viewmodels.AuthUiState
 import com.example.talenta.presentation.viewmodels.AuthViewModel
 
@@ -32,11 +33,13 @@ fun SignUpScreen(
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
-    var name by remember { mutableStateOf("") }
+    var fname by remember { mutableStateOf("") }
+    var lname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
+    var code by remember { mutableStateOf("") }
 
     LaunchedEffect(uiState) {
         when (uiState) {
@@ -59,61 +62,57 @@ fun SignUpScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Full Name") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(12.dp)
+                Field(
+                    header = "First Name",
+                    hint = "Ex: Ramesh",
+                    value = fname,
+                    onValueChange = { fname = it }
                 )
-
-                OutlinedTextField(
+                Field(
+                    header = "Last Name",
+                    hint = "Ex: Rao",
+                    value = lname,
+                    onValueChange = { lname = it }
+                )
+                Field(
+                    header = "Email",
+                    hint = "Ex: Abc@gmail.com",
                     value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") },
-                    leadingIcon = { Icon(Icons.Default.Email, null) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(12.dp)
+                    onValueChange = { email = it }
                 )
-
-                OutlinedTextField(
+                Field(
+                    header = "Password",
+                    hint = "Enter Password",
                     value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
-                    leadingIcon = { Icon(Icons.Default.Lock, null) },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(12.dp)
+                    onValueChange = { password = it }
                 )
-
-                OutlinedTextField(
+                Field(
+                    header = "Confirm Password",
+                    hint = "Confirm Password",
                     value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    label = { Text("Confirm Password") },
-                    leadingIcon = { Icon(Icons.Default.Lock, null) },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(12.dp)
+                    onValueChange = { confirmPassword = it }
                 )
 
-                OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    label = { Text("Mobile Number") },
-                    leadingIcon = { Icon(Icons.Default.Phone, null) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(12.dp)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+                    Field(
+                        header = "Country Code",
+                        hint = "+91",
+                        value = code,
+                        onValueChange = { code = it },
+                        modifier = Modifier.weight(0.3f)
+                    )
+                    Field(
+                        header = "Mobile Number",
+                        hint = "Enter Number",
+                        value = phoneNumber,
+                        onValueChange = { phoneNumber = it },
+                        modifier = Modifier.weight(0.7f)
+                    )
+                }
             }
 
             Column {
@@ -141,7 +140,8 @@ fun SignUpScreen(
                             }
 
                             else -> {
-                                viewModel.startSignUp(name, email, phoneNumber)
+                                navController.navigate(Route.Login.path)
+                                //viewModel.startSignUp(name, email, phoneNumber)
                             }
                         }
                     },
