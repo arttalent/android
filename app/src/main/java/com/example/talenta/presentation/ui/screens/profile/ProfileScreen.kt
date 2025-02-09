@@ -16,10 +16,12 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,6 +49,7 @@ fun ProfileScreen(
 
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Details", "Media", "Reviews")
+    val royalBlue = colorResource(R.color.royal_blue)
 
     Scaffold(
         topBar = {
@@ -54,7 +57,7 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(horizontal = 6.dp, vertical = 10.dp)
             ) {
                 // Profile Header
                 Box(
@@ -120,19 +123,36 @@ fun ProfileScreen(
                 }
 
                 // Tabs
-                TabRow(
-                    selectedTabIndex = selectedTabIndex,
+                OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 5.dp)
+                        .padding(horizontal = 10.dp)
                 ) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = selectedTabIndex == index,
-                            onClick = { selectedTabIndex = index },
-                            text = { Text(title) },
-                            selectedContentColor = colorResource(R.color.royal_blue)
-                        )
+                    TabRow(
+                        selectedTabIndex = selectedTabIndex,
+                        modifier = Modifier.fillMaxWidth(),
+                        containerColor = Color.Transparent,
+                        contentColor = royalBlue,
+                        indicator = { tabPositions ->
+                            SecondaryIndicator(
+                                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                                color = royalBlue
+                            )
+                        }
+                    ) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                selected = selectedTabIndex == index,
+                                onClick = { selectedTabIndex = index },
+                                text = {
+                                    Text(
+                                        text = title,
+                                        color = if (selectedTabIndex == index) royalBlue else Color.Gray
+                                    )
+                                }
+                            )
+                        }
+
                     }
                 }
             }

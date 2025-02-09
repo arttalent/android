@@ -11,4 +11,5 @@ sealed class Route(val path: String) {
     object ForgotPassword : Route("forgot_password")
     object PasswordResetSuccess : Route("password_reset_success")
     object EditProfile : Route("edit_profile")
+    object ExpertDetail : Route("expert_detail")
 }

@@ -157,8 +157,7 @@ fun LoginScreen(
                         errorPlaceholderColor = Color.Gray,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
-                        errorContainerColor = Color.Transparent,
-                        focusedTextColor = Color.Black,
+                        errorContainerColor = Color.Transparent
                     )
                 )
 
