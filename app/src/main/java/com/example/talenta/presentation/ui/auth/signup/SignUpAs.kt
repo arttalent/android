@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import com.example.talenta.R
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.viewmodels.AuthViewModel
+import java.util.Locale
 
 data class CardItem(
     val id: Int,
@@ -47,7 +48,7 @@ fun SignUpAs(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Sign Up as",
+            text = "Sign up as",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -65,7 +66,7 @@ fun SignUpAs(
                 GridCard(
                     cardItem = item,
                     onCardClick = {
-                        viewModel.setUserType(item.title.toLowerCase())
+                        viewModel.setUserType(item.title.lowercase(Locale.ROOT))
                         navController.navigate(Route.SignUp.path)
                     }
                 )

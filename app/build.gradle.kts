@@ -95,6 +95,11 @@ dependencies {
     // lottie
     implementation(libs.lottie.compose)
 
+    //jitsi
     implementation(libs.jitsi.meet.sdk.v1020)
+
+    //Country code picker
+    implementation(libs.country.picker)
+
 
 }

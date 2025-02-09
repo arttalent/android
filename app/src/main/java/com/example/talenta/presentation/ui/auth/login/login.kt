@@ -7,13 +7,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,11 +23,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.arpitkatiyarprojects.countrypicker.CountryPickerOutlinedTextField
+import com.arpitkatiyarprojects.countrypicker.models.BorderThickness
+import com.arpitkatiyarprojects.countrypicker.models.CountriesListDialogDisplayProperties
+import com.arpitkatiyarprojects.countrypicker.models.CountryDetails
+import com.arpitkatiyarprojects.countrypicker.models.SelectedCountryDisplayProperties
+import com.arpitkatiyarprojects.countrypicker.utils.CountryPickerUtils
+import com.example.talenta.R
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.ui.components.ErrorSnackbar
 import com.example.talenta.presentation.ui.components.LoadingDialog
@@ -45,11 +51,31 @@ fun LoginScreen(
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var number by remember { mutableStateOf("") }
+    var enteredMobileNumber by remember { mutableStateOf("") }
+    var isMobileNumberValidationError by remember { mutableStateOf(false) }
+    var formatExampleMobileNumber by remember {
+        mutableStateOf(false)
+    }
+    var selectedCountryDisplayProperties by remember {
+        mutableStateOf(SelectedCountryDisplayProperties())
+    }
+
+    var countriesListDialogDisplayProperties by remember {
+        mutableStateOf(CountriesListDialogDisplayProperties())
+    }
+
+    var borderThickness by remember {
+        mutableStateOf(BorderThickness())
+    }
+
+    var selectedCountryState by remember {
+        mutableStateOf<CountryDetails?>(null)
+    }
 
     // Validate phone number format
     val isValidPhoneNumber = remember(number) {
         number.length >= 10
-                //&& number.all { it.isDigit() }
+        //&& number.all { it.isDigit() }
     }
 
     LaunchedEffect(uiState) {
@@ -57,13 +83,16 @@ fun LoginScreen(
             is AuthUiState.OtpSent -> {
                 navController.navigate(Route.OTPVerification.path)
             }
+
             is AuthUiState.Success -> {
                 onLoginSuccess()
             }
+
             is AuthUiState.Error -> {
                 errorMessage = (uiState as AuthUiState.Error).message
                 showError = true
             }
+
             else -> {}
         }
     }
@@ -77,45 +106,85 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Login to Art Talent",
+                fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(vertical = 32.dp)
             )
 
-            OutlinedTextField(
-                value = number,
-                onValueChange = {
-                    // Only allow digits and limit length
-//                    if (it.length <= 15 && (it.isEmpty() || it.all { char -> char.isDigit() })) {
-                        number = it
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                CountryPickerOutlinedTextField(
 
-                },
-                label = { Text("Enter Mobile Number") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
-                    imeAction = ImeAction.Done
-                ),
-                singleLine = true,
-                isError = number.isNotEmpty() && !isValidPhoneNumber,
-                supportingText = {
-                    if (number.isNotEmpty() && !isValidPhoneNumber) {
-                        Text("Please enter a valid phone number")
-                    }
-                }
-            )
+                    isError = isMobileNumberValidationError,
+                    supportingText = if (isMobileNumberValidationError || enteredMobileNumber.isNotBlank()) {
+                        {
+                            Text(text = if (isMobileNumberValidationError) "Invalid mobile number" else "Valid mobile number")
+                        }
+                    } else null,
+                    modifier = Modifier.weight(1f),
+                    mobileNumber = CountryPickerUtils.getFormattedMobileNumber(
+                        enteredMobileNumber, selectedCountryState?.countryCode ?: "IN",
+                    ),
+                    onMobileNumberChange = {
+                        enteredMobileNumber = it
+                        isMobileNumberValidationError = !CountryPickerUtils.isMobileNumberValid(
+                            enteredMobileNumber,
+                            selectedCountryState?.countryCode ?: "IN"
+                        )
+                    },
+                    selectedCountryDisplayProperties = selectedCountryDisplayProperties,
+                    countriesListDialogDisplayProperties = countriesListDialogDisplayProperties,
+                    borderThickness = borderThickness,
+                    onCountrySelected = {
+                        selectedCountryState = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Ex. ${
+                                CountryPickerUtils.getExampleMobileNumber(
+                                    selectedCountryState?.countryCode ?: "IN",
+                                    formatExampleMobileNumber
+                                )
+                            }"
+                        )
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedSupportingTextColor = Color(0xFF2eb82e),
+                        unfocusedPlaceholderColor = Color.Gray,
+                        focusedPlaceholderColor = Color.Gray,
+                        errorPlaceholderColor = Color.Gray,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent
+                    )
+                )
+
+            }
+
 
             Button(
-                onClick = { viewModel.sendOtp(number) },
+                onClick = {
+                    navController.navigate(Route.OTPVerification.path)
+                    //viewModel.sendOtp(number)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4169E1)
+                    containerColor = colorResource(R.color.royal_blue)
                 ),
-                enabled = isValidPhoneNumber
+                //enabled = isValidPhoneNumber
             ) {
+
+                val formattedNumber = selectedCountryState?.countryCode?.let {
+                    CountryPickerUtils.getFormattedMobileNumber(
+                        enteredMobileNumber, it
+                    )
+                }
+                println(formattedNumber)
+
                 Text(
                     "Login",
                     modifier = Modifier.padding(vertical = 8.dp),

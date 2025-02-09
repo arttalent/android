@@ -7,13 +7,15 @@ sealed class BottomNavRoute(
     val title: String,
     val icon: Int
 ) {
-    object Experts : BottomNavRoute("experts", "Experts", R.drawable.expert)
-    object MyBookings : BottomNavRoute("my_bookings", "My Bookings", R.drawable.save)
-    object Notice : BottomNavRoute("notice", "Notice", R.drawable.notice)
+    object DashBoard : BottomNavRoute("dashboard", "DashBoard", R.drawable.dashboard)
+    object Experts : BottomNavRoute("experts", "Experts", R.drawable.experts)
+    object MyBookings : BottomNavRoute("my_bookings", "Bookings", R.drawable.mybookings)
+    object Notice : BottomNavRoute("notice", "Report", R.drawable.report)
     object Profile : BottomNavRoute("profile", "Profile", R.drawable.profile)
 
     companion object {
         fun getAllRoutes(): List<String> = listOf(
+            DashBoard.route,
             Experts.route,
             MyBookings.route,
             Notice.route,

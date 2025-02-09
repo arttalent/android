@@ -1,4 +1,4 @@
-package com.example.talenta.navigation
+package com.example.talenta.navigation.Graphs
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController

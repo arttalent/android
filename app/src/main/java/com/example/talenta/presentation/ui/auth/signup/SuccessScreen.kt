@@ -52,7 +52,7 @@ fun SuccessScreen(onSuccess :() -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Email Verified",
+                text = "Number Verified",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -61,7 +61,7 @@ fun SuccessScreen(onSuccess :() -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Your email address has been verified successfully and your account has been created.",
+                text = "Your mobile number has been verified successfully and your account has been created.",
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
