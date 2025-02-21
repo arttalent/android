@@ -23,6 +23,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,139 +47,134 @@ import com.example.talenta.R
 fun ProfileScreen(
     onEditProfileClick: () -> Unit
 ) {
-
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Details", "Media", "Reviews")
     val royalBlue = colorResource(R.color.royal_blue)
 
-    Scaffold(
-        topBar = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 6.dp, vertical = 10.dp)
-            ) {
-                // Profile Header
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.padding(top = 10.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape)
-                            .background(Color.LightGray), // Placeholder color
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.singer),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    // Edit Icon
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .background(colorResource(R.color.royal_blue), CircleShape)
-                            .padding(4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Profile",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-
-                // Username
-                Text(
-                    text = "User Name",
-                    modifier = Modifier
-                        .padding(top = 10.dp),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-
-                // Art Form Label
-                Text(
-                    text = "Art form",
-                    modifier = Modifier
-                        .padding(vertical = 8.dp),
-                    color = Color.Gray
-                )
-
-                // Edit Profile Button
-                OutlinedButton(
-                    onClick = onEditProfileClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Text("Edit Profile", color = Color.Gray)
-                }
-
-                // Tabs
-                OutlinedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp)
-                ) {
-                    TabRow(
-                        selectedTabIndex = selectedTabIndex,
-                        modifier = Modifier.fillMaxWidth(),
-                        containerColor = Color.Transparent,
-                        contentColor = royalBlue,
-                        indicator = { tabPositions ->
-                            SecondaryIndicator(
-                                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                                color = royalBlue
-                            )
-                        }
-                    ) {
-                        tabs.forEachIndexed { index, title ->
-                            Tab(
-                                selected = selectedTabIndex == index,
-                                onClick = { selectedTabIndex = index },
-                                text = {
-                                    Text(
-                                        text = title,
-                                        color = if (selectedTabIndex == index) royalBlue else Color.Gray
-                                    )
-                                }
-                            )
-                        }
-
-                    }
-                }
-            }
-        }
-    ) { paddingValues ->
-        // Content based on selected tab
-        Box(
+    Scaffold { paddingValues ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .padding(horizontal = 6.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            when (selectedTabIndex) {
-                0 -> DetailsTab()
-                1 -> MediaTab()
-                2 -> ReviewsTab()
+            // Profile Header
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(top = 10.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .background(Color.LightGray), // Placeholder color
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.singer),
+                        contentDescription = "",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                // Edit Icon
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .background(colorResource(R.color.royal_blue), CircleShape)
+                        .padding(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Profile",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            // Username
+            Text(
+                text = "User Name",
+                modifier = Modifier.padding(top = 10.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+
+            // Art Form Label
+            Text(
+                text = "Art form",
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = Color.Gray
+            )
+
+            // Edit Profile Button
+            OutlinedButton(
+                onClick = onEditProfileClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text("Edit Profile", color = Color.Gray)
+            }
+
+            // Tabs
+            OutlinedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
+            ) {
+                TabRow(
+                    selectedTabIndex = selectedTabIndex,
+                    modifier = Modifier.fillMaxWidth(),
+                    containerColor = Color.Transparent,
+                    contentColor = royalBlue,
+                    indicator = { tabPositions ->
+                        SecondaryIndicator(
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                            color = royalBlue
+                        )
+                    }
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            selected = selectedTabIndex == index,
+                            onClick = { selectedTabIndex = index },
+                            text = {
+                                Text(
+                                    text = title,
+                                    color = if (selectedTabIndex == index) royalBlue else Color.Gray
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Content based on selected tab
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 16.dp)
+            ) {
+                when (selectedTabIndex) {
+                    0 -> DetailsTab()
+                    1 -> MediaTab()
+                    2 -> ReviewsTab()
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun DetailsTab() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+        ,
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -210,7 +206,7 @@ fun MediaTab() {
                 tint = Color.Gray
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text("No Details Available", color = Color.Gray)
+            Text("No Media Available", color = Color.Gray)
         }
     }
 }
@@ -231,7 +227,7 @@ fun ReviewsTab() {
                 tint = Color.Gray
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text("No Details Available", color = Color.Gray)
+            Text("No Reviews Available", color = Color.Gray)
         }
     }
 }
