@@ -16,7 +16,7 @@ fun AppNavigation(isLoggedIn: Boolean) {
 
     NavHost(
         navController = navController,
-        startDestination = if (isLoggedIn) "host" else "auth_graph"
+        startDestination = if (!isLoggedIn) "host" else "auth_graph"
     ) {
 
         // Auth graph
