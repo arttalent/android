@@ -1,37 +1,25 @@
-package com.example.talenta.presentation.ui.auth.signup
+package com.example.talenta.presentation.ui.auth.login
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.talenta.navigation.Routes.Route
-import com.example.talenta.presentation.ui.components.ErrorSnackbar
-import com.example.talenta.presentation.ui.components.LoadingDialog
-import com.example.talenta.presentation.viewmodels.AuthUiState
-import com.example.talenta.presentation.viewmodels.AuthViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.talenta.presentation.viewmodels.SignInViewModel
 
 @Composable
 fun OTPVerificationScreen(
     navController: NavController,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: SignInViewModel = hiltViewModel()
 ) {
+
+}
+/*
+@Composable
+fun OTPVerificationScreen(
+    navController: NavController,
+    viewModel: SignInViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+    val activity = context as? Activity
     val uiState by viewModel.uiState.collectAsState()
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -44,14 +32,25 @@ fun OTPVerificationScreen(
 
     LaunchedEffect(uiState) {
         when (uiState) {
-            is AuthUiState.Success -> navController.navigate(Route.Success.path)
-            is AuthUiState.Error -> {
-                errorMessage = (uiState as AuthUiState.Error).message
-                showError = true
+            is AuthUiStatee.Success -> {
+                Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
+                navController.navigate(Route.Success.path) {
+                    // Clear the back stack to prevent going back to login screens
+                    popUpTo(Route.Login.path) { inclusive = true }
+                }
             }
-
+            is AuthUiStatee.Error -> {
+                errorMessage = (uiState as AuthUiStatee.Error).message
+                showError = true
+                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+            }
             else -> {}
         }
+    }
+
+    // Request focus for first OTP field when screen is launched
+    LaunchedEffect(Unit) {
+        focusRequesters.firstOrNull()?.requestFocus()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -69,7 +68,7 @@ fun OTPVerificationScreen(
             )
 
             Text(
-                text = "Enter the passcode you just received on your email address ending with ********in@gmail.com",
+                text = "Enter the passcode you just received on your mobile phone",
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 32.dp),
                 color = Color.Gray
@@ -81,7 +80,7 @@ fun OTPVerificationScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 otpValues.forEachIndexed { index, value ->
-                    TextField(
+                    OutlinedTextField(
                         value = value,
                         onValueChange = { newValue ->
                             if (newValue.length <= 1 && newValue.all { it.isDigit() }) {
@@ -91,6 +90,9 @@ fun OTPVerificationScreen(
 
                                 if (newValue.isNotEmpty() && index < 5) {
                                     focusRequesters[index + 1].requestFocus()
+                                } else if (newValue.isEmpty() && index > 0) {
+                                    // Allow backspace navigation
+                                    focusRequesters[index - 1].requestFocus()
                                 }
                             }
                         },
@@ -102,8 +104,26 @@ fun OTPVerificationScreen(
                             textAlign = TextAlign.Center,
                             fontSize = 20.sp
                         ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = if (index < 5) ImeAction.Next else ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                if (index < 5) focusRequesters[index + 1].requestFocus()
+                            },
+                            onDone = {
+                                if (otpValues.all { it.isNotEmpty() }) {
+                                    val otp = otpValues.joinToString("")
+                                    viewModel.verifyOtp(otp)
+                                }
+                            }
+                        ),
                         singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFFF5F5F5),
+                            unfocusedContainerColor = Color(0xFFF5F5F5)
+                        )
                     )
                 }
             }
@@ -111,14 +131,16 @@ fun OTPVerificationScreen(
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {
-                    navController.navigate(Route.Success.path)
-                    //val otp = otpValues.joinToString("")
+                    val otp = otpValues.joinToString("")
                     //viewModel.verifyOtp(otp)
                 },
-                //enabled = otpValues.all { it.isNotEmpty() },
+                enabled = otpValues.all { it.isNotEmpty() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 24.dp)
+                    .padding(vertical = 24.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.royal_blue)
+                )
             ) {
                 Text("Verify")
             }
@@ -132,15 +154,20 @@ fun OTPVerificationScreen(
                         text = "Resend OTP",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.clickable {
-                            scope.launch {
-                                isResendEnabled = false
-                                remainingTime = 30
-                                viewModel.resendOtp()
-                                while (remainingTime > 0) {
-                                    delay(1000)
-                                    remainingTime--
+                            if (activity != null) {
+                                scope.launch {
+                                    isResendEnabled = false
+                                    remainingTime = 30
+                                    viewModel.resendOtp(activity)
+
+                                    while (remainingTime > 0) {
+                                        delay(1000)
+                                        remainingTime--
+                                    }
+                                    isResendEnabled = true
                                 }
-                                isResendEnabled = true
+                            } else {
+                                Toast.makeText(context, "Unable to resend OTP. Please try again.", Toast.LENGTH_SHORT).show()
                             }
                         }
                     )
@@ -150,7 +177,7 @@ fun OTPVerificationScreen(
             }
         }
 
-        if (uiState is AuthUiState.Loading) {
+        if (uiState is AuthUiStatee.Loading) {
             LoadingDialog()
         }
 
@@ -161,4 +188,4 @@ fun OTPVerificationScreen(
             )
         }
     }
-}
+} */

@@ -1,161 +1,276 @@
 package com.example.talenta.presentation.ui.screens.profile
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import java.util.Calendar
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
+import com.example.talenta.R
+import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
+import com.example.talenta.presentation.viewmodels.UploadState
 
 @Composable
-fun SocialMediaField(
+fun Field(
+    header: String,
+    hint: String,
     value: String,
     onValueChange: (String) -> Unit,
-    icon: Int,
-    placeholder: String
+    modifier: Modifier = Modifier
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        leadingIcon = {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+    ) {
+        Text(text = header, fontWeight = FontWeight.Bold, maxLines = 1)
+        Spacer(Modifier.height(4.dp))
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = { Text(hint, color = Color.Gray) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = Color.LightGray,
+                focusedBorderColor = Color.Gray,
             )
-        },
-        placeholder = { Text(placeholder) },
+        )
+    }
+}
+
+
+@Composable
+fun AddMediaButton(
+    viewModel: ArtistProfileViewModel
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    // Add button in the top-right corner
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    )
+            .padding(top = 8.dp, end = 16.dp),
+        contentAlignment = Alignment.TopEnd
+    ) {
+        IconButton(
+            onClick = { showDialog = true }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add Media",
+                tint = colorResource(R.color.royal_blue)
+            )
+        }
+    }
+
+    if (showDialog) {
+        AddMediaDialog(
+            onDismiss = { showDialog = false },
+            viewModel = viewModel
+        )
+    }
 }
 
 @Composable
-fun CountryCodeDropdown(
-    selected: String,
-    onSelect: (String) -> Unit,
-    modifier: Modifier = Modifier
+fun AddMediaDialog(
+    onDismiss: () -> Unit,
+    viewModel: ArtistProfileViewModel
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    val countryCodes = listOf("+91", "+1", "+44", "+86", "+81")
+    var selectedMediaType by remember { mutableStateOf<String?>(null) }
+    var selectedUri by remember { mutableStateOf<Uri?>(null) }
+    var description by remember { mutableStateOf("") }
+    var isUploading by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier) {
-        OutlinedTextField(
-            value = selected,
-            onValueChange = {},
-            readOnly = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            countryCodes.forEach { code ->
-                DropdownMenuItem(
-                    text = { Text(code) },
-                    onClick = {
-                        onSelect(code)
-                        expanded = false
-                    }
-                )
+    // Observe the upload state
+    val uploadState by viewModel.uploadState.collectAsState()
+
+    // Set up image/video picker
+    val context = LocalContext.current
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectedUri = uri
+    }
+
+    // Effect to handle upload state changes
+    LaunchedEffect(uploadState) {
+        when (uploadState) {
+            is UploadState.Success -> {
+                isUploading = false
+                onDismiss()
+            }
+
+            is UploadState.Error -> {
+                isUploading = false
+                // Show error (could use a snackbar or toast)
+            }
+
+            is UploadState.Loading -> {
+                isUploading = true
+            }
+
+            else -> { /* Idle state, no action needed */
             }
         }
     }
-}
 
-@Composable
-fun GenderDropdown(
-    selected: String,
-    onSelect: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val genders = listOf("Male", "Female", "Other")
-
-    OutlinedTextField(
-        value = selected,
-        onValueChange = {},
-        readOnly = true,
-        label = { Text("Gender") },
-        modifier = modifier.fillMaxWidth(),
-        trailingIcon = {
-            Icon(
-                Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                modifier = Modifier.clickable { expanded = true }
-            )
+    Dialog(
+        onDismissRequest = {
+            if (!isUploading) onDismiss()
         }
-    )
-
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false }
     ) {
-        genders.forEach { gender ->
-            DropdownMenuItem(
-                text = { Text(gender) },
-                onClick = {
-                    onSelect(gender)
-                    expanded = false
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = Color.White
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Add New Media",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                if (selectedMediaType == null) {
+                    // Media type selection
+                    Button(
+                        onClick = {
+                            selectedMediaType = "photo"
+                            photoPickerLauncher.launch("image/*")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Text("Add Photo")
+                    }
+
+                    Button(
+                        onClick = {
+                            selectedMediaType = "video"
+                            photoPickerLauncher.launch("video/*")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Text("Add Video")
+                    }
+                } else if (selectedUri != null) {
+                    // Media selected, show preview and description field
+                    if (selectedMediaType == "photo") {
+                        AsyncImage(
+                            model = selectedUri,
+                            contentDescription = "Selected photo",
+                            modifier = Modifier
+                                .size(200.dp)
+                                .padding(vertical = 8.dp)
+                        )
+                    } else {
+                        // For video, we'd ideally show a thumbnail or preview
+                        // For simplicity, just show a placeholder or text
+                        Text(
+                            "Video selected",
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text("Description") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                selectedMediaType = null
+                                selectedUri = null
+                                description = ""
+                            }
+                        ) {
+                            Text("Cancel")
+                        }
+
+                        Button(
+                            onClick = {
+                                selectedUri?.let { uri ->
+                                    viewModel.uploadMedia(
+                                        imageUri = uri,
+                                        description = description,
+                                        isVideo = selectedMediaType == "video"
+                                    )
+                                }
+                            },
+                            enabled = !isUploading
+                        ) {
+                            if (isUploading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = Color.White
+                                )
+                            } else {
+                                Text("Upload")
+                            }
+                        }
+                    }
+                } else {
+                    // Uri is null but media type is selected - show error or retry button
+                    Text(
+                        "No media selected",
+                        color = Color.Red,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            if (selectedMediaType == "photo") {
+                                photoPickerLauncher.launch("image/*")
+                            } else {
+                                photoPickerLauncher.launch("video/*")
+                            }
+                        },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        Text("Select Again")
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            selectedMediaType = null
+                        },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        Text("Change Media Type")
+                    }
                 }
-            )
-        }
-    }
-}
-
-@Composable
-fun BirthYearDropdown(
-    selected: String,
-    onSelect: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-    val years = (currentYear downTo currentYear - 100).map { it.toString() }
-
-    OutlinedTextField(
-        value = selected,
-        onValueChange = {},
-        readOnly = true,
-        label = { Text("Birth Year") },
-        modifier = modifier.fillMaxWidth(),
-        trailingIcon = {
-            Icon(
-                Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                modifier = Modifier.clickable { expanded = true }
-            )
-        }
-    )
-
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false }
-    ) {
-        years.forEach { year ->
-            DropdownMenuItem(
-                text = { Text(year) },
-                onClick = {
-                    onSelect(year)
-                    expanded = false
-                }
-            )
+            }
         }
     }
 }

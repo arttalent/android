@@ -8,8 +8,8 @@ import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.ui.auth.AuthScreen
 import com.example.talenta.presentation.ui.auth.login.ForgotPasswordScreen
 import com.example.talenta.presentation.ui.auth.login.LoginScreen
+import com.example.talenta.presentation.ui.auth.login.OTPVerificationScreen
 import com.example.talenta.presentation.ui.auth.login.PasswordResetSuccessScreen
-import com.example.talenta.presentation.ui.auth.signup.OTPVerificationScreen
 import com.example.talenta.presentation.ui.auth.signup.SignUpAs
 import com.example.talenta.presentation.ui.auth.signup.SignUpScreen
 import com.example.talenta.presentation.ui.auth.signup.SuccessScreen
@@ -49,13 +49,15 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 })
         }
         composable(Route.Login.path) {
-            LoginScreen(navController = navController,
+            LoginScreen(
+                navController = navController,
                 onLoginSuccess = {
                     navController.navigate("host") {
                         popUpTo("auth_graph") { inclusive = true }
                         launchSingleTop = true
                     }
-                })
+                }
+            )
         }
         composable(Route.ForgotPassword.path) {
             ForgotPasswordScreen(navController)
