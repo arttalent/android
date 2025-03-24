@@ -60,23 +60,23 @@ fun DetailsTab(artist: Artist) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.Start
                 ) {
                     artist.socialMediaLinks.facebook.takeIf { it.isNotEmpty() }?.let {
                         SocialMediaIcon(platform = "facebook")
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                     }
                     artist.socialMediaLinks.instagram.takeIf { it.isNotEmpty() }?.let {
                         SocialMediaIcon(platform = "instagram")
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                     }
                     artist.socialMediaLinks.linkedin.takeIf { it.isNotEmpty() }?.let {
                         SocialMediaIcon(platform = "linkedin")
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                     }
                     artist.socialMediaLinks.twitter.takeIf { it.isNotEmpty() }?.let {
                         SocialMediaIcon(platform = "twitter")
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                     }
                 }
             }
@@ -95,12 +95,12 @@ fun DetailsTab(artist: Artist) {
                     // Left Column
                     Column {
                         ProfileAttribute(label = "Age", value = artist.age.toString())
-                        ProfileAttribute(label = "Ethnicity", value = artist.ethnicity)
+                        ProfileAttribute(label = "Gender", value = artist.gender)
                     }
 
                     // Right Column
                     Column {
-                        ProfileAttribute(label = "Gender", value = artist.gender)
+
                         ProfileAttribute(
                             label = "Height",
                             value = "${artist.height}cm"
@@ -196,7 +196,7 @@ private fun SocialMediaIcon(platform: String) {
 
     Box(
         modifier = Modifier
-            .size(36.dp)
+            .size(39.dp)
             .clip(CircleShape)
             .clickable { /* Handle click to open social media link */ },
         contentAlignment = Alignment.Center
@@ -204,7 +204,7 @@ private fun SocialMediaIcon(platform: String) {
         Image(
             painter = painterResource(id = iconResId),
             contentDescription = platform,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(26.dp)
         )
     }
 }

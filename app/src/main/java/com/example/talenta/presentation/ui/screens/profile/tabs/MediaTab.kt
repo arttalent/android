@@ -172,8 +172,7 @@ private fun PhotoItem(photo: Photo) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = R.drawable.singer)
+                contentScale = ContentScale.Crop
             )
             Text(
                 text = photo.description.takeIf { it.isNotBlank() } ?: "No description",
