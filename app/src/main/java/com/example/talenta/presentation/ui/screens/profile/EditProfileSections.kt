@@ -73,8 +73,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.talenta.R
 import com.example.talenta.data.model.Certificate
-import com.example.talenta.presentation.viewmodels.EditProfileEvent
-import com.example.talenta.presentation.viewmodels.EditProfileState
+import com.example.talenta.presentation.state.EditProfileEvent
+import com.example.talenta.presentation.state.EditProfileState
 import com.example.talenta.presentation.viewmodels.EditProfileViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -225,8 +225,9 @@ fun EditProfileScreen(
                                     .height(6.dp)
                                     .clip(RoundedCornerShape(20.dp))
                                     .background(
-                                        if (step <= currentStep) royalBlue else
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                                        if (step <= currentStep) royalBlue else MaterialTheme.colorScheme.primary.copy(
+                                            alpha = 0.3f
+                                        )
                                     )
                             )
                         }
@@ -376,7 +377,7 @@ fun BioAndCertificatesSection(viewModel: EditProfileViewModel) {
     val state = viewModel.state.collectAsState().value
     if (state !is EditProfileState.Success) return
 
-    val context = LocalContext.current;
+    val context = LocalContext.current
 
     var showAddDialog by remember { mutableStateOf(false) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }

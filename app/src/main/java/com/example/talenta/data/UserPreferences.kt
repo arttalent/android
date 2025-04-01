@@ -1,5 +1,8 @@
 package com.example.talenta.data
 
+
+/** This is for future custom backend login state*/
+
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey

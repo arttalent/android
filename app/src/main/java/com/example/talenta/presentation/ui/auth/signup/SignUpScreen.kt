@@ -37,16 +37,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.talenta.data.model.Expert
+import com.example.talenta.data.model.Person
+import com.example.talenta.data.model.SignUpData
+import com.example.talenta.data.model.SocialMediaLinks
 import com.example.talenta.navigation.Routes.Route
+import com.example.talenta.presentation.state.AuthUiStatee
 import com.example.talenta.presentation.ui.screens.profile.Field
-import com.example.talenta.presentation.viewmodels.AuthUiStatee
 import com.example.talenta.presentation.viewmodels.SignUpViewModel
+import java.util.UUID
 
 @Composable
 fun SignUpScreen(
     navController: NavController,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
+
     val uiState by viewModel.uiState.collectAsState()
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -90,6 +96,7 @@ fun SignUpScreen(
 
             is AuthUiStatee.Error -> {
                 errorMessage = (uiState as AuthUiStatee.Error).message
+                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                 showError = true
             }
 
@@ -132,14 +139,12 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Sign Up Form Card
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp, vertical = 4.dp)
             ) {
-                // Name Fields Row
 
                 Field(
                     header = "First Name",
@@ -205,6 +210,7 @@ fun SignUpScreen(
                 // Sign Up Button
                 Button(
                     onClick = {
+
                         when {
                             password != confirmPassword -> {
                                 errorMessage = "Passwords do not match"
@@ -215,17 +221,61 @@ fun SignUpScreen(
                                 errorMessage = "Please enter valid phone number"
                                 showError = true
                             }
-
                             else -> {
-                                viewModel.startSignUp(
-                                    firstName = fname,
-                                    lastName = lname,
-                                    email = email,
-                                    password = password,
-                                    countryCode = code,
-                                    phoneNumber = phoneNumber
-                                )
+
+                                val data =
+                                    SignUpData(fname, lname, email, password, code, phoneNumber)
+
+                                try {
+                                    val person = Person(
+                                        firstName = fname,
+                                        lastName = lname,
+                                        email = email,
+                                        profession = "pianist",
+                                        subProfession = "melodist",
+                                        countryCode = code,
+                                        mobileNumber = phoneNumber,
+                                        photoUrl = "gs://arttalent-61e75.firebasestorage.app/placeholder.jpg",
+                                        gender = "Male",
+                                        age = 23,
+                                        birthYear = 2002,
+                                        language = "Kannada",
+                                        height = "5.6",
+                                        weight = "60",
+                                        ethnicity = "Indian",
+                                        color = "Brown",
+                                        city = "Gulbarga",
+                                        country = "India",
+                                        bioData = "Rohit, Android Dev",
+                                        socialMediaLinks = SocialMediaLinks("", "", "", ""),
+                                        certificatesList = emptyList(),
+                                        photos = emptyList(),
+                                        videos = emptyList(),
+                                        skills = emptyList()
+                                    )
+
+                                    val expert = Expert(
+                                        id = UUID.randomUUID().toString(),
+                                        person = person,
+                                        reviews = 0,
+                                        location = "Karnataka",
+                                        rating = 5,
+                                        profession = "Pianist",
+                                        followers = 1
+                                    )
+
+                                    viewModel.startSignUp(
+                                        data,
+                                        role = "Expert"
+                                    )
+                                    viewModel.uploadExpert(expert)
+
+                                } catch (e: Exception) {
+                                    println("Error : $e")
+                                }
                             }
+
+
                         }
                     },
                     modifier = Modifier
@@ -249,8 +299,12 @@ fun SignUpScreen(
                     }
                 }
             }
+
         }
+
+
     }
+
 
     // Error Snackbar
     if (showError) {

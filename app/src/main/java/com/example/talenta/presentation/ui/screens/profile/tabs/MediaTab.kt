@@ -43,9 +43,9 @@ import coil.compose.AsyncImage
 import com.example.talenta.R
 import com.example.talenta.data.model.Photo
 import com.example.talenta.data.model.Video
+import com.example.talenta.presentation.state.UploadState
 import com.example.talenta.presentation.ui.screens.profile.AddMediaButton
 import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
-import com.example.talenta.presentation.viewmodels.UploadState
 
 @Composable
 fun MediaContent(

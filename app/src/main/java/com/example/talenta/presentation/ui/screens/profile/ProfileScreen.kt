@@ -1,6 +1,7 @@
 package com.example.talenta.presentation.ui.screens.profile
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -30,6 +31,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,11 +50,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.talenta.R
+import com.example.talenta.presentation.state.ProfileUiState
 import com.example.talenta.presentation.ui.screens.profile.tabs.DetailsTab
 import com.example.talenta.presentation.ui.screens.profile.tabs.MediaContent
 import com.example.talenta.presentation.ui.screens.profile.tabs.ReviewsTab
 import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
-import com.example.talenta.presentation.viewmodels.ProfileUiState
 
 @Composable
 fun ProfileScreen(
@@ -68,14 +70,26 @@ fun ProfileScreen(
 
     // Image picker launcher
     val context = LocalContext.current
+
+    var toastMessage by remember { mutableStateOf<String?>(null) }
+
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            viewModel.updateProfilePhoto(it)
+            viewModel.uploadProfilePhoto(it) { e ->
+                toastMessage = e?.message
+            }
         }
     }
 
+
+    LaunchedEffect(toastMessage) {
+        toastMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            toastMessage = null
+        }
+    }
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
@@ -134,17 +148,17 @@ fun ProfileScreen(
                                 .background(Color.LightGray), // Placeholder color
                             contentAlignment = Alignment.Center
                         ) {
-                            if (artist.photoUrl.isNotEmpty()) {
+                            if (artist.person.photoUrl.isNotEmpty()) {
                                 AsyncImage(
-                                    model = artist.photoUrl,
-                                    contentDescription = "${artist.firstName} ${artist.lastName}",
+                                    model = artist.person.photoUrl,
+                                    contentDescription = "${artist.person.firstName} ${artist.person.lastName}",
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop
                                 )
                             } else {
                                 // Fallback if no photo URL
                                 Text(
-                                    text = "${artist.firstName.firstOrNull() ?: ""}${artist.lastName.firstOrNull() ?: ""}",
+                                    text = "${artist.person.firstName.firstOrNull() ?: ""}${artist.person.lastName.firstOrNull() ?: ""}",
                                     style = MaterialTheme.typography.headlineMedium
                                 )
                             }
@@ -169,8 +183,8 @@ fun ProfileScreen(
 
                     // Username - use firstName and lastName if available
                     Text(
-                        text = if (artist.firstName.isNotEmpty() || artist.lastName.isNotEmpty())
-                            "${artist.firstName} ${artist.lastName}".trim() else "User Name",
+                        text = if (artist.person.firstName.isNotEmpty() || artist.person.lastName.isNotEmpty())
+                            "${artist.person.firstName} ${artist.person.lastName}".trim() else "User Name",
                         modifier = Modifier.padding(top = 10.dp),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
@@ -178,7 +192,7 @@ fun ProfileScreen(
 
                     // Art Form Label - use profession if available
                     Text(
-                        text = artist.profession.ifEmpty { "Art form" },
+                        text = artist.person.profession.ifEmpty { "Art form" },
                         modifier = Modifier.padding(vertical = 8.dp),
                         color = Color.Gray
                     )

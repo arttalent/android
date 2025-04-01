@@ -1,5 +1,6 @@
 package com.example.talenta.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,7 +17,8 @@ fun AppNavigation(isLoggedIn: Boolean) {
 
     NavHost(
         navController = navController,
-        startDestination = if (!isLoggedIn) "host" else "auth_graph"
+//        startDestination = if (!isLoggedIn) "host" else "auth_graph"
+        startDestination = if (!isLoggedIn) "auth_graph" else "host"
     ) {
 
         // Auth graph
@@ -30,9 +32,13 @@ fun AppNavigation(isLoggedIn: Boolean) {
                 navController = navController
             )
         }
-        composable(Route.ExpertDetail.path) {
-            ExpertDetailedScreen(navController)
+        composable(Route.ExpertDetail.path) { backStackEntry ->
+            val expertId = backStackEntry.arguments?.getString("expertId")
+            Log.d("NavigationDebug", "Expert ID received: $expertId") // Add this line
+            ExpertDetailedScreen(navController, expertId)
         }
+
+
     }
 
 }

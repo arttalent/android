@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.talenta.data.UserPreferences
+import com.example.talenta.data.repository.AuthRepository
 import com.example.talenta.navigation.AppNavigation
 import com.example.talenta.ui.theme.TalentATheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,13 +24,17 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var userPreferences: UserPreferences
 
+    @Inject
+    lateinit var authRepository: AuthRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         installSplashScreen()
         setContent {
             TalentATheme {
-                val isLoggedIn = userPreferences.isLoggedIn.collectAsState(initial = false).value
+                val isLoggedIn = authRepository.isUserLoggedIn()
+
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
