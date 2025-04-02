@@ -30,6 +30,7 @@ class AuthRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val storage: FirebaseStorage
 ) {
+    val TAG = "AuthRepository"
     private val artistsCollection = firestore.collection("artists")
 
 
@@ -116,7 +117,13 @@ class AuthRepository @Inject constructor(
         role: String  // Add role parameter
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+            val authResult = auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
+                Timber.tag(TAG).d("User Created")
+                FirebaseAuth.getInstance().signOut()
+            }.addOnFailureListener {
+                FirebaseAuth.getInstance().signOut()
+                Timber.tag(TAG).d("Error Listner = %s", it.message)
+            }.await()
             val userId = authResult.user?.uid ?: throw Exception("Failed to create user")
 
             val formattedPhoneNumber = formatPhoneNumber(countryCode, phoneNumber)
@@ -128,7 +135,13 @@ class AuthRepository @Inject constructor(
                             firstName, lastName, formattedPhoneNumber, countryCode, email, password
                         )
                     )
-                    artistsCollection.document(userId).set(artist).await()
+                    artistsCollection.document(userId).set(artist).addOnSuccessListener {
+                        Result.success(Unit)
+                        Timber.tag(TAG).d("Successful Creation")
+                    }
+                        .addOnFailureListener { e ->
+                            Timber.tag(TAG).d("Error Listner = %s", e.message)
+                        }.await()
                 }
 
                 "Expert" -> {
@@ -155,6 +168,7 @@ class AuthRepository @Inject constructor(
 
             Result.success(Unit)
         } catch (e: Exception) {
+            Timber.tag(TAG).d("Error = %s", e.message)
             Result.failure(e)
         }
     }
@@ -165,7 +179,6 @@ class AuthRepository @Inject constructor(
         val cleanPhoneNumber = phoneNumber.replace(Regex("[^0-9]"), "")
         return "+$cleanCountryCode$cleanPhoneNumber"
     }
-
 
 
     suspend fun sendOtp(phoneNumber: String): Result<String> = withContext(Dispatchers.IO) {
@@ -217,7 +230,8 @@ class AuthRepository @Inject constructor(
     suspend fun createArtistProfile(artist: Artist, imageUri: Uri?): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
-                val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
+                val userId =
+                    auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
 
                 val photoUrl = imageUri?.let { uri ->
                     val photoRef = storage.reference.child("profile_photos/$userId.jpg")

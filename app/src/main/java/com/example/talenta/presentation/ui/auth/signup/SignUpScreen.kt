@@ -91,7 +91,7 @@ fun SignUpScreen(
                     "Account created successfully, please login",
                     Toast.LENGTH_LONG
                 ).show()
-                navController.navigate(Route.Login.path)
+                navController.navigate(Route.Login)
             }
 
             is AuthUiStatee.Error -> {

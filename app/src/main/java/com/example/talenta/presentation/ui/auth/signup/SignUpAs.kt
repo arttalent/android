@@ -31,9 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,12 +43,15 @@ import androidx.navigation.NavController
 import com.example.talenta.R
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.viewmodels.SignInViewModel
+import com.example.talenta.ui.theme.TalentATheme
 
 data class CardItem(
     val id: Int,
     val title: String,
     val imageRes: Int
 )
+
+
 
 
 @Composable
@@ -141,9 +146,9 @@ fun SignUpAs(
 }
 
 @Composable
-fun GridCard(cardItem: CardItem, onCardClick: () -> Unit) {
+fun GridCard(modifier: Modifier = Modifier, cardItem: CardItem, onCardClick: () -> Unit) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(0.85f)
             .clickable(onClick = onCardClick),
@@ -213,5 +218,28 @@ fun GridCard(cardItem: CardItem, onCardClick: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+private fun GridCardPrev() {
+    TalentATheme {
+        GridCard(
+            modifier = Modifier
+                .fillMaxSize(0.5f)
+                .padding(20.dp),
+            cardItem = CardItem(1, "Experts", R.drawable.experts),
+        ) { }
+    }
+}
+
+@Preview
+@Composable
+private fun SignUpAsPrev() {
+    TalentATheme {
+        SignUpAs(
+            navController = NavController(context = LocalContext.current)
+        )
     }
 }

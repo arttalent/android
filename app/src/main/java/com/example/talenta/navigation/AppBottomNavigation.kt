@@ -11,6 +11,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.talenta.navigation.Routes.BottomNavRoute
+import com.example.talenta.navigation.Routes.Route
+import com.example.talenta.presentation.ui.screens.isEqualTo
 
 @Composable
 fun AppBottomNavigation(navController: NavController) {
@@ -28,7 +30,8 @@ fun AppBottomNavigation(navController: NavController) {
         val currentDestination = navBackStackEntry?.destination
 
         items.forEach { screen ->
-            val isSelected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+            val isSelected =
+                currentDestination?.hierarchy?.any { it isEqualTo screen.route } == true
 
             NavigationBarItem(
                 icon = { Icon(painterResource(screen.icon), screen.title) },
@@ -37,7 +40,7 @@ fun AppBottomNavigation(navController: NavController) {
                 onClick = {
                     if (!isSelected) {
                         navController.navigate(screen.route) {
-                            popUpTo("host") {
+                            popUpTo(Route.HostGraph) {
                                 saveState = true
                             }
                             launchSingleTop = true

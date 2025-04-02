@@ -31,14 +31,4 @@ data class Person(
     val photos: List<Photo> = emptyList(),
     val videos: List<Video> = emptyList(),
     val skills: List<String> = emptyList()
-) {
-    constructor() : this(
-        firstName = "", lastName = "", email = "", password = "",
-        profession = "", subProfession = "", countryCode = "", mobileNumber = "",
-        photoUrl = "", gender = "", age = 0, birthYear = 0, language = "",
-        height = "", weight = "", ethnicity = "", color = "", city = "", country = "",
-        bioData = "", socialMediaLinks = SocialMediaLinks(), certificatesList = emptyList(),
-        photos = emptyList(), videos = emptyList(), skills = emptyList()
-    )
-
-}
+)

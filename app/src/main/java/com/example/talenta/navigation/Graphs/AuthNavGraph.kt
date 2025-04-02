@@ -16,53 +16,52 @@ import com.example.talenta.presentation.ui.auth.signup.SuccessScreen
 import com.example.talenta.presentation.ui.onboarding.OnboardingScreen
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
-    navigation(
-        startDestination = Route.Onboarding.path,
-        route = "auth_graph"
+    navigation<Route.AuthGraph>(
+        startDestination = Route.Onboarding
     ) {
-        composable(Route.Onboarding.path) {
+        composable<Route.Onboarding> {
             OnboardingScreen(
                 onComplete = {
-                    navController.navigate(Route.Auth.path)
+                    navController.navigate(Route.Auth)
                 }
             )
         }
-        composable(Route.Auth.path) {
+        composable<Route.Auth> {
             AuthScreen(navController)
         }
-        composable(Route.SignUpAs.path) {
+        composable<Route.SignUpAs> {
             SignUpAs(navController)
         }
-        composable(Route.SignUp.path) {
+        composable<Route.SignUp> {
             SignUpScreen(navController)
         }
-        composable(Route.OTPVerification.path) {
+        composable<Route.OTPVerification> {
             OTPVerificationScreen(navController)
         }
-        composable(Route.Success.path) {
+        composable<Route.Success> {
             SuccessScreen(
                 onSuccess = {
-                    navController.navigate("host") {
-                        popUpTo("auth_graph") { inclusive = true }
+                    navController.navigate(Route.HostGraph) {
+                        popUpTo(Route.AuthGraph) { inclusive = true }
                         launchSingleTop = true
                     }
                 })
         }
-        composable(Route.Login.path) {
+        composable<Route.Login> {
             LoginScreen(
                 navController = navController,
                 onLoginSuccess = {
-                    navController.navigate("host") {
-                        popUpTo("auth_graph") { inclusive = true }
+                    navController.navigate(Route.HostGraph) {
+                        popUpTo(Route.AuthGraph) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
             )
         }
-        composable(Route.ForgotPassword.path) {
+        composable<Route.ForgotPassword> {
             ForgotPasswordScreen(navController)
         }
-        composable(Route.PasswordResetSuccess.path) {
+        composable<Route.PasswordResetSuccess> {
             PasswordResetSuccessScreen(navController)
         }
     }

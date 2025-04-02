@@ -57,7 +57,7 @@ fun PasswordResetSuccessScreen(navController: NavHostController) {
         )
 
         Button(
-            onClick = { navController.navigate(Route.Login.path) },
+            onClick = { navController.navigate(Route.Login) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp, horizontal = 25.dp),

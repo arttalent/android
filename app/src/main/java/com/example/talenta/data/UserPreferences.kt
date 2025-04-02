@@ -19,7 +19,7 @@ class UserPreferences @Inject constructor(
     private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
 
     val isLoggedIn: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[IS_LOGGED_IN] ?: false
+        preferences[IS_LOGGED_IN] == true
     }
 
     suspend fun setLoggedIn(isLoggedIn: Boolean) {

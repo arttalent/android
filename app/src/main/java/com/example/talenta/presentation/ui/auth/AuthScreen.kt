@@ -139,7 +139,7 @@ fun AuthScreen(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Button(
-                    onClick = { navController.navigate(Route.Login.path) },
+                    onClick = { navController.navigate(Route.Login) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -163,7 +163,7 @@ fun AuthScreen(navController: NavController) {
                 }
 
                 Button(
-                    onClick = { navController.navigate(Route.SignUpAs.path) },
+                    onClick = { navController.navigate(Route.SignUpAs) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),

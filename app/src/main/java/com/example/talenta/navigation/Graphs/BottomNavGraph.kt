@@ -50,7 +50,7 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavHostController) {
                 content = {
                     ProfileScreen(
                         onEditProfileClick = {
-                            navController.navigate(Route.EditProfile.path)
+                            navController.navigate(Route.EditProfile)
                         }
                     )
                 }

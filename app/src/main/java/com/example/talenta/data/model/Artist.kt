@@ -10,9 +10,7 @@ data class Photo(
 
 data class Artist(
     val id: String = "", val person: Person = Person()
-) {
-    constructor() : this(id = "", person = Person())
-}
+)
 
 
 data class Video(

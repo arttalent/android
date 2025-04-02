@@ -18,7 +18,7 @@ fun AppNavigation(isLoggedIn: Boolean) {
     NavHost(
         navController = navController,
 //        startDestination = if (!isLoggedIn) "host" else "auth_graph"
-        startDestination = if (!isLoggedIn) "auth_graph" else "host"
+        startDestination = if (!isLoggedIn) Route.AuthGraph else "host"
     ) {
 
         // Auth graph
@@ -27,12 +27,12 @@ fun AppNavigation(isLoggedIn: Boolean) {
         bottomNavGraph(navController)
 
         // Screens accessible from anywhere
-        composable(Route.EditProfile.path) {
+        composable<Route.EditProfile> {
             EditProfileScreen(
                 navController = navController
             )
         }
-        composable(Route.ExpertDetail.path) { backStackEntry ->
+        composable<Route.ExpertDetail> { backStackEntry ->
             val expertId = backStackEntry.arguments?.getString("expertId")
             Log.d("NavigationDebug", "Expert ID received: $expertId") // Add this line
             ExpertDetailedScreen(navController, expertId)

@@ -1,19 +1,48 @@
 package com.example.talenta.navigation.Routes
 
-sealed class Route(val path: String) {
-    object Onboarding : Route("onboarding")
-    object Auth : Route("auth")
-    object SignUpAs : Route("signup_as")
-    object SignUp : Route("signup")
-    object OTPVerification : Route("verify_otp")
-    object Success : Route("success")
-    object Login : Route("login")
-    object ForgotPassword : Route("forgot_password")
-    object PasswordResetSuccess : Route("password_reset_success")
-    object EditProfile : Route("edit_profile")
+import kotlinx.serialization.Serializable
 
-    object ExpertDetail : Route("expert_detail/{expertId}") {
-        fun createRoute(expertId: String) = "expert_detail/$expertId"
-    }
+@Serializable
+sealed class Route() {
+    @Serializable
+    object AuthGraph : Route()
+    @Serializable
+    object HostGraph : Route()
+
+    // Inside Auth Graph
+    @Serializable
+    object Onboarding : Route()
+    @Serializable
+    object Auth : Route()
+    @Serializable
+    object SignUpAs : Route()
+    @Serializable
+    object SignUp  : Route()
+    @Serializable
+    object OTPVerification : Route()
+    @Serializable
+    object Success : Route()
+    @Serializable
+    object Login  : Route()
+    @Serializable
+    object ForgotPassword : Route()
+    @Serializable
+    object PasswordResetSuccess  : Route()
+
+    // Inside Bottom Nav Graph`
+    @Serializable
+    object Dashboard : Route()
+    @Serializable
+    object Experts : Route()
+    @Serializable
+    object MyBookings : Route()
+    @Serializable
+    object Notice : Route()
+    @Serializable
+    object Profile : Route()
+    @Serializable
+    object EditProfile : Route()
+    @Serializable
+    data class ExpertDetail(val expertId: String)
 
 }
