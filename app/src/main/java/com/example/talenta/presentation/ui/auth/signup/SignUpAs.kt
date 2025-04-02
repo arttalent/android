@@ -122,7 +122,7 @@ fun SignUpAs(
                     GridCard(
                         cardItem = item,
                         onCardClick = {
-                            navController.navigate(Route.SignUp.path)
+                            navController.navigate(Route.SignUp)
                         }
                     )
                 }
