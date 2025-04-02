@@ -6,7 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.talenta.data.model.Artist
 import com.example.talenta.data.model.Certificate
+import com.example.talenta.data.model.Person
 import com.example.talenta.data.model.SocialMediaLinks
+import com.example.talenta.presentation.state.EditProfileEvent
+import com.example.talenta.presentation.state.EditProfileState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -20,42 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
-sealed class EditProfileState {
-    object Loading : EditProfileState()
-    data class Success(
-        val firstName: String = "",
-        val lastName: String = "",
-        val email: String = "",
-        val profession: String = "",
-        val city: String = "",
-        val country: String = "",
-        val gender: String = "",
-        val age: String = "",
-        val birthYear: String = "",
-        val language: String = "",
-        val height: String = "",
-        val weight: String = "",
-        val bioData: String = "",
-        val facebook: String = "",
-        val instagram: String = "",
-        val linkedin: String = "",
-        val twitter: String = "",
-        val certificates: List<Certificate> = emptyList()
-    ) : EditProfileState()
 
-    data class Error(val message: String) : EditProfileState()
-}
-
-sealed class EditProfileEvent {
-    object NavigateBack : EditProfileEvent()
-    data class ShowError(val message: String) : EditProfileEvent()
-    object ShowSuccessMessage : EditProfileEvent()
-    // New event specifically for certificate operations that shouldn't navigate
-    object CertificateOperationSuccess : EditProfileEvent()
-}
-
-
-// EditProfileViewModel Updates
 class EditProfileViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -91,80 +59,67 @@ class EditProfileViewModel : ViewModel() {
                 _state.value = EditProfileState.Loading
                 val userId = auth.currentUser?.uid ?: throw Exception("User not authenticated")
 
-                val artistDoc = firestore.collection("artists")
-                    .document(userId)
-                    .get()
-                    .await()
+                val artistDoc = firestore.collection("artists").document(userId).get().await()
 
-                val artist = artistDoc.toObject(Artist::class.java) ?: Artist(id = userId)
+                val artist = artistDoc.toObject(Artist::class.java) ?: Artist(
+                    id = userId,
+                    person = Person()
+                )
 
-                // Get certificates from the new field or create from the old field if needed
-                val certificatesList = if (artist.certificatesList.isNotEmpty()) {
-                    artist.certificatesList
+                // Ensure certificates are properly handled
+                val certificatesList = if (artist.person.certificatesList.isNotEmpty()) {
+                    artist.person.certificatesList
                 } else {
-                    // Read certificates directly from Firestore as a fallback
-                    val certificatesField = artistDoc.get("certificates")
+                    val certificatesField = artistDoc.get("person.certificates")
                     when (certificatesField) {
-                        // If it's a list, convert to Certificate objects
                         is List<*> -> {
                             certificatesField.mapNotNull { item ->
-                                if (item is Map<*, *>) {
-                                    try {
-                                        Certificate(
-                                            id = (item["id"] as? String) ?: UUID.randomUUID()
-                                                .toString(),
-                                            imageUrl = (item["imageUrl"] as? String) ?: "",
-                                            description = (item["description"] as? String) ?: "",
-                                            timestamp = (item["timestamp"] as? Long)
-                                                ?: System.currentTimeMillis()
-                                        )
-                                    } catch (e: Exception) {
-                                        null
-                                    }
-                                } else null
-                            }
-                        }
-                        // If it's a single object, convert to a list with one item
-                        is Map<*, *> -> {
-                            try {
-                                listOf(
+                                (item as? Map<*, *>)?.let {
                                     Certificate(
-                                        id = (certificatesField["id"] as? String)
-                                            ?: UUID.randomUUID().toString(),
-                                        imageUrl = (certificatesField["imageUrl"] as? String) ?: "",
-                                        description = (certificatesField["description"] as? String)
-                                            ?: "",
-                                        timestamp = (certificatesField["timestamp"] as? Long)
+                                        id = (it["id"] as? String) ?: UUID.randomUUID().toString(),
+                                        imageUrl = (it["imageUrl"] as? String) ?: "",
+                                        description = (it["description"] as? String) ?: "",
+                                        timestamp = (it["timestamp"] as? Long)
                                             ?: System.currentTimeMillis()
                                     )
-                                )
-                            } catch (e: Exception) {
-                                emptyList()
+                                }
                             }
                         }
-
+                        is Map<*, *> -> {
+                            listOf(
+                                Certificate(
+                                    id = (certificatesField["id"] as? String) ?: UUID.randomUUID()
+                                        .toString(),
+                                    imageUrl = (certificatesField["imageUrl"] as? String) ?: "",
+                                    description = (certificatesField["description"] as? String)
+                                        ?: "",
+                                    timestamp = (certificatesField["timestamp"] as? Long)
+                                        ?: System.currentTimeMillis()
+                                )
+                            )
+                        }
                         else -> emptyList()
                     }
                 }
 
                 _state.value = EditProfileState.Success(
-                    firstName = artist.firstName,
-                    lastName = artist.lastName,
-                    email = artist.email,
-                    profession = artist.profession,
-                    city = artist.city,
-                    country = artist.country,
-                    gender = artist.gender,
-                    age = artist.age.toString(),
-                    birthYear = artist.birthYear.toString(),
-                    language = artist.language,
-                    height = artist.height,
-                    weight = artist.weight,
-                    bioData = artist.bioData,
-                    facebook = artist.socialMediaLinks.facebook,
-                    instagram = artist.socialMediaLinks.instagram,
-                    linkedin = artist.socialMediaLinks.linkedin,
-                    twitter = artist.socialMediaLinks.twitter,
+                    firstName = artist.person.firstName,
+                    lastName = artist.person.lastName,
+                    email = artist.person.email,
+                    profession = artist.person.profession,
+                    city = artist.person.city,
+                    country = artist.person.country,
+                    gender = artist.person.gender,
+                    age = artist.person.age.toString(),
+                    birthYear = artist.person.birthYear.toString(),
+                    language = artist.person.language,
+                    height = artist.person.height,
+                    weight = artist.person.weight,
+                    bioData = artist.person.bioData,
+                    facebook = artist.person.socialMediaLinks.facebook,
+                    instagram = artist.person.socialMediaLinks.instagram,
+                    linkedin = artist.person.socialMediaLinks.linkedin,
+                    twitter = artist.person.socialMediaLinks.twitter,
                     certificates = certificatesList
                 )
             } catch (e: Exception) {
@@ -173,6 +128,8 @@ class EditProfileViewModel : ViewModel() {
             }
         }
     }
+
+
     fun addCertificate(imageUri: Uri, description: String) {
         viewModelScope.launch {
             try {
@@ -288,26 +245,29 @@ class EditProfileViewModel : ViewModel() {
 
                 val updatedArtist = Artist(
                     id = userId,
-                    firstName = currentState.firstName,
-                    lastName = currentState.lastName,
-                    email = currentState.email,
-                    profession = currentState.profession,
-                    city = currentState.city,
-                    country = currentState.country,
-                    gender = currentState.gender,
-                    age = currentState.age.toIntOrNull() ?: 0,
-                    birthYear = currentState.birthYear.toIntOrNull() ?: 0,
-                    language = currentState.language,
-                    height = currentState.height,
-                    weight = currentState.weight,
-                    bioData = currentState.bioData,
-                    socialMediaLinks = SocialMediaLinks(
-                        facebook = currentState.facebook,
-                        instagram = currentState.instagram,
-                        linkedin = currentState.linkedin,
-                        twitter = currentState.twitter
-                    ),
-                    certificatesList = currentState.certificates
+                    Person(
+                        firstName = currentState.firstName,
+                        lastName = currentState.lastName,
+                        email = currentState.email,
+                        profession = currentState.profession,
+                        city = currentState.city,
+                        country = currentState.country,
+                        gender = currentState.gender,
+                        age = currentState.age.toIntOrNull() ?: 0,
+                        birthYear = currentState.birthYear.toIntOrNull() ?: 0,
+                        language = currentState.language,
+                        height = currentState.height,
+                        weight = currentState.weight,
+                        bioData = currentState.bioData,
+                        socialMediaLinks = SocialMediaLinks(
+                            facebook = currentState.facebook,
+                            instagram = currentState.instagram,
+                            linkedin = currentState.linkedin,
+                            twitter = currentState.twitter
+                        ),
+                        certificatesList = currentState.certificates
+                    )
+
                 )
 
                 firestore.collection("artists")

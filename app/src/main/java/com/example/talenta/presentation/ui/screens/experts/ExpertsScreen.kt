@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -29,6 +28,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,36 +42,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
-import com.example.talenta.navigation.Routes.Route
+import com.example.talenta.data.model.Expert
+import com.example.talenta.presentation.viewmodels.ExpertViewModel
 
-data class Expert(
-    val name: String,
-    val location: String,
-    val profession: String,
-    val followers: Int,
-    val rating: Float,
-    val imageRes: Int,
-    val reviews: Int
-)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpertsScreen(navController: NavController) {
+fun ExpertsScreen(navController: NavController, viewModel: ExpertViewModel = hiltViewModel()) {
     var searchQuery by remember { mutableStateOf("") }
+    val experts by viewModel.experts.collectAsState(initial = emptyList())
 
-    val experts = listOf(
-        Expert(
-            name = "Kieran",
-            location = "London, UK",
-            profession = "Professional guitarist & degree-qualified music teacher with extensive international experience",
-            followers = 110,
-            rating = 5f,
-            imageRes = R.drawable.singer,
-            reviews = 100
-        )
-    )
 
     Scaffold { paddingValues ->
         Column(
@@ -101,6 +84,7 @@ fun ExpertsScreen(navController: NavController) {
                 singleLine = true
             )
 
+
             // Experts Grid
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -109,12 +93,14 @@ fun ExpertsScreen(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
-                items(List(14) { experts[0] }) { expert ->
+                items(experts) { expert ->
                     ExpertCard(expert, navController)
                 }
+
             }
         }
     }
+
 }
 
 @Composable
@@ -125,21 +111,24 @@ fun ExpertCard(expert: Expert, navController: NavController) {
             .padding(5.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable {
-                navController.navigate(Route.ExpertDetail.path)
+                println("id from expert screen ${expert.id}")
+                navController.navigate("expert_detail/${expert.id}")
+
             },
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
+        println("Details: $expert")
         Column(
             modifier = Modifier.padding(10.dp),
             //horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Image
             Image(
-                painter = painterResource(id = expert.imageRes),
-                contentDescription = expert.name,
+                painter = rememberAsyncImagePainter(if (expert.person.photoUrl.isNotEmpty()) expert.person.photoUrl else R.drawable.placeholder),
+                contentDescription = null,
                 modifier = Modifier
                     .aspectRatio(0.9f)
                     .clip(RoundedCornerShape(8.dp)),
@@ -167,13 +156,13 @@ fun ExpertCard(expert: Expert, navController: NavController) {
             Spacer(Modifier.height(5.dp))
             // Name & Location
             Text(
-                text = expert.name,
+                text = expert.person.firstName + " " + expert.person.lastName,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "Guitarist | ${expert.location}",
+                text = "${expert.person.profession} | ${expert.location}",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )

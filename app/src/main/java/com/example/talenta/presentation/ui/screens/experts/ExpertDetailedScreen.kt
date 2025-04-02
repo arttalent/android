@@ -26,8 +26,9 @@ import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,16 +41,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.presentation.ui.screens.experts.tabs.MediaContent
 import com.example.talenta.presentation.ui.screens.experts.tabs.ProfileContent
 import com.example.talenta.presentation.ui.screens.experts.tabs.ServicesContent
+import com.example.talenta.presentation.viewmodels.ExpertViewModel
 
 @Composable
-fun ExpertDetailedScreen(navController: NavController) {
+fun ExpertDetailedScreen(
+    navController: NavController, expertId: String?
+) {
 
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableIntStateOf(0) }
+
+
 
     Column(
         modifier = Modifier
@@ -58,9 +67,9 @@ fun ExpertDetailedScreen(navController: NavController) {
     ) {
 
         TopBar(navController)
-        ProfileSection()
+        ProfileSection(expertId = expertId)
         SocialMediaSection()
-        RatingSection()
+        RatingSection(expertId)
 
         TabSection(
             selectedTab = selectedTab,
@@ -93,15 +102,34 @@ private fun TopBar(navController: NavController) {
 }
 
 @Composable
-private fun ProfileSection() {
+fun ProfileSection(
+    expertId: String?, viewModel: ExpertViewModel = hiltViewModel()
+) {
+    val expert by viewModel.expert.collectAsStateWithLifecycle()
+
+
+
+    if (expertId.isNullOrEmpty()) {
+        Text("Error: No Expert ID provided")
+        return
+    }
+
+    LaunchedEffect(expertId) {
+        viewModel.getExpertById(expertId)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Profile Picture
+
+
+
         Image(
-            painter = painterResource(id = R.drawable.singer),
+            painter = rememberAsyncImagePainter(if (expert?.person?.photoUrl?.isNotEmpty() == true) expert?.person?.photoUrl else R.drawable.placeholder),
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(100.dp)
@@ -111,25 +139,28 @@ private fun ProfileSection() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Expert Name
         Text(
-            text = "Kieran",
+            text = (expert?.person?.firstName + expert?.person?.lastName) ?: "Loading...",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Text(
-            text = "Guitarist | London, UK",
+        // Profession & Location
+        Text(text = expert?.person?.profession?.let { "$it | ${expert?.location}" } ?: "Loading...",
             fontSize = 14.sp,
             color = Color.Gray
         )
 
+        // Languages
         Text(
-            text = "English, Spanish",
+            text = expert?.person?.language ?: "Loading...",
             fontSize = 14.sp,
             color = Color.Gray
         )
     }
 }
+
 
 @Composable
 private fun SocialMediaSection() {
@@ -161,7 +192,21 @@ private fun SocialMediaIcon(icon: Int) {
 }
 
 @Composable
-private fun RatingSection() {
+private fun RatingSection(expertId: String?, viewModel: ExpertViewModel = hiltViewModel()) {
+    val expert by viewModel.expert.collectAsStateWithLifecycle()
+
+
+    if (expertId.isNullOrEmpty()) {
+        Text("Error: No Expert ID provided")
+        return
+    }
+
+    LaunchedEffect(expertId) {
+        viewModel.getExpertById(expertId)
+    }
+
+    println("rating: ${expert?.rating}")
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,7 +214,7 @@ private fun RatingSection() {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         RatingItem(
-            rating = "5.0",
+            rating = expert?.rating.toString(),
             description = "50 reviews",
             stars = true
         )

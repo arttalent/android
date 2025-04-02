@@ -1,5 +1,6 @@
 package com.example.talenta.presentation.ui.auth.login
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -46,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -58,6 +60,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.talenta.R
 import com.example.talenta.navigation.Routes.Route
+import com.example.talenta.presentation.state.AuthUiState
 import com.example.talenta.presentation.viewmodels.SignInViewModel
 
 @Composable
@@ -75,6 +78,7 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
     // Input validation
     val isValidEmail = remember(email) {
         android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
@@ -86,12 +90,13 @@ fun LoginScreen(
 
     LaunchedEffect(uiState) {
         when (uiState) {
-            is SignInViewModel.AuthUiState.Success -> {
+            is AuthUiState.Success -> {
+                Toast.makeText(context, "Login Success", Toast.LENGTH_SHORT).show()
                 onLoginSuccess()
             }
 
-            is SignInViewModel.AuthUiState.Error -> {
-                errorMessage = (uiState as SignInViewModel.AuthUiState.Error).message
+            is AuthUiState.Error -> {
+                errorMessage = (uiState as AuthUiState.Error).message
                 showError = true
             }
 
@@ -259,7 +264,7 @@ fun LoginScreen(
                         disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                     )
                 ) {
-                    if (uiState is SignInViewModel.AuthUiState.Loading) {
+                    if (uiState is AuthUiState.Loading) {
                         CircularProgressIndicator(
                             color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(24.dp)

@@ -2,114 +2,108 @@ package com.example.talenta.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.talenta.data.model.Artist
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.talenta.data.model.Expert
+import com.example.talenta.data.model.Person
+import com.example.talenta.data.model.SignUpData
+import com.example.talenta.data.repository.AuthRepository
+import com.example.talenta.presentation.state.AuthUiStatee
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-sealed class AuthUiStatee {
-    object Idle : AuthUiStatee()
-    object Loading : AuthUiStatee()
-    object Success : AuthUiStatee()
-    object OtpSent : AuthUiStatee()
-    data class Error(val message: String) : AuthUiStatee()
-}
 
-data class SignUpData(
-    val firstName: String = "",
-    val lastName: String = "",
-    val email: String = "",
-    val password: String = "",
-    val countryCode: String = "",
-    val phoneNumber: String = ""
-)
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AuthUiStatee>(AuthUiStatee.Idle)
     val uiState: StateFlow<AuthUiStatee> = _uiState.asStateFlow()
 
-    fun validateSignUpData(signUpData: SignUpData): String? {
+
+    fun uploadExpert(expert: Expert) {
+        val validationError = validateExpertData(expert.person)
+
+        if (validationError != null) {
+            _uiState.value = AuthUiStatee.Error(validationError)
+            return
+        }
+
+        _uiState.value = AuthUiStatee.Loading
+
+        viewModelScope.launch {
+            val result = authRepository.uploadExpert(expert)
+
+            _uiState.value = if (result.isSuccess) {
+                AuthUiStatee.Success
+            } else {
+                AuthUiStatee.Error(result.exceptionOrNull()?.message ?: "Expert upload failed")
+            }
+        }
+    }
+
+    fun startSignUp(signUpData: SignUpData, role: String) {
+        val validationError = validateSignUpData(signUpData)
+
+        if (validationError != null) {
+            _uiState.value = AuthUiStatee.Error(validationError)
+            return
+        }
+
+        _uiState.value = AuthUiStatee.Loading
+
+        viewModelScope.launch {
+            val result = authRepository.startSignUp(
+                signUpData.firstName.trim(),
+                signUpData.lastName.trim(),
+                signUpData.email.trim(),
+                signUpData.password,
+                signUpData.countryCode.trim(),
+                signUpData.phoneNumber.trim(),
+                role = role
+
+            )
+
+            _uiState.value = if (result.isSuccess) {
+                AuthUiStatee.Success
+            } else {
+                AuthUiStatee.Error(result.exceptionOrNull()?.message ?: "Sign-up failed")
+            }
+        }
+    }
+
+    private fun validateSignUpData(signUpData: SignUpData): String? {
         return when {
             signUpData.firstName.length < 2 -> "First name must be at least 2 characters"
             signUpData.lastName.length < 2 -> "Last name must be at least 2 characters"
             !isValidEmail(signUpData.email) -> "Invalid email address"
             signUpData.password.length < 8 -> "Password must be at least 8 characters"
-            signUpData.phoneNumber.isEmpty() -> "Phone number is required"
+            signUpData.countryCode.isBlank() -> "Country code is required"
+            signUpData.phoneNumber.isBlank() -> "Phone number is required"
             !isValidPhoneNumber(signUpData.phoneNumber) -> "Invalid phone number"
             else -> null
         }
     }
 
-    fun startSignUp(
-        firstName: String,
-        lastName: String,
-        email: String,
-        password: String,
-        countryCode: String,
-        phoneNumber: String
-    ) {
-        val signUpData = SignUpData(
-            firstName = firstName.trim(),
-            lastName = lastName.trim(),
-            email = email.trim(),
-            password = password,
-            countryCode = countryCode,
-            phoneNumber = phoneNumber.trim()
-        )
 
-        validateSignUpData(signUpData)?.let { error ->
-            _uiState.value = AuthUiStatee.Error(error)
-            return
+    private fun validateExpertData(person: Person): String? {
+        return when {
+            person.firstName.length < 2 -> "First name must be at least 2 characters"
+            person.lastName.length < 2 -> "Last name must be at least 2 characters"
+            !isValidEmail(person.email) -> "Invalid email address"
+            person.mobileNumber.isBlank() -> "Mobile number is required"
+            !isValidPhoneNumber(person.mobileNumber) -> "Invalid mobile number"
+            person.profession.isBlank() -> "Profession is required"
+            person.city.isBlank() -> "City is required"
+            person.country.isBlank() -> "Country is required"
+            person.bioData.isBlank() -> "BioData is required"
+            person.photoUrl.isBlank() -> "Profile image URL is required"
+            else -> null
         }
-
-        viewModelScope.launch {
-            try {
-                _uiState.value = AuthUiStatee.Loading
-
-                val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-                val userId = authResult.user?.uid ?: throw Exception("Failed to create user")
-
-                val formattedPhoneNumber = formatPhoneNumber(countryCode, phoneNumber)
-
-                val artist = Artist(
-                    id = userId,
-                    firstName = firstName,
-                    lastName = lastName,
-                    mobileNumber = formattedPhoneNumber,
-                    countryCode = countryCode,
-                    email = email.trim(),
-                    password = password.trim(),
-                )
-
-                firestore.collection("artists")
-                    .document(userId)
-                    .set(artist)
-                    .await()
-
-                // Only set success if Firestore operation is successful
-                _uiState.value = AuthUiStatee.Success
-            } catch (e: Exception) {
-                _uiState.value = AuthUiStatee.Error(e.message ?: "Sign up failed")
-            }
-        }
-    }
-
-
-    private fun formatPhoneNumber(countryCode: String, phoneNumber: String): String {
-        val cleanCountryCode = countryCode.replace("+", "").trim()
-        val cleanPhoneNumber = phoneNumber.replace(Regex("[^0-9]"), "")
-        return "+$cleanCountryCode$cleanPhoneNumber"
     }
 
     private fun isValidEmail(email: String): Boolean {
