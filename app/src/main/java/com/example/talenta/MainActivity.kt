@@ -32,7 +32,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         installSplashScreen()
-        //FirebaseAuth.getInstance().signOut()
         setContent {
             TalentATheme {
                 val isLoggedIn = authRepository.isUserLoggedIn()

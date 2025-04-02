@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.talenta.data.model.Artist
 import com.example.talenta.data.model.Expert
 import com.example.talenta.data.model.Person
+import com.example.talenta.data.model.Role
 import com.example.talenta.presentation.state.AuthUiState
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
@@ -83,13 +84,6 @@ class AuthRepository @Inject constructor(
 
     suspend fun signInWithEmail(email: String, password: String): AuthUiState {
         return try {
-            // Check if user exists in Firestore
-            val isUserRegistered = checkIfUserExists(email)
-            if (!isUserRegistered) {
-                return AuthUiState.Error("Email not registered. Please sign up.")
-            }
-
-            // Attempt authentication
             val result = auth.signInWithEmailAndPassword(email, password).await()
             if (result.user != null) {
                 AuthUiState.Success
@@ -114,7 +108,7 @@ class AuthRepository @Inject constructor(
         password: String,
         countryCode: String,
         phoneNumber: String,
-        role: String  // Add role parameter
+        role: Role  // Add role parameter
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val authResult = auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
@@ -122,17 +116,21 @@ class AuthRepository @Inject constructor(
                 FirebaseAuth.getInstance().signOut()
             }.addOnFailureListener {
                 FirebaseAuth.getInstance().signOut()
-                Timber.tag(TAG).d("Error Listner = %s", it.message)
+                Timber.tag(TAG).d("Error Listener = %s", it.message)
             }.await()
             val userId = authResult.user?.uid ?: throw Exception("Failed to create user")
 
             val formattedPhoneNumber = formatPhoneNumber(countryCode, phoneNumber)
 
             when (role) {
-                "Artist" -> {
+               Role.ARTIST -> {
                     val artist = Artist(
                         id = userId, person = Person(
-                            firstName, lastName, formattedPhoneNumber, countryCode, email, password
+                            firstName = firstName,
+                            lastName = lastName,
+                            email = email,
+                            mobileNumber = formattedPhoneNumber,
+                            countryCode = countryCode,
                         )
                     )
                     artistsCollection.document(userId).set(artist).addOnSuccessListener {
@@ -144,21 +142,25 @@ class AuthRepository @Inject constructor(
                         }.await()
                 }
 
-                "Expert" -> {
+                Role.EXPERT -> {
                     val expert = Expert(
                         id = userId, person = Person(
-                            firstName, lastName, formattedPhoneNumber, countryCode, email, password
+                            firstName = firstName,
+                            lastName = lastName,
+                            email = email,
+                            mobileNumber = formattedPhoneNumber,
+                            countryCode = countryCode,
                         )
                     )
                     expertsCollection.document(userId).set(expert).await()
                 }
 
-                "Member" -> {
+                Role.FAN -> {
 
                     // yet to implemented
                 }
 
-                "Sponsor" -> {
+                Role.SPONSOR -> {
                     // yet to implemented
 
                 }

@@ -1,5 +1,6 @@
 package com.example.talenta.navigation.Routes
 
+import com.example.talenta.data.model.Role
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,7 +18,7 @@ sealed class Route() {
     @Serializable
     object SignUpAs : Route()
     @Serializable
-    object SignUp  : Route()
+    data class SignUp(val role: Role)  : Route()
     @Serializable
     object OTPVerification : Route()
     @Serializable

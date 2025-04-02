@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.ui.auth.AuthScreen
 import com.example.talenta.presentation.ui.auth.login.ForgotPasswordScreen
@@ -32,8 +33,9 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         composable<Route.SignUpAs> {
             SignUpAs(navController)
         }
-        composable<Route.SignUp> {
-            SignUpScreen(navController)
+        composable<Route.SignUp> {navBackStackEntry ->
+            val role = navBackStackEntry.toRoute<Route.SignUp>().role
+            SignUpScreen(role,navController)
         }
         composable<Route.OTPVerification> {
             OTPVerificationScreen(navController)

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.talenta.data.model.Expert
 import com.example.talenta.data.model.Person
+import com.example.talenta.data.model.Role
 import com.example.talenta.data.model.SignUpData
 import com.example.talenta.data.repository.AuthRepository
 import com.example.talenta.presentation.state.AuthUiStatee
@@ -46,7 +47,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun startSignUp(signUpData: SignUpData, role: String) {
+    fun startSignUp(signUpData: SignUpData, role: Role) {
         val validationError = validateSignUpData(signUpData)
 
         if (validationError != null) {

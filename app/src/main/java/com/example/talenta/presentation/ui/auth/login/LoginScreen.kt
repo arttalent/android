@@ -97,7 +97,7 @@ fun LoginScreen(
 
             is AuthUiState.Error -> {
                 errorMessage = (uiState as AuthUiState.Error).message
-                showError = true
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
             }
 
             else -> {}

@@ -18,8 +18,7 @@ fun AppNavigation(isLoggedIn: Boolean) {
 
     NavHost(
         navController = navController,
-//        startDestination = if (!isLoggedIn) "host" else "auth_graph"
-        startDestination = if (!isLoggedIn) Route.AuthGraph else "host"
+        startDestination = if (!isLoggedIn) Route.AuthGraph else Route.HostGraph
     ) {
 
         // Auth graph
@@ -37,8 +36,6 @@ fun AppNavigation(isLoggedIn: Boolean) {
             val args = backStackEntry.toRoute<Route.ExpertDetail>()
             ExpertDetailedScreen(navController, args.expertId)
         }
-
-
     }
 
 }
