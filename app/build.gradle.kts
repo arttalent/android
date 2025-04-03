@@ -5,6 +5,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -102,6 +103,9 @@ dependencies {
 
     //Country code picker
     implementation(libs.country.picker)
+
+    // Serialization json
+    implementation(libs.kotlinx.serialization.json)
 
 
 }

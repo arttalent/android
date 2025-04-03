@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.talenta.navigation.Graphs.authNavGraph
 import com.example.talenta.navigation.Graphs.bottomNavGraph
 import com.example.talenta.navigation.Routes.Route
@@ -17,8 +18,7 @@ fun AppNavigation(isLoggedIn: Boolean) {
 
     NavHost(
         navController = navController,
-//        startDestination = if (!isLoggedIn) "host" else "auth_graph"
-        startDestination = if (!isLoggedIn) "auth_graph" else "host"
+        startDestination = if (!isLoggedIn) Route.AuthGraph else Route.HostGraph
     ) {
 
         // Auth graph
@@ -27,18 +27,15 @@ fun AppNavigation(isLoggedIn: Boolean) {
         bottomNavGraph(navController)
 
         // Screens accessible from anywhere
-        composable(Route.EditProfile.path) {
+        composable<Route.EditProfile> {
             EditProfileScreen(
                 navController = navController
             )
         }
-        composable(Route.ExpertDetail.path) { backStackEntry ->
-            val expertId = backStackEntry.arguments?.getString("expertId")
-            Log.d("NavigationDebug", "Expert ID received: $expertId") // Add this line
-            ExpertDetailedScreen(navController, expertId)
+        composable<Route.ExpertDetail> { backStackEntry ->
+            val args = backStackEntry.toRoute<Route.ExpertDetail>()
+            ExpertDetailedScreen(navController, args.expertId)
         }
-
-
     }
 
 }

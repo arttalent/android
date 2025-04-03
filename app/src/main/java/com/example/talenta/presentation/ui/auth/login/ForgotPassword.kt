@@ -62,7 +62,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
         )
 
         Button(
-            onClick = { navController.navigate(Route.PasswordResetSuccess.path) },
+            onClick = { navController.navigate(Route.PasswordResetSuccess) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp),

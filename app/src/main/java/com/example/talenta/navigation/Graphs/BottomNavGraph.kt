@@ -4,7 +4,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.talenta.navigation.Routes.BottomNavRoute
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.ui.screens.DashBoardScreen
 import com.example.talenta.presentation.ui.screens.experts.ExpertsScreen
@@ -14,43 +13,44 @@ import com.example.talenta.presentation.ui.screens.ReportScreen
 import com.example.talenta.presentation.ui.screens.profile.ProfileScreen
 
 fun NavGraphBuilder.bottomNavGraph(navController: NavHostController) {
-    navigation(
-        startDestination =BottomNavRoute.DashBoard.route,
-        route = "host"
+    navigation<Route.HostGraph>(
+        startDestination = Route.Dashboard
     ) {
-        composable(BottomNavRoute.DashBoard.route) {
+        composable<Route.Dashboard> {
             HostScreen(
                 navController = navController,
                 content = { DashBoardScreen() }
             )
         }
-        composable(BottomNavRoute.Experts.route) {
+        composable<Route.Experts> {
             HostScreen(
                 navController = navController,
-                content = { ExpertsScreen(
-                    navController
-                ) }
+                content = {
+                    ExpertsScreen(
+                        navController
+                    )
+                }
             )
         }
-        composable(BottomNavRoute.MyBookings.route) {
+        composable<Route.MyBookings> {
             HostScreen(
                 navController = navController,
                 content = { MyBookingsScreen() }
             )
         }
-        composable(BottomNavRoute.Notice.route) {
+        composable<Route.Notice> {
             HostScreen(
                 navController = navController,
                 content = { ReportScreen() }
             )
         }
-        composable(BottomNavRoute.Profile.route) {
+        composable<Route.Profile> {
             HostScreen(
                 navController = navController,
                 content = {
                     ProfileScreen(
                         onEditProfileClick = {
-                            navController.navigate(Route.EditProfile.path)
+                            navController.navigate(Route.EditProfile)
                         }
                     )
                 }

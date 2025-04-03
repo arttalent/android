@@ -10,14 +10,4 @@ data class Expert(
     val profession: String = "",
     val followers: Long = 0
 
-) {
-    constructor() : this(
-        id = "",
-        person = Person(),
-        reviews = 0,
-        location = "",
-        rating = 0,
-        profession = "",
-        followers = 0
-    )
-}
+)

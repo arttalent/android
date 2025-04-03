@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,21 +32,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.talenta.R
+import com.example.talenta.data.model.Role
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.viewmodels.SignInViewModel
+import com.example.talenta.ui.theme.TalentATheme
 
 data class CardItem(
-    val id: Int,
-    val title: String,
-    val imageRes: Int
+    val id: Int, val title: String, val role: Role, val imageRes: Int, val description: String
 )
 
 
@@ -54,10 +57,10 @@ fun SignUpAs(
     navController: NavController,
 ) {
     val cardItems = listOf(
-        CardItem(1, "Experts", R.drawable.experts),
-        CardItem(2, "Artists", R.drawable.artist),
-        CardItem(3, "Sponsors", R.drawable.sponsors),
-        CardItem(4, "Fan or Follower", R.drawable.fan)
+        CardItem(1, "Experts", Role.EXPERT, R.drawable.experts, "Share your knowledge"),
+        CardItem(2, "Artists", Role.ARTIST, R.drawable.artist, "Showcase your talent"),
+        CardItem(3, "Sponsors", Role.SPONSOR, R.drawable.sponsors, "Support creativity"),
+        CardItem(4, "Fan or Follower", Role.FAN, R.drawable.fan, "Join the community")
     )
 
     Box(
@@ -91,12 +94,9 @@ fun SignUpAs(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Choose Your Role",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp
-                ),
-                color = MaterialTheme.colorScheme.primary
+                text = "Choose Your Role", style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp
+                ), color = MaterialTheme.colorScheme.primary
             )
 
             Text(
@@ -115,21 +115,18 @@ fun SignUpAs(
             ) {
                 items(cardItems) { item ->
                     GridCard(
-                        cardItem = item,
-                        onCardClick = {
-                            navController.navigate(Route.SignUp.path)
-                        }
-                    )
+                        cardItem = item, onCardClick = {
+                            navController.navigate(Route.SignUp(role = item.role))
+                        })
                 }
             }
 
             // Bottom section with back button
             TextButton(
-                onClick = { navController.navigateUp() },
-                modifier = Modifier.padding(top = 16.dp)
+                onClick = { navController.navigateUp() }, modifier = Modifier.padding(top = 16.dp)
             ) {
                 Icon(
-                    Icons.Outlined.ArrowBack,
+                    Icons.AutoMirrored.Outlined.ArrowBack,
                     contentDescription = "Back",
                     modifier = Modifier.size(20.dp)
                 )
@@ -141,16 +138,15 @@ fun SignUpAs(
 }
 
 @Composable
-fun GridCard(cardItem: CardItem, onCardClick: () -> Unit) {
+fun GridCard(modifier: Modifier = Modifier, cardItem: CardItem, onCardClick: () -> Unit) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(0.85f)
             .clickable(onClick = onCardClick),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 8.dp
+            defaultElevation = 4.dp, pressedElevation = 8.dp
         )
     ) {
         Box(
@@ -189,23 +185,16 @@ fun GridCard(cardItem: CardItem, onCardClick: () -> Unit) {
                 )
 
                 Text(
-                    text = cardItem.title,
-                    style = MaterialTheme.typography.titleMedium.copy(
+                    text = cardItem.title, style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
-                    ),
-                    color = MaterialTheme.colorScheme.primary
+                    ), color = MaterialTheme.colorScheme.primary
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Role description
                 Text(
-                    text = when (cardItem.title) {
-                        "Experts" -> "Share your knowledge"
-                        "Artists" -> "Showcase your talent"
-                        "Sponsors" -> "Support creativity"
-                        else -> "Join the community"
-                    },
+                    text = cardItem.description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center,
@@ -213,5 +202,34 @@ fun GridCard(cardItem: CardItem, onCardClick: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+private fun GridCardPrev() {
+    TalentATheme {
+        GridCard(
+            modifier = Modifier
+                .fillMaxSize(0.5f)
+                .padding(20.dp),
+            cardItem = CardItem(
+                1,
+                "Experts",
+                Role.EXPERT,
+                R.drawable.experts,
+                "Join the community"
+            ),
+        ) { }
+    }
+}
+
+@Preview
+@Composable
+private fun SignUpAsPrev() {
+    TalentATheme {
+        SignUpAs(
+            navController = NavController(context = LocalContext.current)
+        )
     }
 }

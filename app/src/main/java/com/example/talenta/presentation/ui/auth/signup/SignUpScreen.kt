@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.talenta.data.model.Expert
 import com.example.talenta.data.model.Person
+import com.example.talenta.data.model.Role
 import com.example.talenta.data.model.SignUpData
 import com.example.talenta.data.model.SocialMediaLinks
 import com.example.talenta.navigation.Routes.Route
@@ -49,6 +50,7 @@ import java.util.UUID
 
 @Composable
 fun SignUpScreen(
+    role: Role,
     navController: NavController,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
@@ -91,7 +93,7 @@ fun SignUpScreen(
                     "Account created successfully, please login",
                     Toast.LENGTH_LONG
                 ).show()
-                navController.navigate(Route.Login.path)
+                navController.navigate(Route.Login)
             }
 
             is AuthUiStatee.Error -> {
@@ -227,48 +229,10 @@ fun SignUpScreen(
                                     SignUpData(fname, lname, email, password, code, phoneNumber)
 
                                 try {
-                                    val person = Person(
-                                        firstName = fname,
-                                        lastName = lname,
-                                        email = email,
-                                        profession = "pianist",
-                                        subProfession = "melodist",
-                                        countryCode = code,
-                                        mobileNumber = phoneNumber,
-                                        photoUrl = "gs://arttalent-61e75.firebasestorage.app/placeholder.jpg",
-                                        gender = "Male",
-                                        age = 23,
-                                        birthYear = 2002,
-                                        language = "Kannada",
-                                        height = "5.6",
-                                        weight = "60",
-                                        ethnicity = "Indian",
-                                        color = "Brown",
-                                        city = "Gulbarga",
-                                        country = "India",
-                                        bioData = "Rohit, Android Dev",
-                                        socialMediaLinks = SocialMediaLinks("", "", "", ""),
-                                        certificatesList = emptyList(),
-                                        photos = emptyList(),
-                                        videos = emptyList(),
-                                        skills = emptyList()
-                                    )
-
-                                    val expert = Expert(
-                                        id = UUID.randomUUID().toString(),
-                                        person = person,
-                                        reviews = 0,
-                                        location = "Karnataka",
-                                        rating = 5,
-                                        profession = "Pianist",
-                                        followers = 1
-                                    )
-
                                     viewModel.startSignUp(
                                         data,
-                                        role = "Expert"
+                                        role = role
                                     )
-                                    viewModel.uploadExpert(expert)
 
                                 } catch (e: Exception) {
                                     println("Error : $e")

@@ -97,7 +97,7 @@ fun LoginScreen(
 
             is AuthUiState.Error -> {
                 errorMessage = (uiState as AuthUiState.Error).message
-                showError = true
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
             }
 
             else -> {}
@@ -286,7 +286,7 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TextButton(
-                    onClick = { navController.navigate(Route.ForgotPassword.path) },
+                    onClick = { navController.navigate(Route.ForgotPassword) },
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(
@@ -296,7 +296,7 @@ fun LoginScreen(
                     )
                 }
                 TextButton(
-                    onClick = { navController.navigate(Route.SignUpAs.path) },
+                    onClick = { navController.navigate(Route.SignUpAs) },
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(
