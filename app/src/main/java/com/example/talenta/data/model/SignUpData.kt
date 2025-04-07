@@ -5,6 +5,7 @@ data class SignUpData(
     val lastName: String = "",
     val email: String = "",
     val password: String = "",
+    val confirmPassword: String = "",
     val countryCode: String = "",
-    val phoneNumber: String = ""
+    val phoneNumber: String = "",
 )

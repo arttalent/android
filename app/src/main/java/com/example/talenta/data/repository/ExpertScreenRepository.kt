@@ -24,7 +24,7 @@ class ExpertScreenRepository @Inject constructor(
         try {
             val snapshot = firestore.collection("experts").get().await()
 
-            val expertList = snapshot.documents.mapNotNull { it.toExpert() }
+            val expertList = snapshot.documents.mapNotNull { it.toObject(Expert::class.java) }
 
             onResult(expertList)
         } catch (e: Exception) {
@@ -47,7 +47,7 @@ class ExpertScreenRepository @Inject constructor(
     suspend fun getExpertById(expertId: String): Expert? = withContext(Dispatchers.IO) {
         runCatching {
             firestore.collection("experts").document(expertId).get()
-                .await().toExpert()
+                .await().toObject(Expert::class.java)
         }.getOrNull()
     }
 

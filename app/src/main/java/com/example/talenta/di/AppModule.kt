@@ -7,10 +7,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.example.talenta.data.Utilities
 import com.example.talenta.data.repository.ArtistRepository
-import com.example.talenta.data.repository.AuthRepository
 import com.example.talenta.data.repository.ExpertScreenRepository
-import com.example.talenta.domain.AuthUseCase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
@@ -18,6 +17,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -50,18 +50,13 @@ object AppModule {
     @Singleton
     fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
 
-    @Provides
-    @Singleton
-    fun provideAuthRepository(
-        auth: FirebaseAuth,
-        firestore: FirebaseFirestore,
-        storage: FirebaseStorage
-    ): AuthRepository = AuthRepository(auth, firestore, storage)
 
+    @Named("users")
     @Provides
     @Singleton
-    fun provideAuthUseCase(repository: AuthRepository): AuthUseCase =
-        AuthUseCase(repository)
+    fun provideUserCollection(firestore: FirebaseFirestore): CollectionReference {
+        return firestore.collection("users")
+    }
 
     @Provides
     @Singleton
@@ -86,4 +81,6 @@ object AppModule {
     ): ExpertScreenRepository {
         return ExpertScreenRepository(firestore)
     }
+
+
 }

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.talenta.data.model.Expert
 import com.example.talenta.data.model.Person
@@ -45,6 +46,8 @@ import com.example.talenta.data.model.SocialMediaLinks
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.state.AuthUiStatee
 import com.example.talenta.presentation.ui.screens.profile.Field
+import com.example.talenta.presentation.viewmodels.AuthUiActions
+import com.example.talenta.presentation.viewmodels.SignUpEvents
 import com.example.talenta.presentation.viewmodels.SignUpViewModel
 import java.util.UUID
 
@@ -55,39 +58,30 @@ fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
 
-    val uiState by viewModel.uiState.collectAsState()
-    var showError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
-
-    // Form states
-    var fname by remember { mutableStateOf("") }
-    var lname by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var code by remember { mutableStateOf("+91") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
-
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiEvents = viewModel.events.collectAsStateWithLifecycle(
+        initialValue = SignUpEvents.None
+    )
     val context = LocalContext.current
 
-    // Validation
-    val isValidEmail = remember(email) {
-        android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    LaunchedEffect(Unit) {
+        viewModel.handleAction(
+            AuthUiActions.UpdateData(
+                selectedRole = role
+            )
+        )
     }
+    LaunchedEffect(uiEvents.value) {
+        val event = uiEvents.value
+        when (event) {
+            is SignUpEvents.Error -> {
+                Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+            }
 
-    val isValidPassword = remember(password) {
-        password.length >= 6
-    }
+            SignUpEvents.None -> {
 
-    val isValidPhone = remember(phoneNumber) {
-        phoneNumber.length >= 10 && phoneNumber.all { it.isDigit() }
-    }
-
-    LaunchedEffect(uiState) {
-        when (uiState) {
-            is AuthUiStatee.Success -> {
+            }
+            SignUpEvents.SignUpSuccess -> {
                 Toast.makeText(
                     context,
                     "Account created successfully, please login",
@@ -95,14 +89,6 @@ fun SignUpScreen(
                 ).show()
                 navController.navigate(Route.Login)
             }
-
-            is AuthUiStatee.Error -> {
-                errorMessage = (uiState as AuthUiStatee.Error).message
-                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
-                showError = true
-            }
-
-            else -> {}
         }
     }
 
@@ -151,32 +137,42 @@ fun SignUpScreen(
                 Field(
                     header = "First Name",
                     hint = "Ex: Ramesh",
-                    value = fname,
-                    onValueChange = { fname = it }
+                    value = uiState.firstName,
+                    onValueChange = {
+                        viewModel.handleAction(AuthUiActions.UpdateData(firstName = it))
+                    }
                 )
                 Field(
                     header = "Last Name",
                     hint = "Ex: Rao",
-                    value = lname,
-                    onValueChange = { lname = it }
+                    value = uiState.lastName,
+                    onValueChange = {
+                        viewModel.handleAction(AuthUiActions.UpdateData(lastName = it))
+                    }
                 )
                 Field(
                     header = "Email",
                     hint = "Ex: Abc@gmail.com",
-                    value = email,
-                    onValueChange = { email = it }
+                    value = uiState.email,
+                    onValueChange = {
+                        viewModel.handleAction(AuthUiActions.UpdateData(email = it))
+                    }
                 )
                 Field(
                     header = "Password",
                     hint = "Enter Password",
-                    value = password,
-                    onValueChange = { password = it }
+                    value = uiState.password,
+                    onValueChange = {
+                        viewModel.handleAction(AuthUiActions.UpdateData(password = it))
+                    }
                 )
                 Field(
                     header = "Confirm Password",
                     hint = "Confirm Password",
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it }
+                    value = uiState.confirmPassword,
+                    onValueChange = {
+                        viewModel.handleAction(AuthUiActions.UpdateData(confirmPassword = it))
+                    }
                 )
 
                 Row(
@@ -187,15 +183,19 @@ fun SignUpScreen(
                     Field(
                         header = "Country Code",
                         hint = "+91",
-                        value = code,
-                        onValueChange = { code = it },
+                        value = uiState.countryCode,
+                        onValueChange = {
+                            viewModel.handleAction(AuthUiActions.UpdateData(countryCode = it))
+                        },
                         modifier = Modifier.weight(0.3f)
                     )
                     Field(
                         header = "Mobile Number",
                         hint = "Enter Number",
-                        value = phoneNumber,
-                        onValueChange = { phoneNumber = it },
+                        value = uiState.phoneNumber,
+                        onValueChange = {
+                            viewModel.handleAction(AuthUiActions.UpdateData(phoneNumber = it))
+                        },
                         modifier = Modifier.weight(0.7f)
                     )
                 }
@@ -212,44 +212,14 @@ fun SignUpScreen(
                 // Sign Up Button
                 Button(
                     onClick = {
-
-                        when {
-                            password != confirmPassword -> {
-                                errorMessage = "Passwords do not match"
-                                showError = true
-                            }
-
-                            !isValidPhone -> {
-                                errorMessage = "Please enter valid phone number"
-                                showError = true
-                            }
-                            else -> {
-
-                                val data =
-                                    SignUpData(fname, lname, email, password, code, phoneNumber)
-
-                                try {
-                                    viewModel.startSignUp(
-                                        data,
-                                        role = role
-                                    )
-
-                                } catch (e: Exception) {
-                                    println("Error : $e")
-                                }
-                            }
-
-
-                        }
+                        viewModel.handleAction(AuthUiActions.SignUp)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(12.dp),
-                    enabled = fname.isNotBlank() && lname.isNotBlank() && isValidEmail &&
-                            isValidPassword && password == confirmPassword && isValidPhone
                 ) {
-                    if (uiState is AuthUiStatee.Loading) {
+                    if (uiState.isLoading) {
                         CircularProgressIndicator(
                             color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(24.dp)
@@ -268,30 +238,4 @@ fun SignUpScreen(
 
 
     }
-
-
-    // Error Snackbar
-    if (showError) {
-        Snackbar(
-            modifier = Modifier
-                .padding(16.dp),
-            shape = RoundedCornerShape(8.dp),
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            action = {
-                TextButton(onClick = { showError = false }) {
-                    Text(
-                        "Dismiss",
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        ) {
-            Text(
-                errorMessage,
-                color = MaterialTheme.colorScheme.onErrorContainer
-            )
-        }
-    }
-
 }

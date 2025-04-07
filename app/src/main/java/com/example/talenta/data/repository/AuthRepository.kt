@@ -1,12 +1,14 @@
 package com.example.talenta.data.repository
 
 import android.net.Uri
-import android.util.Log
+import com.example.talenta.data.UserPreferences
 import com.example.talenta.data.model.Artist
 import com.example.talenta.data.model.Expert
-import com.example.talenta.data.model.Person
 import com.example.talenta.data.model.Role
+import com.example.talenta.data.model.User
 import com.example.talenta.presentation.state.AuthUiState
+import com.example.talenta.utils.FirestoreResult
+import com.example.talenta.utils.safeFirebaseCall
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -15,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
@@ -25,62 +28,17 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class AuthRepository @Inject constructor(
     private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore,
-    private val storage: FirebaseStorage
+    @Named("users")
+    private val userCollection: CollectionReference,
+    private val preferences: UserPreferences,
 ) {
     val TAG = "AuthRepository"
-    private val artistsCollection = firestore.collection("artists")
-
-
-    private val expertsCollection = firestore.collection("experts")
-
-    suspend fun uploadExpert(expert: Expert): Result<Unit> = withContext(Dispatchers.IO) {
-        try {
-            println("uploading $expert")
-            val expertData = hashMapOf(
-                "id" to expert.id,
-                "firstName" to expert.person.firstName,
-                "lastName" to expert.person.lastName,
-                "email" to expert.person.email,
-                "profession" to expert.person.profession,
-                "subProfession" to expert.person.subProfession,
-                "countryCode" to expert.person.countryCode,
-                "mobileNumber" to expert.person.mobileNumber,
-                "photoUrl" to expert.person.photoUrl,
-                "gender" to expert.person.gender,
-                "age" to expert.person.age,
-                "birthYear" to expert.person.birthYear,
-                "language" to expert.person.language,
-                "height" to expert.person.height,
-                "weight" to expert.person.weight,
-                "ethnicity" to expert.person.ethnicity,
-                "color" to expert.person.color,
-                "city" to expert.person.city,
-                "country" to expert.person.country,
-                "bioData" to expert.person.bioData,
-                "socialMediaLinks" to expert.person.socialMediaLinks,
-                "certificatesList" to expert.person.certificatesList,
-                "photos" to expert.person.photos,
-                "videos" to expert.person.videos,
-                "skills" to expert.person.skills,
-                "reviews" to expert.reviews,
-                "location" to expert.location,
-                "rating" to expert.rating,
-                "followers" to expert.followers
-            )
-
-            expertsCollection.document(expert.id).set(expertData).await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            println(e)
-
-            Result.failure(e)
-        }
-    }
-
 
     suspend fun signInWithEmail(email: String, password: String): AuthUiState {
         return try {
@@ -108,70 +66,27 @@ class AuthRepository @Inject constructor(
         password: String,
         countryCode: String,
         phoneNumber: String,
-        role: Role  // Add role parameter
-    ): Result<Unit> = withContext(Dispatchers.IO) {
-        try {
-            val authResult = auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
-                Timber.tag(TAG).d("User Created")
-                FirebaseAuth.getInstance().signOut()
-            }.addOnFailureListener {
-                FirebaseAuth.getInstance().signOut()
-                Timber.tag(TAG).d("Error Listener = %s", it.message)
-            }.await()
+        role: Role
+    ): FirestoreResult<Any> = withContext(Dispatchers.IO) {
+        safeFirebaseCall {
+            val authResult =
+                auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
+                    Timber.tag(TAG).d("User Created")
+                    FirebaseAuth.getInstance().signOut()
+                }.await()
             val userId = authResult.user?.uid ?: throw Exception("Failed to create user")
 
             val formattedPhoneNumber = formatPhoneNumber(countryCode, phoneNumber)
 
-            when (role) {
-               Role.ARTIST -> {
-                    val artist = Artist(
-                        id = userId, person = Person(
-                            firstName = firstName,
-                            lastName = lastName,
-                            email = email,
-                            mobileNumber = formattedPhoneNumber,
-                            countryCode = countryCode,
-                        )
-                    )
-                    artistsCollection.document(userId).set(artist).addOnSuccessListener {
-                        Result.success(Unit)
-                        Timber.tag(TAG).d("Successful Creation")
-                    }
-                        .addOnFailureListener { e ->
-                            Timber.tag(TAG).d("Error Listner = %s", e.message)
-                        }.await()
-                }
-
-                Role.EXPERT -> {
-                    val expert = Expert(
-                        id = userId, person = Person(
-                            firstName = firstName,
-                            lastName = lastName,
-                            email = email,
-                            mobileNumber = formattedPhoneNumber,
-                            countryCode = countryCode,
-                        )
-                    )
-                    expertsCollection.document(userId).set(expert).await()
-                }
-
-                Role.FAN -> {
-
-                    // yet to implemented
-                }
-
-                Role.SPONSOR -> {
-                    // yet to implemented
-
-                }
-
-                else -> throw Exception("Invalid role selected")
-            }
-
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Timber.tag(TAG).d("Error = %s", e.message)
-            Result.failure(e)
+            val user = User(
+                id = userId,
+                firstName = firstName,
+                lastName = lastName,
+                email = email,
+                phoneNumber = formattedPhoneNumber,
+                role = role
+            )
+            userCollection.document(userId).set(user).await()
         }
     }
 
@@ -229,30 +144,6 @@ class AuthRepository @Inject constructor(
             }
         }
 
-    suspend fun createArtistProfile(artist: Artist, imageUri: Uri?): Result<Unit> =
-        withContext(Dispatchers.IO) {
-            try {
-                val userId =
-                    auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
-
-                val photoUrl = imageUri?.let { uri ->
-                    val photoRef = storage.reference.child("profile_photos/$userId.jpg")
-                    photoRef.putFile(uri).await()
-                    photoRef.downloadUrl.await().toString()
-                }
-
-                val updatedArtist = artist.copy(
-                    id = userId,
-                    person = artist.person.copy(photoUrl = photoUrl ?: artist.person.photoUrl)
-                )
-
-                artistsCollection.document(userId).set(updatedArtist).await()
-                Result.success(Unit)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-
 
     fun isUserLoggedIn(): Boolean {
         return auth.currentUser != null
@@ -262,37 +153,20 @@ class AuthRepository @Inject constructor(
         auth.signOut()
     }
 
-    suspend fun fetchArtistProfile(userId: String): Artist? {
-        val artistDoc = firestore.collection("artists").document(userId).get().await()
-        return if (artistDoc.exists()) {
-            artistDoc.toObject(Artist::class.java)?.copy(id = userId)
-        } else {
-            null
-        }
-
-    }
-
-    suspend fun getArtistProfile(): Result<Artist> = withContext(Dispatchers.IO) {
+    suspend fun getUserProfile(): Result<User> = withContext(Dispatchers.IO) {
         try {
             val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
-            val document = artistsCollection.document(userId).get().await()
-            val artist = document.toObject<Artist>()
-            Result.success(artist ?: throw IllegalStateException("Artist profile not found"))
+            val document = userCollection.document(userId).get().await()
+            val user = document.toObject<User>()
+            if (user == null) {
+                Timber.tag(TAG).d("User not found")
+                return@withContext Result.failure(IllegalStateException("User not found"))
+            }
+            preferences.saveUserData(user)
+            Result.success(user)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-
-    private suspend fun checkIfUserExists(email: String): Boolean {
-        return try {
-            val querySnapshot =
-                firestore.collection("artists").whereEqualTo("email", email).get().await()
-
-            !querySnapshot.isEmpty
-        } catch (e: Exception) {
-            Log.e("AuthRepository", "Error checking user existence", e)
-            true
-        }
-    }
 }

@@ -1,5 +1,8 @@
 package com.example.talenta.data.model
 
+import com.google.firebase.firestore.IgnoreExtraProperties
+import kotlinx.serialization.Serializable
+
 // Data classes for media items
 data class Photo(
     val id: String = "",
@@ -8,6 +11,7 @@ data class Photo(
     val timestamp: Long = System.currentTimeMillis()
 )
 
+@IgnoreExtraProperties
 data class Artist(
     val id: String = "", val person: Person = Person()
 )
@@ -21,19 +25,5 @@ data class Video(
     val timestamp: Long = System.currentTimeMillis()
 )
 
-
-data class SocialMediaLinks(
-    val facebook: String = "",
-    val instagram: String = "",
-    val linkedin: String = "",
-    val twitter: String = "",
-)
-
-data class Certificate(
-    val id: String = "",
-    val imageUrl: String = "",
-    val description: String = "",
-    val timestamp: Long = System.currentTimeMillis()
-)
 
 
