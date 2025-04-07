@@ -9,5 +9,4 @@ data class Expert(
     val rating: Int = 0,
     val profession: String = "",
     val followers: Long = 0
-
 )

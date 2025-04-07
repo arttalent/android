@@ -47,6 +47,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.data.model.Expert
+import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.viewmodels.ExpertViewModel
 
 
@@ -111,8 +112,7 @@ fun ExpertCard(expert: Expert, navController: NavController) {
             .padding(5.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable {
-                println("id from expert screen ${expert.id}")
-                navController.navigate("expert_detail/${expert.id}")
+                navController.navigate(Route.ExpertDetail(expert.id))
 
             },
         elevation = CardDefaults.cardElevation(4.dp),
@@ -120,7 +120,6 @@ fun ExpertCard(expert: Expert, navController: NavController) {
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
-        println("Details: $expert")
         Column(
             modifier = Modifier.padding(10.dp),
             //horizontalAlignment = Alignment.CenterHorizontally
