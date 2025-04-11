@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,19 +44,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.data.model.Expert
+import com.example.talenta.data.model.User
+import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.viewmodels.ExpertViewModel
 
 
 @Composable
 fun ExpertsScreen(navController: NavController, viewModel: ExpertViewModel = hiltViewModel()) {
     var searchQuery by remember { mutableStateOf("") }
-    val experts by viewModel.experts.collectAsState(initial = emptyList())
+    val experts = viewModel.experts.collectAsStateWithLifecycle().value
 
-
+    LaunchedEffect(experts) {
+        println("Experts: $experts")
+    }
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
@@ -104,7 +111,7 @@ fun ExpertsScreen(navController: NavController, viewModel: ExpertViewModel = hil
 }
 
 @Composable
-fun ExpertCard(expert: Expert, navController: NavController) {
+fun ExpertCard(expert: User, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,7 +119,9 @@ fun ExpertCard(expert: Expert, navController: NavController) {
             .clip(RoundedCornerShape(12.dp))
             .clickable {
                 println("id from expert screen ${expert.id}")
-                navController.navigate("expert_detail/${expert.id}")
+                navController.navigate(Route.ExpertDetail(
+                    expertId = expert.id?:""
+                ))
 
             },
         elevation = CardDefaults.cardElevation(4.dp),
@@ -126,21 +135,23 @@ fun ExpertCard(expert: Expert, navController: NavController) {
             //horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Image
-            Image(
-                painter = rememberAsyncImagePainter(if (expert.person.photoUrl.isNotEmpty()) expert.person.photoUrl else R.drawable.placeholder),
+            AsyncImage(
+                model = expert.profilePicture,
                 contentDescription = null,
                 modifier = Modifier
                     .aspectRatio(0.9f)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop,
-                alignment = Alignment.Center
+                alignment = Alignment.Center,
+                placeholder = painterResource(R.drawable.placeholder),
+                error = painterResource(R.drawable.placeholder)
             )
             Spacer(Modifier.height(5.dp))
-            // Ratings & Followers
+            // Todo Ratings & Followers Actual Functionality
             Row {
                 repeat(5) { index ->
                     Icon(
-                        painter = painterResource(id = if (index < expert.rating) R.drawable.star_filled else R.drawable.star_outline),
+                        painter = painterResource(id = if (index < 2) R.drawable.star_filled else R.drawable.star_outline),
                         contentDescription = null,
                         tint = Color(0xFFFFC107),
                         modifier = Modifier.size(16.dp)
@@ -148,7 +159,7 @@ fun ExpertCard(expert: Expert, navController: NavController) {
                 }
             }
             Text(
-                text = "${expert.reviews} reviews",
+                text = "Todo reviews",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray,
                 modifier = Modifier.padding(start = 4.dp)
@@ -156,13 +167,13 @@ fun ExpertCard(expert: Expert, navController: NavController) {
             Spacer(Modifier.height(5.dp))
             // Name & Location
             Text(
-                text = expert.person.firstName + " " + expert.person.lastName,
+                text = expert.firstName + " " + expert.lastName,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "${expert.person.profession} | ${expert.location}",
+                text = "${expert.professionalData.profession} | ${expert.bio.country}",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
@@ -171,7 +182,7 @@ fun ExpertCard(expert: Expert, navController: NavController) {
 
             // Description
             Text(
-                text = expert.profession,
+                text = expert.bio.bioData,
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.DarkGray,
                 maxLines = 2,

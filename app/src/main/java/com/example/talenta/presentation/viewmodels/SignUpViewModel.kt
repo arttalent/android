@@ -131,7 +131,7 @@ class SignUpViewModel @Inject constructor(
                                 isLoading = false
                             )
                         }
-                        _events.emit(SignUpEvents.Error(result.errorMessage))
+                        _events.emit(SignUpEvents.Error(result.errorMessage.toString()))
                     }
 
                     is FirestoreResult.Success<*> -> {
