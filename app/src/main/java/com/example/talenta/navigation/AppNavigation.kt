@@ -18,7 +18,7 @@ fun AppNavigation(isLoggedIn: Boolean) {
 
     NavHost(
         navController = navController,
-        startDestination = if (!isLoggedIn) Route.AuthGraph else Route.HostGraph
+        startDestination = if (isLoggedIn) Route.AuthGraph else Route.HostGraph
     ) {
 
         // Auth graph
