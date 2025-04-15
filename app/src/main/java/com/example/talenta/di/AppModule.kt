@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.example.talenta.data.Utilities
 import com.example.talenta.data.repository.ArtistRepository
+import com.example.talenta.data.repository.EditProfileRepository
 import com.example.talenta.data.repository.ExpertScreenRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
@@ -82,5 +83,15 @@ object AppModule {
         return ExpertScreenRepository(firestore)
     }
 
+    @Provides
+    @Singleton
+    fun provideEditProfileRepository(
+        firestore: FirebaseFirestore,
+        storage: FirebaseStorage,
+        auth: FirebaseAuth,
+        @Named("users") userCollection: CollectionReference
+    ): EditProfileRepository {
+        return EditProfileRepository(firestore, storage, auth, userCollection)
+    }
 
 }

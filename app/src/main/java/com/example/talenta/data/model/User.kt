@@ -1,28 +1,29 @@
 package com.example.talenta.data.model
 
+import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties
 import kotlinx.serialization.Serializable
 
-@Serializable
+@Keep
 @IgnoreExtraProperties
 data class User(
-    val id: String,
-    val firstName: String = "",
-    val lastName: String = "",
-    val email: String = "",
-    val phoneNumber: String = "",
-    val physicalAttributes: PhysicalAttributes = PhysicalAttributes(),
-    val profilePicture: String = "",
-    val bio: Bio = Bio(),
-    val role: Role,
-    val isVerified: Boolean? = null,
-    val isBlocked: Boolean? = null,
-    val professionalData: ProfessionalData = ProfessionalData(),
+    var id: String = "",
+    var firstName: String = "",
+    var lastName: String = "",
+    var email: String = "",
+    var phoneNumber: String = "",
+    var physicalAttributes: PhysicalAttributes = PhysicalAttributes(),
+    var profilePicture: String = "",
+    var bio: Bio = Bio(),
+    var role: Role? = null,
+    var isVerified: Boolean? = null,
+    var blocked: Boolean? = null,
+    var professionalData: ProfessionalData = ProfessionalData()
 )
+
 
 @Serializable
 enum class Ethnicity {
-
     WHITE,
     BLACK,
     HISPANIC,
