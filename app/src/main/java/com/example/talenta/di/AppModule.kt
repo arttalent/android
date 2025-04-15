@@ -74,13 +74,5 @@ object AppModule {
         return ArtistRepository(firestore, storage, utilities)
     }
 
-    @Provides
-    @Singleton
-    fun provideExpertRepository(
-        firestore: FirebaseFirestore,
-    ): ExpertScreenRepository {
-        return ExpertScreenRepository(firestore)
-    }
-
 
 }
