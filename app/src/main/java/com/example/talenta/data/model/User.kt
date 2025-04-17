@@ -1,5 +1,6 @@
 package com.example.talenta.data.model
 
+import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties
 import kotlinx.serialization.Serializable
 
