@@ -1,26 +1,25 @@
 package com.example.talenta.data.model
 
-import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties
 import kotlinx.serialization.Serializable
 
 @Keep
 @IgnoreExtraProperties
 data class User(
-    var id: String = "",
-    var firstName: String = "",
-    var lastName: String = "",
-    var email: String = "",
-    var phoneNumber: String = "",
-    var physicalAttributes: PhysicalAttributes = PhysicalAttributes(),
-    var profilePicture: String = "",
-    var bio: Bio = Bio(),
-    var role: Role? = null,
-    var isVerified: Boolean? = null,
-    var blocked: Boolean? = null,
-    var professionalData: ProfessionalData = ProfessionalData()
-)
-
+    val id: String? = null,
+    val firstName: String = "",
+    val lastName: String = "",
+    val email: String = "",
+    val phoneNumber: String = "",
+    val physicalAttributes: PhysicalAttributes = PhysicalAttributes(),
+    val profilePicture: String = "",
+    val bio: Bio = Bio(),
+    val role: Role? = null,
+    val isVerified: Boolean? = null,
+    val isBlocked: Boolean? = null,
+    val professionalData: ProfessionalData = ProfessionalData(),
+) {
+}
 
 @Serializable
 enum class Ethnicity {
@@ -44,7 +43,7 @@ data class ProfessionalData(
     val skills: List<String> = emptyList(),
     val certifications: List<String> = emptyList(),
     val certificatesList: List<Certificate> = emptyList(),
-)
+){}
 
 @Serializable
 data class Bio(
@@ -53,7 +52,7 @@ data class Bio(
     val bioData: String = "",
     val language: String = "",
     val socialMediaLinks: SocialMediaLinks = SocialMediaLinks(),
-)
+){}
 
 @Serializable
 data class PhysicalAttributes(
@@ -63,7 +62,7 @@ data class PhysicalAttributes(
     val age: Int = 0,
     val ethnicity: Ethnicity? = null,
     val color: String = "",
-)
+){}
 
 @Serializable
 data class Media(
@@ -71,7 +70,7 @@ data class Media(
     val type: MediaType? = null,
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
-)
+){}
 
 @Serializable
 enum class MediaType {
@@ -86,7 +85,7 @@ data class SocialMediaLinks(
     val instagram: String = "",
     val linkedin: String = "",
     val twitter: String = "",
-)
+){}
 
 @Serializable
 data class Certificate(
@@ -94,7 +93,7 @@ data class Certificate(
     val imageUrl: String = "",
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
-)
+){}
 
 
 

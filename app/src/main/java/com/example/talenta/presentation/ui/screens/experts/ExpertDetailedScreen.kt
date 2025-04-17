@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.presentation.ui.screens.experts.tabs.MediaContent
@@ -56,9 +57,8 @@ fun ExpertDetailedScreen(
     navController: NavController, expertId: String?
 ) {
 
+
     var selectedTab by remember { mutableIntStateOf(0) }
-
-
 
     Column(
         modifier = Modifier
@@ -127,34 +127,36 @@ fun ProfileSection(
         // Profile Picture
 
 
-
-        Image(
-            painter = rememberAsyncImagePainter(if (expert?.person?.photoUrl?.isNotEmpty() == true) expert?.person?.photoUrl else R.drawable.placeholder),
+        AsyncImage(
+            model = expert?.profilePicture,
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.placeholder),
+            error = painterResource(R.drawable.placeholder)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Expert Name
         Text(
-            text = (expert?.person?.firstName + expert?.person?.lastName) ?: "Loading...",
+            text = (expert?.firstName + expert?.lastName),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
 
         // Profession & Location
-        Text(text = expert?.person?.profession?.let { "$it | ${expert?.location}" } ?: "Loading...",
+        Text(text = expert?.professionalData?.profession?.let { "$it | ${expert?.bio?.country}" }
+            ?: "",
             fontSize = 14.sp,
             color = Color.Gray
         )
 
         // Languages
         Text(
-            text = expert?.person?.language ?: "Loading...",
+            text = expert?.bio?.language ?: "",
             fontSize = 14.sp,
             color = Color.Gray
         )
@@ -205,7 +207,8 @@ private fun RatingSection(expertId: String?, viewModel: ExpertViewModel = hiltVi
         viewModel.getExpertById(expertId)
     }
 
-    println("rating: ${expert?.rating}")
+    // Todo Rating needs to be added
+   // println("rating: ${expert?}")
 
     Row(
         modifier = Modifier
@@ -213,8 +216,9 @@ private fun RatingSection(expertId: String?, viewModel: ExpertViewModel = hiltVi
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        // Todo - Fake Rating
         RatingItem(
-            rating = expert?.rating.toString(),
+            rating = "10",
             description = "50 reviews",
             stars = true
         )

@@ -1,13 +1,17 @@
 package com.example.talenta.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.talenta.data.model.Expert
+import com.example.talenta.data.model.User
 import com.example.talenta.data.repository.ExpertScreenRepository
+import com.example.talenta.utils.FirestoreResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,17 +20,26 @@ class ExpertViewModel @Inject constructor(
     private val repository: ExpertScreenRepository
 ) : ViewModel() {
 
-    private val _expert = MutableStateFlow<Expert?>(null)
-    val expert: StateFlow<Expert?> = _expert.asStateFlow()
+    private val _expert = MutableStateFlow<User?>(null)
+    val expert: StateFlow<User?> = _expert.asStateFlow()
 
     fun getExpertById(expertId: String) {
         viewModelScope.launch {
-            _expert.value = repository.getExpertById(expertId)
+            val result = repository.getExpertById(expertId)
+            when (result) {
+                is FirestoreResult.Failure -> {
+                    // Handle error
+                }
+
+                is FirestoreResult.Success -> {
+                    _expert.value = result.data
+                }
+            }
         }
     }
 
-    private val _experts = MutableStateFlow<List<Expert>>(emptyList())
-    val experts: StateFlow<List<Expert>> = _experts.asStateFlow()
+    private val _experts = MutableStateFlow<List<User>>(emptyList())
+    val experts: StateFlow<List<User>> = _experts.asStateFlow()
 
     init {
         fetchExperts()
@@ -34,8 +47,17 @@ class ExpertViewModel @Inject constructor(
 
     private fun fetchExperts() {
         viewModelScope.launch {
-            repository.fetchExperts { expertList ->
-                _experts.value = expertList
+            val result = repository.fetchExperts()
+            when (result) {
+                is FirestoreResult.Failure -> {
+                    Log.d("TAG", "fetchExperts: ${result.errorMessage}")
+                    // Handle error
+                }
+
+                is FirestoreResult.Success -> {
+                    Log.d("TAG", "fetchExperts: ")
+                    _experts.value = result.data ?: emptyList()
+                }
             }
         }
     }
