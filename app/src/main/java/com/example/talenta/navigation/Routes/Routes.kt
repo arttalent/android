@@ -45,7 +45,8 @@ sealed class Route() {
     object Profile : Route()
     @Serializable
     object EditProfile : Route()
+
     @Serializable
-    data class ExpertDetail(val expertId: String)
+    data class ExpertDetail(val expertId: String) : Route()
 
 }

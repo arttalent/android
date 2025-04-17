@@ -18,16 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,18 +32,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.talenta.data.model.Expert
-import com.example.talenta.data.model.Person
 import com.example.talenta.data.model.Role
-import com.example.talenta.data.model.SignUpData
-import com.example.talenta.data.model.SocialMediaLinks
 import com.example.talenta.navigation.Routes.Route
-import com.example.talenta.presentation.state.AuthUiStatee
 import com.example.talenta.presentation.ui.screens.profile.Field
 import com.example.talenta.presentation.viewmodels.AuthUiActions
 import com.example.talenta.presentation.viewmodels.SignUpEvents
 import com.example.talenta.presentation.viewmodels.SignUpViewModel
-import java.util.UUID
 
 @Composable
 fun SignUpScreen(
@@ -72,8 +60,7 @@ fun SignUpScreen(
         )
     }
     LaunchedEffect(uiEvents.value) {
-        val event = uiEvents.value
-        when (event) {
+        when (val event = uiEvents.value) {
             is SignUpEvents.Error -> {
                 Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
             }
@@ -163,7 +150,7 @@ fun SignUpScreen(
                     hint = "Enter Password",
                     value = uiState.password,
                     onValueChange = {
-                        viewModel.handleAction(AuthUiActions.UpdateData(password = it))
+                        viewModel.handleAction(AuthUiActions.UpdateData(password = it.trim()))
                     }
                 )
                 Field(
@@ -171,7 +158,7 @@ fun SignUpScreen(
                     hint = "Confirm Password",
                     value = uiState.confirmPassword,
                     onValueChange = {
-                        viewModel.handleAction(AuthUiActions.UpdateData(confirmPassword = it))
+                        viewModel.handleAction(AuthUiActions.UpdateData(confirmPassword = it.trim()))
                     }
                 )
 

@@ -33,12 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.talenta.R
-import com.example.talenta.data.model.Artist
+import com.example.talenta.data.model.User
 
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun DetailsTab(artist: Artist) {
+fun DetailsTab(user: User) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,10 +47,10 @@ fun DetailsTab(artist: Artist) {
     ) {
         // About Section
         ProfileCard(
-            title = "About ${artist.person.firstName}",
+            title = "About ${user.firstName}",
             content = {
                 Text(
-                    text = artist.person.bioData.ifEmpty { "No bio information available" },
+                    text = user.bio.bioData.ifEmpty { "No bio information available" },
                     fontSize = 14.sp,
                     color = Color.DarkGray
                 )
@@ -62,19 +62,19 @@ fun DetailsTab(artist: Artist) {
                         .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    artist.person.socialMediaLinks.facebook.takeIf { it.isNotEmpty() }?.let {
+                    user.bio.socialMediaLinks.facebook.takeIf { it.isNotEmpty() }?.let {
                         SocialMediaIcon(platform = "facebook")
                         Spacer(modifier = Modifier.width(8.dp))
                     }
-                    artist.person.socialMediaLinks.instagram.takeIf { it.isNotEmpty() }?.let {
+                    user.bio.socialMediaLinks.instagram.takeIf { it.isNotEmpty() }?.let {
                         SocialMediaIcon(platform = "instagram")
                         Spacer(modifier = Modifier.width(8.dp))
                     }
-                    artist.person.socialMediaLinks.linkedin.takeIf { it.isNotEmpty() }?.let {
+                    user.bio.socialMediaLinks.linkedin.takeIf { it.isNotEmpty() }?.let {
                         SocialMediaIcon(platform = "linkedin")
                         Spacer(modifier = Modifier.width(8.dp))
                     }
-                    artist.person.socialMediaLinks.twitter.takeIf { it.isNotEmpty() }?.let {
+                    user.bio.socialMediaLinks.twitter.takeIf { it.isNotEmpty() }?.let {
                         SocialMediaIcon(platform = "twitter")
                         Spacer(modifier = Modifier.width(8.dp))
                     }
@@ -94,18 +94,23 @@ fun DetailsTab(artist: Artist) {
                 ) {
                     // Left Column
                     Column {
-                        ProfileAttribute(label = "Age", value = artist.person.age.toString())
-                        ProfileAttribute(label = "Ethnicity", value = artist.person.ethnicity)
+                        ProfileAttribute(
+                            label = "Age", value = user.physicalAttributes.age.toString()
+                        )
+                        ProfileAttribute(
+                            label = "Ethnicity",
+                            value = user.physicalAttributes.ethnicity?.name ?: "N/A"
+                        )
                     }
 
                     // Right Column
                     Column {
-                        ProfileAttribute(label = "Gender", value = artist.person.gender)
+                        ProfileAttribute(label = "Gender", value = user.physicalAttributes.gender)
                         ProfileAttribute(
-                            label = "Height", value = "${artist.person.height}cm"
+                            label = "Height", value = "${user.physicalAttributes.height}cm"
                         )
                         ProfileAttribute(
-                            label = "Weight", value = "${artist.person.weight}kg"
+                            label = "Weight", value = "${user.physicalAttributes.weight}kg"
                         )
                     }
                 }
@@ -124,7 +129,7 @@ fun DetailsTab(artist: Artist) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    artist.person.skills.forEach { skill ->
+                    user.professionalData.skills.forEach { skill ->
                         SkillChip(skill = skill)
                     }
                 }

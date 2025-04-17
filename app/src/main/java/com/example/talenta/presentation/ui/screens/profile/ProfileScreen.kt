@@ -134,7 +134,7 @@ fun ProfileScreen(
                 }
 
                 is ProfileUiState.Success -> {
-                    val artist = (profileState as ProfileUiState.Success).artist
+                    val artist = (profileState as ProfileUiState.Success).user
 
                     // Profile Header with photo
                     Box(
@@ -148,17 +148,18 @@ fun ProfileScreen(
                                 .background(Color.LightGray), // Placeholder color
                             contentAlignment = Alignment.Center
                         ) {
-                            if (artist.person.photoUrl.isNotEmpty()) {
+                            // Load the profile photo
+                            if (artist.profilePicture.isNotEmpty()) {
                                 AsyncImage(
-                                    model = artist.person.photoUrl,
-                                    contentDescription = "${artist.person.firstName} ${artist.person.lastName}",
+                                    model = artist.profilePicture,
+                                    contentDescription = "${artist.firstName} ${artist.lastName}",
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop
                                 )
                             } else {
                                 // Fallback if no photo URL
                                 Text(
-                                    text = "${artist.person.firstName.firstOrNull() ?: ""}${artist.person.lastName.firstOrNull() ?: ""}",
+                                    text = "${artist.firstName.firstOrNull() ?: ""}${artist.lastName.firstOrNull() ?: ""}",
                                     style = MaterialTheme.typography.headlineMedium
                                 )
                             }
@@ -183,8 +184,8 @@ fun ProfileScreen(
 
                     // Username - use firstName and lastName if available
                     Text(
-                        text = if (artist.person.firstName.isNotEmpty() || artist.person.lastName.isNotEmpty())
-                            "${artist.person.firstName} ${artist.person.lastName}".trim() else "User Name",
+                        text = if (artist.firstName.isNotEmpty() || artist.lastName.isNotEmpty())
+                            "${artist.firstName} ${artist.lastName}".trim() else "User Name",
                         modifier = Modifier.padding(top = 10.dp),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
@@ -192,7 +193,7 @@ fun ProfileScreen(
 
                     // Art Form Label - use profession if available
                     Text(
-                        text = artist.person.profession.ifEmpty { "Art form" },
+                        text = artist.professionalData.profession.ifEmpty { "Art form" },
                         modifier = Modifier.padding(vertical = 8.dp),
                         color = Color.Gray
                     )

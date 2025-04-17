@@ -1,10 +1,6 @@
 package com.example.talenta.data.repository
 
-import android.net.Uri
 import com.example.talenta.data.UserPreferences
-import com.example.talenta.data.model.Artist
-import com.example.talenta.data.model.Expert
-import com.example.talenta.data.model.Role
 import com.example.talenta.data.model.User
 import com.example.talenta.presentation.state.AuthUiState
 import com.example.talenta.utils.FirestoreResult
@@ -18,9 +14,8 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.toObject
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -38,7 +33,7 @@ class AuthRepository @Inject constructor(
     private val userCollection: CollectionReference,
     private val preferences: UserPreferences,
 ) {
-    val TAG = "AuthRepository"
+    private val TAG = "AuthRepository"
 
     suspend fun signInWithEmail(email: String, password: String): AuthUiState {
         return try {
@@ -59,43 +54,25 @@ class AuthRepository @Inject constructor(
         }
     }
 
+
     suspend fun startSignUp(
-        firstName: String,
-        lastName: String,
-        email: String,
-        password: String,
-        countryCode: String,
-        phoneNumber: String,
-        role: Role
-    ): FirestoreResult<Any> = withContext(Dispatchers.IO) {
+        user: User,
+        password: String
+    ): FirestoreResult<Unit> = withContext(Dispatchers.IO) {
         safeFirebaseCall {
-            val authResult =
-                auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
-                    Timber.tag(TAG).d("User Created")
-                    FirebaseAuth.getInstance().signOut()
-                }.await()
-            val userId = authResult.user?.uid ?: throw Exception("Failed to create user")
+            auth.createUserWithEmailAndPassword(user.email, password).await()
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+                ?: throw Exception("Failed to create user")
 
-            val formattedPhoneNumber = formatPhoneNumber(countryCode, phoneNumber)
+            Timber.tag(TAG).d("User Created with ID: $userId")
 
-            val user = User(
-                id = userId,
-                firstName = firstName,
-                lastName = lastName,
-                email = email,
-                phoneNumber = formattedPhoneNumber,
-                role = role
-            )
-            userCollection.document(userId).set(user).await()
+            userCollection.document(userId).set(user.copy(id = userId), SetOptions.merge())
+                .await()
+            FirebaseAuth.getInstance().signOut()
         }
     }
 
 
-    private fun formatPhoneNumber(countryCode: String, phoneNumber: String): String {
-        val cleanCountryCode = countryCode.replace("+", "").trim()
-        val cleanPhoneNumber = phoneNumber.replace(Regex("[^0-9]"), "")
-        return "+$cleanCountryCode$cleanPhoneNumber"
-    }
 
 
     suspend fun sendOtp(phoneNumber: String): Result<String> = withContext(Dispatchers.IO) {

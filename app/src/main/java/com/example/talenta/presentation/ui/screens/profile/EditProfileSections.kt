@@ -68,7 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.talenta.R
@@ -84,7 +84,7 @@ import java.util.Locale
 @Composable
 fun EditProfileScreen(
     navController: NavController,
-    viewModel: EditProfileViewModel = viewModel()
+    viewModel: EditProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val currentStep by viewModel.currentStep.collectAsState()
@@ -328,7 +328,7 @@ private fun PersonalInfoSection(viewModel: EditProfileViewModel) {
             Field(
                 header = "Age",
                 hint = "Ex: 18",
-                value = state.age,
+                value = state.age.toString(),
                 onValueChange = { viewModel.updateField("age", it) },
                 modifier = Modifier.weight(0.5f)
             )

@@ -1,6 +1,7 @@
 package com.example.talenta.presentation.viewmodels
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -51,13 +52,27 @@ class ArtistProfileViewModel @Inject constructor(
 
     fun fetchArtistProfile() {
         viewModelScope.launch {
+            _profileState.value = ProfileUiState.Loading
+
             try {
                 val currentUser = FirebaseAuth.getInstance().currentUser
                     ?: throw Exception("User not authenticated")
-                val artist = repository.fetchArtistProfile(currentUser.uid)
-                _profileState.value = artist?.let { ProfileUiState.Success(it) }
-                    ?: ProfileUiState.Error("Artist profile not found")
+
+                val uid = currentUser.uid
+                Log.d("fetchArtistProfile", "Current user UID: $uid")
+
+                val artist = repository.fetchArtistProfile(uid)
+
+                if (artist != null) {
+                    Log.d("fetchArtistProfile", "Artist profile fetched: $artist")
+                    _profileState.value = ProfileUiState.Success(artist)
+                } else {
+                    Log.e("fetchArtistProfile", "Artist profile not found for UID: $uid")
+                    _profileState.value = ProfileUiState.Error("Artist profile not found")
+                }
+
             } catch (e: Exception) {
+                Log.e("fetchArtistProfile", "Error: ${e.message}", e)
                 _profileState.value = ProfileUiState.Error(e.message ?: "Unknown error occurred")
             }
         }
