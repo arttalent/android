@@ -77,14 +77,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideExpertRepository(
-        firestore: FirebaseFirestore,
-    ): ExpertScreenRepository {
-        return ExpertScreenRepository(firestore.collection("users"))
-    }
-
-    @Provides
-    @Singleton
     fun provideEditProfileRepository(
         firestore: FirebaseFirestore,
         storage: FirebaseStorage,
