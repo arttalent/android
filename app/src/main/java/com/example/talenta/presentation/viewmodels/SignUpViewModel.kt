@@ -2,9 +2,12 @@ package com.example.talenta.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.talenta.data.model.Bio
 import com.example.talenta.data.model.Person
+import com.example.talenta.data.model.ProfessionalData
 import com.example.talenta.data.model.Role
 import com.example.talenta.data.model.SignUpData
+import com.example.talenta.data.model.User
 import com.example.talenta.data.repository.AuthRepository
 import com.example.talenta.utils.FirestoreResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -88,7 +91,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun startSignUp() {
+    private fun startSignUp() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val signUpData = SignUpData(
@@ -114,16 +117,32 @@ class SignUpViewModel @Inject constructor(
             }
 
             role?.let {
-                val result = authRepository.startSignUp(
-                    signUpData.firstName.trim(),
-                    signUpData.lastName.trim(),
-                    signUpData.email.trim(),
-                    signUpData.password,
-                    signUpData.countryCode.trim(),
-                    signUpData.phoneNumber.trim(),
-                    role = role
-
+                val user = User(
+                    id = "",
+                    firstName = signUpData.firstName.trim(),
+                    lastName = signUpData.lastName.trim(),
+                    email = signUpData.email.trim(),
+                    phoneNumber = signUpData.phoneNumber.trim(), // ✅ correct field
+                    role = role,
+                    profilePicture = signUpData.photoUrl ?: "",
+                    bio = Bio(
+                        city = "",
+                        country = "",
+                        bioData =  ""
+                    ),
+                    professionalData = ProfessionalData(
+                        profession = signUpData.profession ?: ""
+                    ),
+                    isVerified = false,
+                    isBlocked = false
                 )
+
+
+                val result = authRepository.startSignUp(
+                    user = user,
+                    password = signUpData.password
+                )
+
                 when (result) {
                     is FirestoreResult.Failure -> {
                         _uiState.update {

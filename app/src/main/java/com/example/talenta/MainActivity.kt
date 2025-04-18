@@ -15,7 +15,7 @@ import com.example.talenta.data.UserPreferences
 import com.example.talenta.data.repository.AuthRepository
 import com.example.talenta.navigation.AppNavigation
 import com.example.talenta.ui.theme.TalentATheme
-import com.google.firebase.auth.FirebaseAuth
+import com.example.talenta.utils.HelperFunctions.setScreenshotRestriction
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         installSplashScreen()
+        setScreenshotRestriction(this, true)
         setContent {
             TalentATheme {
                 val isLoggedIn = authRepository.isUserLoggedIn()

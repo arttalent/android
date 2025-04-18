@@ -3,7 +3,6 @@ package com.example.talenta.presentation.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.talenta.data.model.Expert
 import com.example.talenta.data.model.User
 import com.example.talenta.data.repository.ExpertScreenRepository
 import com.example.talenta.utils.FirestoreResult
@@ -11,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
