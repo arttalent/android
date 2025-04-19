@@ -1,6 +1,5 @@
 package com.example.talenta.data.repository
 
-import android.util.Log
 import com.example.talenta.data.model.User
 import com.example.talenta.utils.FirestoreResult
 import com.example.talenta.utils.safeFirebaseCall
@@ -18,15 +17,15 @@ class ExpertScreenRepository @Inject constructor(
 
     suspend fun fetchExperts(): FirestoreResult<List<User>> = withContext(Dispatchers.IO) {
         safeFirebaseCall {
-            val snapshot = userCollection.whereEqualTo("role", "EXPERT").get().await()
-            val size = snapshot.size()
-            val data = userCollection.whereEqualTo("role", "EXPERT")
-            snapshot.documents.mapNotNull { snapshot->
-                Log.d("TAG", "fetchExperts: "+snapshot.data)
-                snapshot.toObject(User::class.java)
+            val query = userCollection.whereEqualTo("role", "EXPERT")
+            val snapshot = query.get().await()
+
+            snapshot.documents.mapNotNull { doc ->
+                doc.toObject(User::class.java)
             }
         }
     }
+
 
     suspend fun getExpertById(expertId: String): FirestoreResult<User?> =
         withContext(Dispatchers.IO) {

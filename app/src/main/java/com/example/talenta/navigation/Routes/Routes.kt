@@ -1,8 +1,6 @@
 package com.example.talenta.navigation.Routes
 
-import com.example.talenta.data.model.Expert
 import com.example.talenta.data.model.Role
-import com.example.talenta.data.model.User
 import kotlinx.serialization.Serializable
 
 @Serializable

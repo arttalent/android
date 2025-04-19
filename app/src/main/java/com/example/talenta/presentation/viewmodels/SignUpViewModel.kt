@@ -117,7 +117,7 @@ class SignUpViewModel @Inject constructor(
             when (val result = authRepository.startSignUp(user, password)) {
                 is FirestoreResult.Failure -> {
                     _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(SignUpEvents.Error(result.errorMessage))
+                    result.errorMessage?.let { SignUpEvents.Error(it) }?.let { _events.emit(it) }
                 }
 
                 is FirestoreResult.Success<*> -> {

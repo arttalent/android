@@ -82,7 +82,6 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
 
 
-
     // Networking
     implementation(libs.retrofit)
     // Gson converter to parse JSON
