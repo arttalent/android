@@ -33,7 +33,7 @@ object HelperFunctions {
             profilePicture = state.profilePicture,
             role = state.role,
             isVerified = state.isVerified,
-            blocked = state.blocked,
+            isBlocked = state.blocked,
             physicalAttributes = PhysicalAttributes(
                 height = state.height,
                 weight = state.weight,
@@ -124,7 +124,7 @@ object HelperFunctions {
             // Preserving sensitive fields
             role = existing.role,
             isVerified = existing.isVerified,
-            blocked = existing.blocked
+            isBlocked = existing.isBlocked
         )
     }
 
