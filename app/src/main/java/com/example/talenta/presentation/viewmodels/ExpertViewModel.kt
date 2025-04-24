@@ -4,18 +4,19 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.talenta.data.model.User
-import com.example.talenta.data.repository.ExpertScreenRepository
+import com.example.talenta.data.repository.ExpertRepository
 import com.example.talenta.utils.FirestoreResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class ExpertViewModel @Inject constructor(
-    private val repository: ExpertScreenRepository
+    private val repository: ExpertRepository
 ) : ViewModel() {
 
     private val _expert = MutableStateFlow<User?>(null)
@@ -48,12 +49,12 @@ class ExpertViewModel @Inject constructor(
             val result = repository.fetchExperts()
             when (result) {
                 is FirestoreResult.Failure -> {
-                    Log.d("TAG", "fetchExperts: ${result.errorMessage}")
+                    Timber.tag("TAG").d("fetchExperts: ${result.errorMessage}")
                     // Handle error
                 }
 
                 is FirestoreResult.Success -> {
-                    Log.d("TAG", "fetchExperts: ")
+                    Timber.tag("TAG").d("fetchExperts: ")
                     _experts.value = result.data ?: emptyList()
                 }
             }

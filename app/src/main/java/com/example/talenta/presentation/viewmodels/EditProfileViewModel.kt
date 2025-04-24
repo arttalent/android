@@ -60,7 +60,7 @@ class EditProfileViewModel @Inject constructor(
                     profilePicture = user.profilePicture,
                     role = user.role,
                     isVerified = user.isVerified,
-                    blocked = user.blocked,
+                    blocked = user.isBlocked,
                     city = user.bio.city,
                     country = user.bio.country,
                     bioData = user.bio.bioData,
@@ -106,7 +106,7 @@ class EditProfileViewModel @Inject constructor(
                         val imageUrl = uploadResult.data
                         val newCertificate = Certificate(
                             id = certificateId,
-                            imageUrl = imageUrl,
+                            imageUrl = imageUrl.toString(),
                             description = description,
                             timestamp = System.currentTimeMillis()
                         )
@@ -122,7 +122,7 @@ class EditProfileViewModel @Inject constructor(
                     }
 
                     is FirestoreResult.Failure -> {
-                        _event.value = EditProfileEvent.ShowError(uploadResult.errorMessage)
+                        _event.value = EditProfileEvent.ShowError(uploadResult.errorMessage.toString())
                     }
                 }
             } catch (e: Exception) {
