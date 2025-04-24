@@ -15,11 +15,10 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class EditProfileRepository @Inject constructor(
-    private val firestore: FirebaseFirestore,
-    private val storage: FirebaseStorage,
-    private val auth: FirebaseAuth,
     private val userCollection: CollectionReference,
 ) {
     suspend fun fetchUserData(userId: String): User? = withContext(Dispatchers.IO) {
