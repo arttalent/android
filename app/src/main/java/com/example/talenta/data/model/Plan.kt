@@ -13,7 +13,7 @@ data class Plan(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val isActive: Boolean = true
-)
+){}
 
 enum class ServiceType {
     VIDEO_ASSESSMENT,

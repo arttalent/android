@@ -49,7 +49,6 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
-import com.example.talenta.data.model.Expert
 import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.viewmodels.ExpertViewModel

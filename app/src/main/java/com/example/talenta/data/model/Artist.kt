@@ -11,11 +11,6 @@ data class Photo(
     val timestamp: Long = System.currentTimeMillis()
 )
 
-@IgnoreExtraProperties
-data class Artist(
-    val id: String = "", val person: Person = Person()
-)
-
 
 data class Video(
     val id: String = "",

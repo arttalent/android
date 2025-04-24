@@ -78,7 +78,6 @@ enum class MediaType {
     VIDEO
 }
 
-
 @Serializable
 data class SocialMediaLinks(
     val facebook: String = "",
