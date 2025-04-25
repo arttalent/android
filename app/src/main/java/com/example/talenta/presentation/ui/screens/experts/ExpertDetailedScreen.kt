@@ -45,7 +45,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.presentation.ui.screens.experts.tabs.MediaContent
 import com.example.talenta.presentation.ui.screens.experts.tabs.ProfileContent
@@ -78,7 +77,7 @@ fun ExpertDetailedScreen(
 
         // Content based on selected tab
         when (selectedTab) {
-            0 -> ProfileContent()
+            0 -> ProfileContent(expertId)
             1 -> MediaContent()
             2 -> ServicesContent()
         }
@@ -195,7 +194,6 @@ private fun SocialMediaIcon(icon: Int) {
 
 @Composable
 private fun RatingSection(expertId: String?, viewModel: ExpertViewModel = hiltViewModel()) {
-    val expert by viewModel.expert.collectAsStateWithLifecycle()
 
 
     if (expertId.isNullOrEmpty()) {
