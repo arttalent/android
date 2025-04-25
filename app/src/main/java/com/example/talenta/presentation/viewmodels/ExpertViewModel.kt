@@ -24,8 +24,7 @@ class ExpertViewModel @Inject constructor(
 
     fun getExpertById(expertId: String) {
         viewModelScope.launch {
-            val result = repository.getExpertById(expertId)
-            when (result) {
+            when (val result = repository.getExpertById(expertId)) {
                 is FirestoreResult.Failure -> {
                     // Handle error
                 }

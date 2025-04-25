@@ -33,7 +33,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         installSplashScreen()
         setScreenshotRestriction(this, true)
+
         setContent {
+
             TalentATheme {
                 val isLoggedIn = authRepository.isUserLoggedIn()
 
@@ -49,5 +51,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }
 
