@@ -58,31 +58,25 @@ object AppModule {
         return firestore.collection("users")
     }
 
+    @Named("expertAvailability")
+    @Provides
+    @Singleton
+    fun provideExpertAvailabilityCollection(firestore: FirebaseFirestore): CollectionReference {
+        return firestore.collection("expertAvailability")
+    }
+
+    @Named("bookings")
+    @Provides
+    @Singleton
+    fun provideBookingsCollection(firestore: FirebaseFirestore): CollectionReference {
+        return firestore.collection("bookings")
+    }
+
     @Provides
     @Singleton
     fun provideUtilities(context: Context, auth: FirebaseAuth): Utilities {
         return Utilities(context, auth)
     }
 
-    @Provides
-    @Singleton
-    fun provideArtistRepository(
-        firestore: FirebaseFirestore,
-        storage: FirebaseStorage,
-        utilities: Utilities
-    ): ArtistRepository {
-        return ArtistRepository(firestore, storage, utilities)
-    }
-
-    @Provides
-    @Singleton
-    fun provideEditProfileRepository(
-        firestore: FirebaseFirestore,
-        storage: FirebaseStorage,
-        auth: FirebaseAuth,
-        @Named("users") userCollection: CollectionReference
-    ): EditProfileRepository {
-        return EditProfileRepository(firestore, storage, auth, userCollection)
-    }
 
 }
