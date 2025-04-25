@@ -149,9 +149,11 @@ fun ProfileContent(expertId: String?, viewModel: ExpertViewModel = hiltViewModel
 
 @Composable
 fun InfoSection(title: String, content: String) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 2.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp)
+    ) {
         Text(
             text = title,
             fontSize = 14.sp,
