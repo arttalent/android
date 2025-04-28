@@ -19,7 +19,7 @@ data class User(
     val isVerified: Boolean? = null,
     val isBlocked: Boolean? = null,
     val professionalData: ProfessionalData = ProfessionalData(),
-)
+){}
 
 
 @Serializable
@@ -44,7 +44,7 @@ data class ProfessionalData(
     val skills: List<String> = emptyList(),
     val certifications: List<String> = emptyList(),
     val certificatesList: List<Certificate> = emptyList(),
-)
+){}
 
 // for the skill we can use the enum class
 enum class Skill {
