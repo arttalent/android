@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -20,19 +21,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.talenta.ui.theme.TalentATheme
+import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-fun ExpertBookingScreen(modifier: Modifier = Modifier) {
+fun ExpertBooking(
+    modifier: Modifier = Modifier,
+    viewModel: BookingViewModel = hiltViewModel()
+) {
+    val uiState = viewModel.uiStates.collectAsState().value
+    ExpertBookingScreen(
+        uiState = uiState
+    ) {
+        viewModel
+    }
+}
+
+
+@Composable
+fun ExpertBookingScreen(
+    modifier: Modifier = Modifier,
+    uiState: ExpertAvailabilityState,
+    action: (ExpertAvailabilityActions) -> Unit
+) {
     val selectedDate = rememberSaveable(saver = LocalDateSaver) {
         mutableStateOf(LocalDate.now())
     }
     Column(Modifier.padding(top = 40.dp)) {
         CustomCalender() {
             selectedDate.value = it
+            action(ExpertAvailabilityActions.OnDateSelected(it.toKotlinLocalDate()))
         }
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -61,18 +83,7 @@ fun ExpertBookingScreen(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceAround,
             maxItemsInEachRow = 3,
         ) {
-            listOf(
-                "12:00 PM",
-                "12:30 PM",
-                "01:00 PM",
-                "01:30 PM",
-                "02:00 PM",
-                "02:30 PM",
-                "03:00 PM",
-                "03:30 PM",
-                "04:00 PM",
-                "04:30 PM",
-            ).forEach { time ->
+            uiState.selectedDateAvailability.forEach { time ->
                 DateSlot(
                     text = time,
                     selected = false,
@@ -103,6 +114,9 @@ fun LocalDate.toPrettyString(): String {
 @Composable
 private fun ExpertBookingScreenPRev() {
     TalentATheme {
-        ExpertBookingScreen()
+        ExpertBookingScreen(
+            uiState = ExpertAvailabilityState(),
+            action = { }
+        )
     }
 }
