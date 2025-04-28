@@ -103,4 +103,25 @@ data class Certificate(
 ){}
 
 
+// Data classes for media items
+data class Photo(
+    val id: String = "",
+    val imageUrl: String = "",
+    val description: String = "",
+    val timestamp: Long = System.currentTimeMillis()
+){}
+
+
+data class Video(
+    val id: String = "",
+    val videoUrl: String = "",
+    val thumbnailUrl: String = "",
+    val description: String = "",
+    val timestamp: Long = System.currentTimeMillis()
+){}
+
+
+
+
+
 

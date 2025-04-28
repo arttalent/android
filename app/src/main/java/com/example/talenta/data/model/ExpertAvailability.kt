@@ -17,3 +17,16 @@ data class TimeSlot(
 enum class DayOfWeek {
     SUN, MON, TUE, WED, THU, FRI, SAT
 }
+
+
+fun kotlinx.datetime.DayOfWeek.toDayOfWeek(): DayOfWeek{
+    return when (this) {
+        kotlinx.datetime.DayOfWeek.SUNDAY -> DayOfWeek.SUN
+        kotlinx.datetime.DayOfWeek.MONDAY -> DayOfWeek.MON
+        kotlinx.datetime.DayOfWeek.TUESDAY -> DayOfWeek.TUE
+        kotlinx.datetime.DayOfWeek.WEDNESDAY -> DayOfWeek.WED
+        kotlinx.datetime.DayOfWeek.THURSDAY -> DayOfWeek.THU
+        kotlinx.datetime.DayOfWeek.FRIDAY -> DayOfWeek.FRI
+        kotlinx.datetime.DayOfWeek.SATURDAY -> DayOfWeek.SAT
+    }
+}
