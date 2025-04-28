@@ -9,7 +9,7 @@ data class Photo(
     val imageUrl: String = "",
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
-)
+){}
 
 
 data class Video(
@@ -18,7 +18,7 @@ data class Video(
     val thumbnailUrl: String = "",
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
-)
+){}
 
 
 

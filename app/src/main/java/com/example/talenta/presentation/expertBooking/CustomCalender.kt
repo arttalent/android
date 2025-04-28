@@ -1,7 +1,5 @@
 package com.example.talenta.presentation.expertBooking
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +10,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,18 +29,31 @@ import com.kizitonwose.calendar.compose.ContentHeightMode
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
-fun ExpertBookingsScreen(modifier: Modifier = Modifier) {
+fun CustomCalender(modifier: Modifier = Modifier, onDateChange: (LocalDate) -> Unit = {}) {
     val currentMonth = remember { YearMonth.now() }
-    val startMonth = remember { currentMonth.minusMonths(1) } // Adjust as needed
-    val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
-    val firstDayOfWeek = remember { firstDayOfWeekFromLocale() } // Available from the library
+    val startMonth = remember { currentMonth } // Adjust as needed
+    val endMonth = remember { currentMonth.plusMonths(1) } // Adjust as needed
+    val firstDayOfWeek = remember { firstDayOfWeekFromLocale() }
+    val availableDaysAndMonth = remember {
+        getNextTwoWeeksDates()
+    }
+    var selectedDay = rememberSaveable(saver = LocalDateSaver) {
+        mutableStateOf(LocalDate.now())
+    }
+
 
     val state = rememberCalendarState(
         startMonth = startMonth,
@@ -61,7 +75,7 @@ fun ExpertBookingsScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterHorizontally),
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.SemiBold
             )
@@ -72,34 +86,24 @@ fun ExpertBookingsScreen(modifier: Modifier = Modifier) {
             CalendarDayButton(
                 text = it.date.dayOfMonth.toString(),
                 modifier = Modifier,
-                isSelected = true,
+                isSelected = selectedDay.value == it.date,
+                isEnabled = availableDaysAndMonth.any { pair ->
+                    pair.first == it.date.dayOfMonth && pair.second == it.date.monthValue
+                },
             ) {
-
+                selectedDay.value = it.date
+                onDateChange(it.date)
             }
-            //  Text(text = it.date.dayOfMonth.toString())
         })
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-private fun ExpertBookingScreenPreview() {
-    TalentATheme {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                ExpertBookingsScreen()
-            }
-
-        }
-    }
 }
 
 @Composable
 fun CalendarDayButton(
-    modifier: Modifier = Modifier, text: String, isSelected: Boolean, onClick: () -> Unit
+    modifier: Modifier = Modifier,
+    text: String,
+    isSelected: Boolean,
+    isEnabled: Boolean,
+    onClick: () -> Unit
 ) {
     val backgroundColor = if (isSelected) {
         MaterialTheme.colorScheme.primary
@@ -118,8 +122,11 @@ fun CalendarDayButton(
             .clip(CircleShape)
             .padding(horizontal = 4.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = backgroundColor, contentColor = textColor
+            containerColor = backgroundColor, contentColor = textColor,
+            disabledContainerColor = Color.Transparent,
+            disabledContentColor = Color.LightGray
         ),
+        enabled = isEnabled
     ) {
         Text(
             text = text, modifier = Modifier
@@ -128,7 +135,6 @@ fun CalendarDayButton(
 
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarHeader(daysOfWeek: List<DayOfWeek>) {
     Row(
@@ -139,18 +145,49 @@ fun CalendarHeader(daysOfWeek: List<DayOfWeek>) {
             Text(
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
-                fontSize = 15.sp,
+                fontSize = 14.sp,
                 text = dayOfWeek.displayText(),
-                fontWeight = FontWeight.Medium,
             )
         }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun DayOfWeek.displayText(uppercase: Boolean = false, narrow: Boolean = false): String {
     val style = if (narrow) TextStyle.NARROW else TextStyle.SHORT
     return getDisplayName(style, Locale.ENGLISH).let { value ->
         if (uppercase) value.uppercase(Locale.ENGLISH) else value
+    }
+}
+
+fun getNextTwoWeeksDates(): List<Pair<Int, Int>> {
+    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    return (0..13).map { daysToAdd ->
+        val nextDate = today.plus(value = daysToAdd, unit = DateTimeUnit.DAY)
+        nextDate.dayOfMonth to nextDate.monthNumber
+    }
+}
+
+
+val LocalDateSaver = listSaver(
+    save = {
+        listOf(it.value.year, it.value.monthValue, it.value.dayOfMonth)
+    },
+    restore = { (year, month, day) -> mutableStateOf(LocalDate.of(year, month, day)) }
+)
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+private fun CustomCalendarScreenPreview() {
+    TalentATheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            CustomCalender() {
+                // Handle date change
+                println("Selected date: $it")
+            }
+        }
     }
 }

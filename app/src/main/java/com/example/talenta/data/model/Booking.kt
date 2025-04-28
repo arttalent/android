@@ -14,7 +14,7 @@ data class Booking(
     val report: Report? = null, // Expert assessment (structure to be defined)
 
     val createdAt: String = "", // UTC ISO 8601 timestamp
-)
+){}
 
 enum class BookingStatus {
     PENDING,
@@ -28,6 +28,6 @@ data class Feedback(
     val rating: Float = 0f,
     val review: String = "",
     val timestamp: String = "" // UTC ISO 8601
-)
+){}
 
 class Report // To be defined later
