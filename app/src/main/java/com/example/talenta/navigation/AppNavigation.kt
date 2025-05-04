@@ -1,6 +1,5 @@
 package com.example.talenta.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,6 +8,7 @@ import androidx.navigation.toRoute
 import com.example.talenta.navigation.Graphs.authNavGraph
 import com.example.talenta.navigation.Graphs.bottomNavGraph
 import com.example.talenta.navigation.Routes.Route
+import com.example.talenta.presentation.ui.screens.MyBookingsScreen
 import com.example.talenta.presentation.ui.screens.experts.ExpertDetailedScreen
 import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
 
@@ -31,6 +31,9 @@ fun AppNavigation(isLoggedIn: Boolean) {
             EditProfileScreen(
                 navController = navController
             )
+        }
+        composable<Route.MyBookings> {
+            MyBookingsScreen()
         }
         composable<Route.ExpertDetail> { backStackEntry ->
             val args = backStackEntry.toRoute<Route.ExpertDetail>()

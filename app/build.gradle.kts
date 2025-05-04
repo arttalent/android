@@ -14,8 +14,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.talenta"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 26
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -44,7 +44,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -80,7 +79,6 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
 
 
-
     // Networking
     implementation(libs.retrofit)
     // Gson converter to parse JSON
@@ -107,5 +105,9 @@ dependencies {
     // Serialization json
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.compose.calendar)
+
+    // In your commonMain or app-level build.gradle.kts
+    implementation(libs.kotlinx.datetime) // or latest
 
 }

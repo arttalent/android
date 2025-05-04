@@ -7,13 +7,10 @@ data class Plan(
     val planTitle: String = "",
     val description: String = "",
     val serviceType: ServiceType = ServiceType.ADVISE,
-    val price: Float = 0.0f,
+    val perHourCharge: Float = 0.0f,
     val currency: String = "USD", // Currency code
-    val availableSlots: Map<String, List<String>> = emptyMap(),
-    val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis(),
     val isActive: Boolean = true
-)
+){}
 
 enum class ServiceType {
     VIDEO_ASSESSMENT,

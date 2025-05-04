@@ -1,8 +1,5 @@
 package com.example.talenta.data
 
-
-/** This is for future custom backend login state*/
-
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -15,8 +12,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.get
-import kotlin.collections.set
 
 @Singleton
 class UserPreferences @Inject constructor(

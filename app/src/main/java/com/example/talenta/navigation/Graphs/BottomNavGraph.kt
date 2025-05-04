@@ -6,10 +6,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.ui.screens.DashBoardScreen
-import com.example.talenta.presentation.ui.screens.experts.ExpertsScreen
 import com.example.talenta.presentation.ui.screens.HostScreen
 import com.example.talenta.presentation.ui.screens.MyBookingsScreen
 import com.example.talenta.presentation.ui.screens.ReportScreen
+import com.example.talenta.presentation.ui.screens.experts.ExpertsScreen
 import com.example.talenta.presentation.ui.screens.profile.ProfileScreen
 
 fun NavGraphBuilder.bottomNavGraph(navController: NavHostController) {
@@ -38,6 +38,7 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavHostController) {
                 content = { MyBookingsScreen() }
             )
         }
+
         composable<Route.Notice> {
             HostScreen(
                 navController = navController,

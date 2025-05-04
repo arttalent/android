@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.example.talenta.data.Utilities
 import com.example.talenta.data.repository.ArtistRepository
-import com.example.talenta.data.repository.ExpertScreenRepository
+import com.example.talenta.data.repository.EditProfileRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -58,20 +58,24 @@ object AppModule {
         return firestore.collection("users")
     }
 
+    @Named("expertAvailability")
     @Provides
     @Singleton
-    fun provideUtilities(context: Context, auth: FirebaseAuth): Utilities {
-        return Utilities(context, auth)
+    fun provideExpertAvailabilityCollection(firestore: FirebaseFirestore): CollectionReference {
+        return firestore.collection("expertAvailability")
+    }
+
+    @Named("bookings")
+    @Provides
+    @Singleton
+    fun provideBookingsCollection(firestore: FirebaseFirestore): CollectionReference {
+        return firestore.collection("bookings")
     }
 
     @Provides
     @Singleton
-    fun provideArtistRepository(
-        firestore: FirebaseFirestore,
-        storage: FirebaseStorage,
-        utilities: Utilities
-    ): ArtistRepository {
-        return ArtistRepository(firestore, storage, utilities)
+    fun provideUtilities(context: Context, auth: FirebaseAuth): Utilities {
+        return Utilities(context, auth)
     }
 
 

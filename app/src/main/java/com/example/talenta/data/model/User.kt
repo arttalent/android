@@ -3,6 +3,7 @@ package com.example.talenta.data.model
 import com.google.firebase.firestore.IgnoreExtraProperties
 import kotlinx.serialization.Serializable
 
+// we have to add the genre field in the user class, as genre is completely different from the skills, as well as instruments
 @Serializable
 @IgnoreExtraProperties
 data class User(
@@ -18,8 +19,8 @@ data class User(
     val isVerified: Boolean? = null,
     val isBlocked: Boolean? = null,
     val professionalData: ProfessionalData = ProfessionalData(),
-) {
-}
+){}
+
 
 @Serializable
 enum class Ethnicity {
@@ -44,6 +45,11 @@ data class ProfessionalData(
     val certifications: List<String> = emptyList(),
     val certificatesList: List<Certificate> = emptyList(),
 ){}
+
+// for the skill we can use the enum class
+enum class Skill {
+    GUITAR, SINGER, PIANIST, THEORY_TEACHING, INSTRUMENTAL_TEACHING, MUSIC_PSYCHOLOGY, PERFECT_PITCH
+}
 
 @Serializable
 data class Bio(
@@ -78,7 +84,6 @@ enum class MediaType {
     VIDEO
 }
 
-
 @Serializable
 data class SocialMediaLinks(
     val facebook: String = "",
@@ -87,6 +92,8 @@ data class SocialMediaLinks(
     val twitter: String = "",
 ){}
 
+
+// we should add a title as well for the certificate i think
 @Serializable
 data class Certificate(
     val id: String = "",
@@ -94,6 +101,27 @@ data class Certificate(
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
 ){}
+
+
+// Data classes for media items
+data class Photo(
+    val id: String = "",
+    val imageUrl: String = "",
+    val description: String = "",
+    val timestamp: Long = System.currentTimeMillis()
+){}
+
+
+data class Video(
+    val id: String = "",
+    val videoUrl: String = "",
+    val thumbnailUrl: String = "",
+    val description: String = "",
+    val timestamp: Long = System.currentTimeMillis()
+){}
+
+
+
 
 
 
