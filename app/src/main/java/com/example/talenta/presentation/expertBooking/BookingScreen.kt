@@ -31,14 +31,14 @@ import java.util.Locale
 @Composable
 fun ExpertBooking(
     modifier: Modifier = Modifier,
-    viewModel: BookingViewModel = hiltViewModel()
+   // viewModel: BookingViewModel = hiltViewModel()
 ) {
-    val uiState = viewModel.uiStates.collectAsState().value
+/*    val uiState = viewModel.uiStates.collectAsState().value
     ExpertBookingScreen(
         uiState = uiState
     ) {
         viewModel
-    }
+    }*/
 }
 
 
