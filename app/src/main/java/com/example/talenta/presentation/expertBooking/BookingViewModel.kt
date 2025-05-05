@@ -9,6 +9,7 @@ import com.example.talenta.data.repository.ExpertRepository
 import com.example.talenta.utils.FirestoreResult
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,16 +43,11 @@ data class ExpertAvailabilityState(
     val errorMessage: String? = null
 )
 
-@HiltViewModel
-class BookingViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = BookingViewModelFactory::class)
+class BookingViewModel @AssistedInject constructor(
     private val expertRepository: ExpertRepository,
     @Assisted private val expertId: String,
 ) : ViewModel() {
-
-    @AssistedFactory
-    interface Factory {
-        fun create(expertId: String): BookingViewModel
-    }
 
     private val _uiStates = MutableStateFlow(ExpertAvailabilityState())
     val uiStates = _uiStates.asStateFlow()
@@ -169,4 +165,10 @@ class BookingViewModel @Inject constructor(
     }
 
 
+}
+
+
+@AssistedFactory
+interface BookingViewModelFactory {
+    fun create(expertId: String): BookingViewModel
 }
