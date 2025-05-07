@@ -128,5 +128,10 @@ object HelperFunctions {
         )
     }
 
+    fun String.capitalizeFirstLetter(): String {
+        return this.lowercase().replaceFirstChar { it.uppercaseChar() }
+    }
+
+
 
 }

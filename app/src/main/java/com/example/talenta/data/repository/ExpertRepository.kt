@@ -13,7 +13,9 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class ExpertRepository @Inject constructor(
     @Named("users")
     private val userCollection: CollectionReference,

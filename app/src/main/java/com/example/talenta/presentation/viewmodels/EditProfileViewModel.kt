@@ -104,25 +104,37 @@ class EditProfileViewModel @Inject constructor(
                 when (uploadResult) {
                     is FirestoreResult.Success -> {
                         val imageUrl = uploadResult.data
-                        val newCertificate = Certificate(
-                            id = certificateId,
-                            imageUrl = imageUrl.toString(),
-                            description = description,
-                            timestamp = System.currentTimeMillis()
-                        )
+                        val newCertificate = imageUrl?.let {
+                            Certificate(
+                                id = certificateId,
+                                imageUrl = it,
+                                description = description,
+                                timestamp = System.currentTimeMillis()
+                            )
+                        }
 
-                        val updatedCertificates = currentState.certificatesList + newCertificate
+                        if (newCertificate != null) {
+                            val updatedCertificates = currentState.certificatesList + newCertificate
 
-                        firestore.collection("users").document(userId)
-                            .update("professionalData.certificatesList", updatedCertificates)
-                            .await()
+                            firestore.collection("users").document(userId)
+                                .update("professionalData.certificatesList", updatedCertificates)
+                                .await()
 
-                        _state.value = currentState.copy(certificatesList = updatedCertificates)
-                        _event.value = EditProfileEvent.CertificateOperationSuccess
+                            _state.value = currentState.copy(certificatesList = updatedCertificates)
+                            _event.value = EditProfileEvent.CertificateOperationSuccess
+                        } else {
+                            _event.value =
+                                EditProfileEvent.ShowError("Failed to create certificate")
+                        }
+
                     }
 
                     is FirestoreResult.Failure -> {
-                        _event.value = EditProfileEvent.ShowError(uploadResult.errorMessage.toString())
+                        _event.value = uploadResult.errorMessage?.let {
+                            EditProfileEvent.ShowError(
+                                it
+                            )
+                        }
                     }
                 }
             } catch (e: Exception) {

@@ -19,7 +19,7 @@ data class User(
     val isVerified: Boolean? = null,
     val isBlocked: Boolean? = null,
     val professionalData: ProfessionalData = ProfessionalData(),
-)
+){}
 
 
 @Serializable
@@ -44,7 +44,7 @@ data class ProfessionalData(
     val skills: List<String> = emptyList(),
     val certifications: List<String> = emptyList(),
     val certificatesList: List<Certificate> = emptyList(),
-)
+){}
 
 // for the skill we can use the enum class
 enum class Skill {
@@ -84,7 +84,6 @@ enum class MediaType {
     VIDEO
 }
 
-
 @Serializable
 data class SocialMediaLinks(
     val facebook: String = "",
@@ -102,6 +101,27 @@ data class Certificate(
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
 ){}
+
+
+// Data classes for media items
+data class Photo(
+    val id: String = "",
+    val imageUrl: String = "",
+    val description: String = "",
+    val timestamp: Long = System.currentTimeMillis()
+){}
+
+
+data class Video(
+    val id: String = "",
+    val videoUrl: String = "",
+    val thumbnailUrl: String = "",
+    val description: String = "",
+    val timestamp: Long = System.currentTimeMillis()
+){}
+
+
+
 
 
 

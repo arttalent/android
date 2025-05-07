@@ -12,11 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
+import javax.inject.Inject
 import javax.inject.Singleton
 
 
 @Singleton
-class ArtistRepository(
+class ArtistRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val storage: FirebaseStorage,
     private val utilities: Utilities
