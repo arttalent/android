@@ -25,7 +25,6 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.temporal.ChronoUnit
-import javax.inject.Inject
 
 
 sealed class ExpertAvailabilityActions {
@@ -43,8 +42,8 @@ data class ExpertAvailabilityState(
     val errorMessage: String? = null
 )
 
-@HiltViewModel(assistedFactory = BookingViewModelFactory::class)
-class BookingViewModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = ExpertAvailabilityViewModelFactory::class)
+class ExpertAvailabilityViewModel @AssistedInject constructor(
     private val expertRepository: ExpertRepository,
     @Assisted private val expertId: String,
 ) : ViewModel() {
@@ -169,6 +168,6 @@ class BookingViewModel @AssistedInject constructor(
 
 
 @AssistedFactory
-interface BookingViewModelFactory {
-    fun create(expertId: String): BookingViewModel
+interface ExpertAvailabilityViewModelFactory {
+    fun create(expertId: String): ExpertAvailabilityViewModel
 }
