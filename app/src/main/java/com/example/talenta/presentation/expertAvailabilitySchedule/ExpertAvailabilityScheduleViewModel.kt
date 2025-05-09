@@ -19,9 +19,9 @@ import kotlinx.coroutines.launch
 
 sealed class ExpertAvailabilityScheduleActions {
     data class OnWeekdayDaySelect(val day: DayOfWeek) : ExpertAvailabilityScheduleActions()
+    data class AddSlotByDay(val day: DayOfWeek, val timeSlot: TimeSlot) : ExpertAvailabilityScheduleActions()
+    data object SetSchedule : ExpertAvailabilityScheduleActions()
     data object ResetError : ExpertAvailabilityScheduleActions()
-
-
 }
 
 data class ExpertAvailabilityScheduleState(
@@ -56,7 +56,69 @@ class ExpertAvailabilityScheduleViewModel @AssistedInject constructor(
             }
 
             is ExpertAvailabilityScheduleActions.OnWeekdayDaySelect -> {
+                _uiStates.update {
+                    it.copy(
+                        selectedDay = action.day,
+                        selectedDayAvailabilitySlot = it.expertAvailability?.weeklySchedule?.get(
+                            action.day
+                        )
+                            ?: emptyList()
+                    )
+                }
+            }
 
+            is ExpertAvailabilityScheduleActions.AddSlotByDay -> {
+                _uiStates.update {
+                    val currentWeeklySchedule = it.expertAvailability?.weeklySchedule
+                    currentWeeklySchedule?.get(action.day)?.toMutableList()?.add(action.timeSlot)
+                    it.copy(
+                        selectedDay = action.day,
+                        selectedDayAvailabilitySlot = it.expertAvailability?.weeklySchedule?.get(
+                            action.day
+                        )
+                            ?.plus(action.timeSlot)
+                            ?: emptyList(),
+                        expertAvailability = it.expertAvailability?.copy(
+                            weeklySchedule = currentWeeklySchedule
+                                ?: it.expertAvailability.weeklySchedule
+                        )
+                    )
+                }
+            }
+
+            ExpertAvailabilityScheduleActions.SetSchedule -> {
+                viewModelScope.launch {
+                    _uiStates.update {
+                        it.copy(
+                            isLoading = true,
+                        )
+                    }
+                    val result = expertRepository.setExpertAvailability(
+                        expertId,
+                        _uiStates.value.expertAvailability?.weeklySchedule
+                            ?: emptyMap(),
+                        _uiStates.value.expertAvailability?.timezone.toString()
+                        )
+                    when (result) {
+                        is FirestoreResult.Success -> {
+                            _uiStates.update {
+                                it.copy(
+                                    isLoading = false
+                                )
+                            }
+                        }
+
+                        is FirestoreResult.Failure -> {
+                            val errorMessage = result.errorMessage
+                            _uiStates.update {
+                                it.copy(
+                                    errorMessage = errorMessage,
+                                    isLoading = false
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
