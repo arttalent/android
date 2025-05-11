@@ -47,4 +47,7 @@ sealed class Route() {
     @Serializable
     data class ExpertDetail(val expertId: String) : Route()
 
+    @Serializable
+    data class ExpertAvailabilitySetScreen(val expertId: String) : Route()
+
 }

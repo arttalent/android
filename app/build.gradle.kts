@@ -52,9 +52,14 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // Firebase Bom
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.messaging)
+
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.foundation.android)
     testImplementation(libs.junit)
@@ -65,7 +70,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
+    // Viewmodel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Navigation

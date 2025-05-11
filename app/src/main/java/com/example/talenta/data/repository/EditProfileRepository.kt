@@ -5,10 +5,7 @@ import com.example.talenta.data.model.User
 import com.example.talenta.utils.FirestoreResult
 import com.example.talenta.utils.HelperFunctions
 import com.example.talenta.utils.safeFirebaseCall
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -26,7 +23,7 @@ class EditProfileRepository @Inject constructor(
     suspend fun fetchUserData(userId: String): User? = withContext(Dispatchers.IO) {
         try {
             val documentSnapshot = userCollection.document(userId).get().await()
-            documentSnapshot.toObject<User>()
+            documentSnapshot.toObject(User::class.java)
         } catch (e: Exception) {
             Timber.e(e, "Failed to fetch user data for ID: $userId")
             null
