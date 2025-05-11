@@ -1,7 +1,6 @@
 package com.example.talenta.data.model
 
-// This file defines the Plan data class and ServiceType enum class.
-data class Plan(
+data class Service(
     val planId: String = "",
     val expertId: String = "", // UID of the expert
     val planTitle: String = "",
