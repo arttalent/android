@@ -81,14 +81,14 @@ fun ExpertBookingScreen(
                 )
                 .fillMaxWidth()
                 .fillMaxHeight(
-                    fraction = 0.3f
                 )
                 .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
+            horizontalArrangement = Arrangement.SpaceEvenly,
             maxItemsInEachRow = 3,
         ) {
             get24HourList().forEach { time ->
                 DateSlot(
+                    modifier = Modifier.fillMaxWidth(0.26f),
                     text = time,
                     selected = false,
                     enabled = true,
@@ -118,7 +118,7 @@ fun LocalDate.toPrettyString(): String {
 
 fun get24HourList(): List<String> {
     val formatter = DateTimeFormatter.ofPattern("HH:00")
-    return (0..23).map { hour ->
+    return (8..20).map { hour ->
         LocalTime(hour, 0).toJavaLocalTime().format(formatter)
     }
 }
