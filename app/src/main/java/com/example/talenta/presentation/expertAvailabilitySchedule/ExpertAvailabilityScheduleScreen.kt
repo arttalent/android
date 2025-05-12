@@ -60,7 +60,7 @@ import com.example.talenta.ui.theme.TalentATheme
 @Composable
 fun ExpertAvailabilitySchedule(
     modifier: Modifier = Modifier,
-    expertId: String
+    expertId: String,
 ) {
 
     val viewModel =

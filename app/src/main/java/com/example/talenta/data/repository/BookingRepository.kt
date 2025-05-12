@@ -3,6 +3,7 @@ package com.example.talenta.data.repository
 import com.example.talenta.data.UserPreferences
 import com.example.talenta.data.model.Booking
 import com.example.talenta.data.model.BookingStatus
+import com.example.talenta.data.model.PaymentStatus
 import com.example.talenta.utils.FirestoreResult
 import com.example.talenta.utils.safeFirebaseCall
 import com.google.firebase.firestore.CollectionReference
@@ -18,7 +19,20 @@ class BookingRepository @Inject constructor(
     private val userPreferences: UserPreferences
 ) {
 
-    suspend fun createBooking(booking: Booking): FirestoreResult<Unit> = safeFirebaseCall {
+    suspend fun createBooking(expertId: String,serviceId: String, scheduleStartTime: String, hours: String ): FirestoreResult<Unit> = safeFirebaseCall {
+        val userId = userPreferences.getUserData()?.id?:""
+        val bookingId = bookingCollection.document().id
+        val booking = Booking(
+            bookingId = bookingId,
+            artistId = userId,
+            expertId = expertId,
+            status = BookingStatus.PENDING,
+            serviceId = serviceId,
+            scheduledStartTime = scheduleStartTime ,
+            timeInHrs = hours.toInt(),
+            paymentStatus = PaymentStatus.PENDING,
+        )
+
         val docRef = bookingCollection.document(booking.bookingId)
         docRef.set(booking).await()
         FirestoreResult.Success(Unit)

@@ -66,7 +66,8 @@ fun ServicesContent() {
 private fun ServiceCard(
     title: String,
     price: String,
-    features: List<String>
+    features: List<String>,
+    onBookingClick : () -> Unit = { /* No-op */ }
 ) {
     OutlinedCard(
         modifier = Modifier
@@ -116,7 +117,9 @@ private fun ServiceCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { /* Handle booking */ },
+                onClick = {
+                    onBookingClick()
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.royal_blue),
