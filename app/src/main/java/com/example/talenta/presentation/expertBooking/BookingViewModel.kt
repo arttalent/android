@@ -85,7 +85,7 @@ class BookingViewModel @Inject constructor(
         }
     }
 
-    fun createInitialBookingFromArtist() {
+   private fun createInitialBookingFromArtist() {
         val time = uiStates.value.selectedTime
         val date = uiStates.value.selectedDate
         val localInstant =
