@@ -126,7 +126,6 @@ fun CalendarDayButton(
             disabledContainerColor = Color.Transparent,
             disabledContentColor = Color.LightGray
         ),
-        enabled = isEnabled
     ) {
         Text(
             text = text, modifier = Modifier

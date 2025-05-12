@@ -10,7 +10,7 @@ data class Booking(
     val timeInHrs: Int,   // UTC ISO 8601 format
 
     val status: BookingStatus = BookingStatus.PENDING,
-    val paymentStatus: PaymentStatus = PaymentStatus.PENDING,
+    val paymentStatus: PaymentStatus = PaymentStatus.NOT_PAID,
     val report: Report? = null, // Expert assessment (structure to be defined)
 ) {}
 

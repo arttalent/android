@@ -23,30 +23,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.talenta.ui.theme.TalentATheme
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.toJavaLocalTime
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
 fun ExpertBooking(
+    expertId: String,
+    serviceId: String,
     modifier: Modifier = Modifier,
-   // viewModel: BookingViewModel = hiltViewModel()
+    viewModel: BookingViewModel = hiltViewModel()
 ) {
-/*    val uiState = viewModel.uiStates.collectAsState().value
+    val uiState = viewModel.uiStates.collectAsState().value
     ExpertBookingScreen(
-        uiState = uiState
-    ) {
-        viewModel
-    }*/
+        uiState = uiState,
+        action = viewModel::onAction
+    )
 }
 
 
 @Composable
 fun ExpertBookingScreen(
     modifier: Modifier = Modifier,
-    uiState: ExpertAvailabilityState,
-    action: (ExpertAvailabilityActions) -> Unit
+    uiState: BookingStates,
+    action: (BookingActions) -> Unit
 ) {
     val selectedDate = rememberSaveable(saver = LocalDateSaver) {
         mutableStateOf(LocalDate.now())
@@ -54,7 +58,7 @@ fun ExpertBookingScreen(
     Column(Modifier.padding(top = 40.dp)) {
         CustomCalender() {
             selectedDate.value = it
-            action(ExpertAvailabilityActions.OnDateSelected(it.toKotlinLocalDate()))
+            action(BookingActions.OnDateSelected(it.toKotlinLocalDate()))
         }
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -83,12 +87,14 @@ fun ExpertBookingScreen(
             horizontalArrangement = Arrangement.SpaceAround,
             maxItemsInEachRow = 3,
         ) {
-            uiState.selectedDateAvailability.forEach { time ->
+            get24HourList().forEach { time ->
                 DateSlot(
                     text = time,
                     selected = false,
                     enabled = true,
-                    onClick = {}
+                    onClick = {
+                        action(BookingActions.OnTimeSelected(stringToLocalTime(time)))
+                    }
                 )
             }
         }
@@ -110,12 +116,26 @@ fun LocalDate.toPrettyString(): String {
     return "$dayOfWeek, ${dayOfMonth}$suffix $month"
 }
 
+fun get24HourList(): List<String> {
+    val formatter = DateTimeFormatter.ofPattern("HH:00")
+    return (0..23).map { hour ->
+        LocalTime(hour, 0).toJavaLocalTime().format(formatter)
+    }
+}
+
+fun stringToLocalTime(timeString: String): LocalTime {
+    val parts = timeString.split(":")
+    val hour = parts[0].toInt()
+    val minute = parts[1].toInt()
+    return LocalTime(hour, minute)
+}
+
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun ExpertBookingScreenPRev() {
     TalentATheme {
         ExpertBookingScreen(
-            uiState = ExpertAvailabilityState(),
+            uiState = BookingStates(),
             action = { }
         )
     }
