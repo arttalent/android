@@ -10,9 +10,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
 
 
@@ -20,8 +23,8 @@ sealed class BookingActions {
     data class OnDateSelected(val date: LocalDate) : BookingActions()
     data object ResetError : BookingActions()
     data class OnTimeSelected(val time: LocalTime) : BookingActions()
-
-
+    data class InitData(val expertId: String, val serviceId: String) : BookingActions()
+    data object CreateBooking : BookingActions()
 }
 
 data class BookingStates(
@@ -66,24 +69,34 @@ class BookingViewModel @Inject constructor(
                     )
                 }
             }
+
+            is BookingActions.InitData -> {
+                _uiStates.update {
+                    it.copy(
+                        expertId = action.expertId,
+                        serviceId = action.serviceId
+                    )
+                }
+            }
+
+            BookingActions.CreateBooking -> {
+                createInitialBookingFromArtist()
+            }
         }
     }
 
     fun createInitialBookingFromArtist() {
         val time = uiStates.value.selectedTime
         val date = uiStates.value.selectedDate
-        val localDateTime = time?.let { date?.atTime(it) }
-
-        val formatted = localDateTime?.let {
-            LocalDateTime.Formats.ISO.format(it)
-        }
-
+        val localInstant =
+            time?.let { date?.atTime(it)?.toInstant(TimeZone.currentSystemDefault()) }
+        val startTime = localInstant?.format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
 
         viewModelScope.launch {
             val result = bookingRepository.createBooking(
                 expertId = _uiStates.value.expertId,
                 serviceId = _uiStates.value.serviceId, // Replace with actual service ID
-                scheduleStartTime = formatted ?: "N/A",
+                scheduleStartTime = startTime ?: "N/A",
                 hours = "1" // Replace with actual hours
             )
             when (result) {
