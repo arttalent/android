@@ -32,7 +32,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         installSplashScreen()
-        setScreenshotRestriction(this, false)
+        actionBar?.hide()
+        setScreenshotRestriction(this, true)
 
         setContent {
 

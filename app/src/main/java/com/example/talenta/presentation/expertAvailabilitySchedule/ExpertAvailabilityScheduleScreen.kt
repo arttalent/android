@@ -59,7 +59,8 @@ import com.example.talenta.ui.theme.TalentATheme
 
 @Composable
 fun ExpertAvailabilitySchedule(
-    modifier: Modifier = Modifier, expertId: String
+    modifier: Modifier = Modifier,
+    expertId: String,
 ) {
 
     val viewModel =
@@ -70,7 +71,7 @@ fun ExpertAvailabilitySchedule(
 
     ExpertAvailabilityScheduleScreen(
         expertAvailabilityStates = uiStates.value, onAction = viewModel::onAction
-    ) {
+    ){
 
     }
 

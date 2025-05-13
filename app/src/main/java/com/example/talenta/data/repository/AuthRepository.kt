@@ -16,6 +16,7 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.toObject
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -34,11 +35,13 @@ class AuthRepository @Inject constructor(
     private val preferences: UserPreferences,
 ) {
     private val TAG = "AuthRepository"
+    val firebaseMessaging = FirebaseMessaging.getInstance()
 
     suspend fun signInWithEmail(email: String, password: String): AuthUiState {
         return try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
             if (result.user != null) {
+                updateFirebaseToken(firebaseMessaging.token.await())
                 AuthUiState.Success
             } else {
                 AuthUiState.Error("Authentication failed. Please try again.")
@@ -51,6 +54,16 @@ class AuthRepository @Inject constructor(
             }
             Timber.tag("AuthRepository").e(e, "Sign in failed")
             AuthUiState.Error(errorMessage)
+        }
+    }
+
+
+    suspend fun updateFirebaseToken(token: String): FirestoreResult<Unit> {
+        return safeFirebaseCall {
+            val userId = auth.currentUser?.uid
+                ?: throw IllegalStateException("User not logged in")
+            userCollection.document(userId).update("firebaseToken", token).await()
+            FirestoreResult.Success(Unit)
         }
     }
 
@@ -71,8 +84,6 @@ class AuthRepository @Inject constructor(
             FirebaseAuth.getInstance().signOut()
         }
     }
-
-
 
 
     suspend fun sendOtp(phoneNumber: String): Result<String> = withContext(Dispatchers.IO) {

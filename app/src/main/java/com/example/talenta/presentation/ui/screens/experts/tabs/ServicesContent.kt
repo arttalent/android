@@ -28,8 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.talenta.R
-import com.example.talenta.data.model.Services
-import java.util.UUID
 
 
 @Composable
@@ -41,41 +39,35 @@ fun ServicesContent() {
             .verticalScroll(rememberScrollState())
     ) {
         ServiceCard(
-            services = Services(
-                serviceId = UUID.randomUUID().toString(),
-                title = "Online Video Call",
-                price = "$25/hr",
-                features = listOf("Video Call", "Report")
-            )
+            title = "Online Video Assessment",
+            price = "$25/hr",
+            features = listOf("Video Assessment", "Report")
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
         ServiceCard(
-            services = Services(
-                serviceId = UUID.randomUUID().toString(),
-                title = "Online Text Assessment",
-                price = "$25/hr",
-                features = listOf("Text Assessment", "Report")
-            )
+            title = "Online Live Assessment",
+            price = "$25/hr",
+            features = listOf("Live Assessment", "Report")
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
         ServiceCard(
-            services = Services(
-                serviceId = UUID.randomUUID().toString(),
-                title = "Online 1 on 1 Advise",
-                price = "$25/hr",
-                features = listOf("1 on 1 Advise", "Doubts")
-            )
+            title = "Online 1 on 1 Advise",
+            price = "$25/hr",
+            features = listOf("1 on 1 Advise", "Doubts")
         )
     }
 }
 
 @Composable
 private fun ServiceCard(
-    services: Services
+    title: String,
+    price: String,
+    features: List<String>,
+    onBookingClick : () -> Unit = { /* No-op */ }
 ) {
     OutlinedCard(
         modifier = Modifier
@@ -89,13 +81,16 @@ private fun ServiceCard(
                 .padding(16.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = services.title, fontWeight = FontWeight.Bold, fontSize = 16.sp
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
                 )
                 Text(
-                    text = services.price,
+                    text = price,
                     color = colorResource(R.color.royal_blue),
                     fontWeight = FontWeight.Bold
                 )
@@ -103,7 +98,7 @@ private fun ServiceCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            services.features.forEach { feature ->
+            features.forEach { feature ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(vertical = 4.dp)
@@ -122,7 +117,9 @@ private fun ServiceCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {},
+                onClick = {
+                    onBookingClick()
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.royal_blue),
