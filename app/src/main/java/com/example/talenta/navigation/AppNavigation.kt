@@ -34,6 +34,8 @@ fun AppNavigation(isLoggedIn: Boolean) {
                 navController = navController
             )
         }
+
+
         composable<Route.MyBookings> {
             MyBookingsScreen()
         }

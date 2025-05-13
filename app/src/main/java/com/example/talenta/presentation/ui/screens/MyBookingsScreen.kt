@@ -29,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -83,8 +82,7 @@ fun MyBookingsScreen() {
             date = "2 Jan 2025",
             bookingStatus = BookingStatus.ACCEPTED,
             hourlyRate = 25
-        ),
-        Booking(
+        ), Booking(
             id = "125",
             name = "Samuel Moore",
             profileImage = R.drawable.singer, // Replace with actual resource
@@ -96,8 +94,7 @@ fun MyBookingsScreen() {
             date = "23 Dec 2024",
             bookingStatus = BookingStatus.RESCHEDULED,
             hourlyRate = 25
-        ),
-        Booking(
+        ), Booking(
             id = "126",
             name = "Samuel Moore",
             profileImage = R.drawable.singer, // Replace with actual resource
@@ -109,8 +106,7 @@ fun MyBookingsScreen() {
             date = "12 Dec 2024",
             bookingStatus = BookingStatus.REJECTED,
             hourlyRate = 25
-        ),
-        Booking(
+        ), Booking(
             id = "123",
             name = "Kieran",
             profileImage = R.drawable.singer, // Replace with actual resource
@@ -122,8 +118,7 @@ fun MyBookingsScreen() {
             date = "2 Jan 2025",
             bookingStatus = BookingStatus.ACCEPTED,
             hourlyRate = 25
-        ),
-        Booking(
+        ), Booking(
             id = "125",
             name = "Samuel Moore",
             profileImage = R.drawable.singer, // Replace with actual resource
@@ -135,8 +130,7 @@ fun MyBookingsScreen() {
             date = "23 Dec 2024",
             bookingStatus = BookingStatus.RESCHEDULED,
             hourlyRate = 25
-        ),
-        Booking(
+        ), Booking(
             id = "126",
             name = "Samuel Moore",
             profileImage = R.drawable.singer, // Replace with actual resource
@@ -179,10 +173,7 @@ fun MyBookingsScreen() {
                 placeholder = { Text("Search") },
                 leadingIcon = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        DropdownMenu(
-                            expanded = false,
-                            onDismissRequest = {}
-                        ) {
+                        DropdownMenu(expanded = false, onDismissRequest = {}) {
                             // Dropdown items would go here
                         }
                         Text(
@@ -203,8 +194,7 @@ fun MyBookingsScreen() {
             HorizontalDivider(
                 modifier = Modifier
                     .height(24.dp)
-                    .width(1.dp),
-                color = Color.LightGray
+                    .width(1.dp), color = Color.LightGray
             )
             Spacer(modifier = Modifier.width(5.dp))
 
@@ -225,8 +215,7 @@ fun MyBookingsScreen() {
 
         // Bookings list
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(bookings) { booking ->
                 BookingCard(booking = booking)
@@ -238,8 +227,7 @@ fun MyBookingsScreen() {
 @Composable
 fun BookingCard(booking: Booking) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -285,15 +273,11 @@ fun BookingCard(booking: Booking) {
                     // Name and occupation
                     Column {
                         Text(
-                            text = booking.name,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
+                            text = booking.name, fontWeight = FontWeight.Bold, fontSize = 18.sp
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = booking.occupation,
-                                fontSize = 14.sp,
-                                color = Color.Gray
+                                text = booking.occupation, fontSize = 14.sp, color = Color.Gray
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Icon(
@@ -303,9 +287,7 @@ fun BookingCard(booking: Booking) {
                                 tint = Color.Gray
                             )
                             Text(
-                                text = booking.location,
-                                fontSize = 14.sp,
-                                color = Color.Gray
+                                text = booking.location, fontSize = 14.sp, color = Color.Gray
                             )
                         }
                     }
@@ -348,21 +330,16 @@ fun BookingCard(booking: Booking) {
                     val (chipColor, textColor, statusText) = when (booking.paymentStatus) {
                         PaymentStatus.PAID -> Triple(Color(0xFFE9F7EF), Color(0xFF27AE60), "Paid")
                         PaymentStatus.NOT_PAID -> Triple(
-                            Color(0xFFFAE9EF),
-                            Color(0xFFE74C3C),
-                            "Not Paid"
+                            Color(0xFFFAE9EF), Color(0xFFE74C3C), "Not Paid"
                         )
 
                         PaymentStatus.PENDING -> Triple(
-                            Color(0xFFFFF9E6),
-                            Color(0xFFF39C12),
-                            "Pending"
+                            Color(0xFFFFF9E6), Color(0xFFF39C12), "Pending"
                         )
                     }
 
                     Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = chipColor
+                        shape = RoundedCornerShape(16.dp), color = chipColor
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -376,9 +353,7 @@ fun BookingCard(booking: Booking) {
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = statusText,
-                                fontSize = 12.sp,
-                                color = textColor
+                                text = statusText, fontSize = 12.sp, color = textColor
                             )
                         }
                     }
@@ -423,9 +398,7 @@ fun BookingCard(booking: Booking) {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${booking.duration} min",
-                            fontSize = 14.sp,
-                            color = Color.Gray
+                            text = "${booking.duration} min", fontSize = 14.sp, color = Color.Gray
                         )
                     }
 
@@ -439,9 +412,7 @@ fun BookingCard(booking: Booking) {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = booking.date,
-                            fontSize = 14.sp,
-                            color = Color.Gray
+                            text = booking.date, fontSize = 14.sp, color = Color.Gray
                         )
                     }
                 }
@@ -449,27 +420,20 @@ fun BookingCard(booking: Booking) {
                 // Status chip
                 val (chipColor, textColor, statusText) = when (booking.bookingStatus) {
                     BookingStatus.ACCEPTED -> Triple(
-                        Color(0xFFE9F7EF),
-                        Color(0xFF27AE60),
-                        "Accepted"
+                        Color(0xFFE9F7EF), Color(0xFF27AE60), "Accepted"
                     )
 
                     BookingStatus.REJECTED -> Triple(
-                        Color(0xFFFAE9EF),
-                        Color(0xFFE74C3C),
-                        "Rejected"
+                        Color(0xFFFAE9EF), Color(0xFFE74C3C), "Rejected"
                     )
 
                     BookingStatus.RESCHEDULED -> Triple(
-                        Color(0xFFFFF9E6),
-                        Color(0xFFF39C12),
-                        "Re-Scheduled"
+                        Color(0xFFFFF9E6), Color(0xFFF39C12), "Re-Scheduled"
                     )
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = chipColor
+                    shape = RoundedCornerShape(16.dp), color = chipColor
                 ) {
                     Text(
                         text = statusText,

@@ -1,5 +1,7 @@
 [versions]
 agp = "8.10.0"
+firebase-bom = "33.13.0"
+firebase-messaging = "24.1.1"
 animationsCore = "1.10.0"
 bottomSheet = "1.9.63"
 coilCompose = "2.5.0"
@@ -14,7 +16,7 @@ hiltAndroidCompiler = "2.55"
 hiltNavigationFragment = "1.2.0"
 jitsiMeetSdk = "10.2.1"
 jitsiMeetSdkVersion = "10.2.0"
-kotlin = "2.0.0"
+kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -84,7 +86,8 @@ androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtim
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json-version" }
 compose-calendar = "com.kizitonwose.calendar:compose:2.6.2"
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
-
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebase-messaging" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
