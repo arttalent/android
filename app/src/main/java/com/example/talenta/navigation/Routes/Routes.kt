@@ -58,6 +58,11 @@ sealed class Route() {
     @Serializable
     object EditProfile : Route()
 
+    object Routes {
+        const val ExpertBooking = "expert_booking"
+        fun withArgs(expertId: String, serviceId: String): String = "$ExpertBooking/$expertId/$serviceId"
+    }
+
 
     @Serializable
     data class ExpertDetail(val expertId: String) : Route()

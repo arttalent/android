@@ -40,23 +40,20 @@ fun ExpertBooking(
 ) {
     val uiState = viewModel.uiStates.collectAsState().value
     ExpertBookingScreen(
-        uiState = uiState,
-        action = viewModel::onAction
+        uiState = uiState, action = viewModel::onAction
     )
 }
 
 
 @Composable
 fun ExpertBookingScreen(
-    modifier: Modifier = Modifier,
-    uiState: BookingStates,
-    action: (BookingActions) -> Unit
+    modifier: Modifier = Modifier, uiState: BookingStates, action: (BookingActions) -> Unit
 ) {
     val selectedDate = rememberSaveable(saver = LocalDateSaver) {
         mutableStateOf(LocalDate.now())
     }
     Column(Modifier.padding(top = 40.dp)) {
-        CustomCalender() {
+        CustomCalender {
             selectedDate.value = it
             action(BookingActions.OnDateSelected(it.toKotlinLocalDate()))
         }
@@ -89,13 +86,9 @@ fun ExpertBookingScreen(
         ) {
             get24HourList().forEach { time ->
                 DateSlot(
-                    text = time,
-                    selected = false,
-                    enabled = true,
-                    onClick = {
+                    text = time, selected = false, enabled = true, onClick = {
                         action(BookingActions.OnTimeSelected(stringToLocalTime(time)))
-                    }
-                )
+                    })
             }
         }
     }
@@ -135,8 +128,6 @@ fun stringToLocalTime(timeString: String): LocalTime {
 private fun ExpertBookingScreenPRev() {
     TalentATheme {
         ExpertBookingScreen(
-            uiState = BookingStates(),
-            action = { }
-        )
+            uiState = BookingStates(), action = { })
     }
 }

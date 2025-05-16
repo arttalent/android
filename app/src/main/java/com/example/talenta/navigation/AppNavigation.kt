@@ -42,6 +42,13 @@ fun AppNavigation(isLoggedIn: Boolean) {
             ExpertDetailedScreen(navController, args.expertId)
         }
 
+        composable("expert_booking/{expertId}/{serviceId}") { backStackEntry ->
+            val expertId = backStackEntry.arguments?.getString("expertId") ?: ""
+            val serviceId = backStackEntry.arguments?.getString("serviceId") ?: ""
+            ExpertBooking(expertId = expertId, serviceId = serviceId)
+        }
+
+
         composable<Route.ExpertAvailabilitySetScreen> { backStackEntry ->
             val args = backStackEntry.toRoute<Route.ExpertAvailabilitySetScreen>()
             ExpertAvailabilitySchedule(expertId = args.expertId)

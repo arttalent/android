@@ -27,47 +27,51 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.talenta.R
+import com.example.talenta.navigation.Routes.Route.Routes
+import timber.log.Timber
+
+
+data class Service(
+    val title: String, val price: String, val features: List<String>, val id: String = ""
+)
 
 
 @Composable
-fun ServicesContent() {
+fun ServicesContent(navController: NavController, expertId: String) {
+    val services = listOf(
+        Service("Online Video Assessment", "$25/hr", listOf("Video Assessment", "Report"), "video"),
+        Service("Online Live Assessment", "$25/hr", listOf("Live Assessment", "Report"), "live"),
+        Service("Online 1 on 1 Advise", "$25/hr", listOf("1 on 1 Advise", "Doubts"), "advise")
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        ServiceCard(
-            title = "Online Video Assessment",
-            price = "$25/hr",
-            features = listOf("Video Assessment", "Report")
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        ServiceCard(
-            title = "Online Live Assessment",
-            price = "$25/hr",
-            features = listOf("Live Assessment", "Report")
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        ServiceCard(
-            title = "Online 1 on 1 Advise",
-            price = "$25/hr",
-            features = listOf("1 on 1 Advise", "Doubts")
-        )
+        services.forEachIndexed { index, service ->
+            ServiceCard(
+                title = service.title,
+                price = service.price,
+                features = service.features,
+                onBookingClick = {
+                    navController.navigate(Routes.withArgs(expertId, service.id))
+                    Timber.tag("ServiceCard").d("Booking clicked for ${service.title}")
+                })
+            if (index < services.lastIndex) {
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+        }
     }
 }
 
+
 @Composable
 private fun ServiceCard(
-    title: String,
-    price: String,
-    features: List<String>,
-    onBookingClick : () -> Unit = { /* No-op */ }
+    title: String, price: String, features: List<String>, onBookingClick: () -> Unit
 ) {
     OutlinedCard(
         modifier = Modifier
@@ -81,13 +85,10 @@ private fun ServiceCard(
                 .padding(16.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp
                 )
                 Text(
                     text = price,
@@ -119,9 +120,7 @@ private fun ServiceCard(
             Button(
                 onClick = {
                     onBookingClick()
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
+                }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.royal_blue),
                 )
             ) {

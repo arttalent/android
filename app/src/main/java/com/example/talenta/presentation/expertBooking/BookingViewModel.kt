@@ -73,8 +73,7 @@ class BookingViewModel @Inject constructor(
             is BookingActions.InitData -> {
                 _uiStates.update {
                     it.copy(
-                        expertId = action.expertId,
-                        serviceId = action.serviceId
+                        expertId = action.expertId, serviceId = action.serviceId
                     )
                 }
             }
@@ -85,7 +84,7 @@ class BookingViewModel @Inject constructor(
         }
     }
 
-   private fun createInitialBookingFromArtist() {
+    private fun createInitialBookingFromArtist() {
         val time = uiStates.value.selectedTime
         val date = uiStates.value.selectedDate
         val localInstant =
