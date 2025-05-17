@@ -3,6 +3,7 @@ package com.example.talenta.presentation.viewmodels
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.talenta.data.UserPreferences
 import com.example.talenta.data.model.Role
 import com.example.talenta.data.model.User
 import com.example.talenta.data.repository.AuthRepository
@@ -54,15 +55,15 @@ sealed class SignUpEvents {
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val auth: FirebaseAuth,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val preferences: UserPreferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpUiStates())
     val uiState: StateFlow<SignUpUiStates> = _uiState.asStateFlow()
 
     private val _events = MutableSharedFlow<SignUpEvents>(
-        replay = 0,
-        extraBufferCapacity = 1
+        replay = 0, extraBufferCapacity = 1
     )
     val events = _events.asSharedFlow()
 
@@ -103,6 +104,12 @@ class SignUpViewModel @Inject constructor(
                 phoneNumber = formattedPhone,
                 role = _uiState.value.selectedRole ?: Role.ARTIST
             )
+
+            val selectedRole = (_uiState.value.selectedRole ?: Role.ARTIST).toString()
+            viewModelScope.launch {
+                preferences.saveUserRole(selectedRole)
+            }
+
 
             val password = _uiState.value.password
             val confirmPassword = _uiState.value.confirmPassword

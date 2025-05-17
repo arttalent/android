@@ -29,8 +29,7 @@ import kotlin.math.abs
 
 @Composable
 fun OnboardingPageContent(
-    page: OnboardingPage,
-    offset: Float
+    page: OnboardingPage, offset: Float
 ) {
     Box(
         modifier = Modifier
@@ -40,8 +39,7 @@ fun OnboardingPageContent(
             .graphicsLayer {
                 // Add parallax effect to the content
                 translationX = size.width * offset * 0.2f
-            }
-    ) {
+            }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -81,8 +79,7 @@ fun OnboardingPageContent(
                         // Slide in text effect
                         translationX = size.width * offset * 0.4f
                         alpha = 1f - abs(offset)
-                    }
-            )
+                    })
 
             Text(
                 text = page.description,
@@ -97,8 +94,7 @@ fun OnboardingPageContent(
                         // Delayed slide in effect for description
                         translationX = size.width * offset * 0.6f
                         alpha = 1f - abs(offset)
-                    }
-            )
+                    })
         }
     }
 }

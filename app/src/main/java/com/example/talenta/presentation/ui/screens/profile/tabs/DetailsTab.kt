@@ -227,3 +227,4 @@ fun SkillChip(skill: String) {
         )
     }
 }
+

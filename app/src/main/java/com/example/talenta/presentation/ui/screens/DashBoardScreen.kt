@@ -11,9 +11,18 @@ import androidx.compose.ui.text.font.FontWeight
 @Composable
 fun DashBoardScreen() {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
-        Text("Home Screen", fontWeight = FontWeight.Bold)
+        Text("Home Screen For Artist", fontWeight = FontWeight.Bold)
     }
+}
+
+@Composable
+fun ExpertDashBoardScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+    ) {
+        Text("Home Screen For Expert", fontWeight = FontWeight.Bold)
+    }
+
 }

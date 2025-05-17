@@ -61,13 +61,15 @@ import androidx.navigation.NavController
 import com.example.talenta.R
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.state.AuthUiState
+import com.example.talenta.presentation.ui.screens.HostViewModel
 import com.example.talenta.presentation.viewmodels.SignInViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    onLoginSuccess: () -> Unit = {},
-    viewModel: SignInViewModel = hiltViewModel()
+    onLoginSuccess: (String) -> Unit = {},
+    viewModel: SignInViewModel = hiltViewModel(),
+    hostViewModel: HostViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showError by remember { mutableStateOf(false) }
@@ -84,15 +86,18 @@ fun LoginScreen(
         android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
+    val role = hostViewModel.role.collectAsState()
+
     val isValidPassword = remember(password) {
         password.length >= 6
     }
+
 
     LaunchedEffect(uiState) {
         when (uiState) {
             is AuthUiState.Success -> {
                 Toast.makeText(context, "Login Success", Toast.LENGTH_SHORT).show()
-                onLoginSuccess()
+                onLoginSuccess(role.toString())
             }
 
             is AuthUiState.Error -> {
@@ -109,8 +114,7 @@ fun LoginScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -141,12 +145,9 @@ fun LoginScreen(
 
             // App Name with enhanced typography
             Text(
-                text = "Art Talent",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp
-                ),
-                color = MaterialTheme.colorScheme.primary
+                text = "Art Talent", style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold, letterSpacing = 1.sp
+                ), color = MaterialTheme.colorScheme.primary
             )
 
             Text(
@@ -182,8 +183,7 @@ fun LoginScreen(
                         .padding(bottom = 16.dp),
                     shape = RoundedCornerShape(12.dp),
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
+                        keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
                     ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -219,8 +219,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
+                        keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
                     ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -230,8 +229,7 @@ fun LoginScreen(
 
                 // Error Messages with enhanced styling
                 AnimatedVisibility(
-                    visible = (email.isNotEmpty() && !isValidEmail) ||
-                            (password.isNotEmpty() && !isValidPassword),
+                    visible = (email.isNotEmpty() && !isValidEmail) || (password.isNotEmpty() && !isValidPassword),
                     enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically()
                 ) {
@@ -314,8 +312,7 @@ fun LoginScreen(
     // Enhanced Error Snackbar
     if (showError) {
         Snackbar(
-            modifier = Modifier
-                .padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             shape = RoundedCornerShape(8.dp),
             containerColor = MaterialTheme.colorScheme.errorContainer,
             action = {
@@ -326,11 +323,9 @@ fun LoginScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
-            }
-        ) {
+            }) {
             Text(
-                errorMessage,
-                color = MaterialTheme.colorScheme.onErrorContainer
+                errorMessage, color = MaterialTheme.colorScheme.onErrorContainer
             )
         }
 

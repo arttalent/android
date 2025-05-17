@@ -44,6 +44,9 @@ sealed class Route() {
     object Dashboard : Route()
 
     @Serializable
+    object ExpertDashboard : Route()
+
+    @Serializable
     object Experts : Route()
 
     @Serializable
@@ -59,8 +62,9 @@ sealed class Route() {
     object EditProfile : Route()
 
     object Routes {
-        const val ExpertBooking = "expert_booking"
-        fun withArgs(expertId: String, serviceId: String): String = "$ExpertBooking/$expertId/$serviceId"
+        private const val ExpertBooking = "expert_booking"
+        fun withArgs(expertId: String, serviceId: String): String =
+            "$ExpertBooking/$expertId/$serviceId"
     }
 
 
