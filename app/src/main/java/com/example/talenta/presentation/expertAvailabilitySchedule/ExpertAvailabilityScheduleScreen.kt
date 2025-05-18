@@ -320,7 +320,7 @@ fun DayButton(
     day: DayOfWeek, isSelected: Boolean, onClick: () -> Unit
 ) {
     val backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
-    val contentColor = if (isSelected) Color.White else Color.DarkGray
+    val contentColor s= if (isSelected) Color.White else Color.DarkGray
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray
 
     OutlinedButton(

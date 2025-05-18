@@ -42,6 +42,7 @@ class AuthRepository @Inject constructor(
             val result = auth.signInWithEmailAndPassword(email, password).await()
             if (result.user != null) {
                 updateFirebaseToken(firebaseMessaging.token.await())
+                getUserProfile()
                 AuthUiState.Success
             } else {
                 AuthUiState.Error("Authentication failed. Please try again.")
@@ -137,7 +138,7 @@ class AuthRepository @Inject constructor(
         return auth.currentUser != null
     }
 
-    suspend fun logout() {
+    fun logout() {
         auth.signOut()
     }
 

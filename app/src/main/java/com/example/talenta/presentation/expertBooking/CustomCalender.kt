@@ -23,6 +23,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.talenta.data.model.DaysOfMonth
+import com.example.talenta.data.model.ExpertAvailability
+import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.ui.theme.TalentATheme
 import com.example.talenta.utils.HelperFunctions.capitalizeFirstLetter
 import com.kizitonwose.calendar.compose.ContentHeightMode
@@ -42,13 +45,18 @@ import java.util.Locale
 
 
 @Composable
-fun CustomCalender(modifier: Modifier = Modifier, onDateChange: (LocalDate) -> Unit = {}) {
+fun CustomCalender(
+    expertAvailability: ExpertAvailability?,
+    modifier: Modifier = Modifier,
+    onDateChange: (LocalDate) -> Unit = {}
+) {
+    val schedule = expertAvailability?.schedule
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth } // Adjust as needed
-    val endMonth = remember { currentMonth.plusMonths(1) } // Adjust as needed
+    val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
     val firstDayOfWeek = remember { firstDayOfWeekFromLocale() }
     val availableDaysAndMonth = remember {
-        getNextTwoWeeksDates()
+        getAvailableDates(schedule)
     }
     var selectedDay = rememberSaveable(saver = LocalDateSaver) {
         mutableStateOf(LocalDate.now())
@@ -126,6 +134,7 @@ fun CalendarDayButton(
             disabledContainerColor = Color.Transparent,
             disabledContentColor = Color.LightGray
         ),
+        enabled = isEnabled
     ) {
         Text(
             text = text, modifier = Modifier
@@ -158,12 +167,16 @@ fun DayOfWeek.displayText(uppercase: Boolean = false, narrow: Boolean = false): 
     }
 }
 
-fun getNextTwoWeeksDates(): List<Pair<Int, Int>> {
-    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    return (0..13).map { daysToAdd ->
-        val nextDate = today.plus(value = daysToAdd, unit = DateTimeUnit.DAY)
-        nextDate.dayOfMonth to nextDate.monthNumber
+fun getAvailableDates(schedule: Map<DaysOfMonth, TimeSlot>?): List<Pair<Int, Int>> {
+    val availableDates = mutableListOf<Pair<Int, Int>>()
+    schedule?.forEach {
+        val daysOfMonth = it.key
+        val month = daysOfMonth.month
+        daysOfMonth.days.forEach { day ->
+            availableDates.add(Pair(day, month))
+        }
     }
+    return availableDates
 }
 
 
@@ -183,7 +196,18 @@ private fun CustomCalendarScreenPreview() {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            CustomCalender() {
+            CustomCalender(
+                expertAvailability = ExpertAvailability(
+                    timezone = "UTC",
+                    schedule = mapOf(
+                        DaysOfMonth(
+                            days = listOf(1, 6, 18, 19, 20),
+                            month = 5,
+                            year = 2025
+                        ) to TimeSlot(start = "10:00", end = "12:00"),
+                    )
+                ),
+            ) {
                 // Handle date change
                 println("Selected date: $it")
             }

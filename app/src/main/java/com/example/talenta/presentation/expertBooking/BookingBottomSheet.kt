@@ -28,7 +28,7 @@ import com.example.talenta.ui.theme.TalentATheme
 
 @Composable
 fun BookingBottomSheet(
-
+    modifier: Modifier,
     expertName: String = "Kieran",
     time: String = "02:30pm - 03:30pm",
     date: String = "Thursday, April 10th",
@@ -38,7 +38,7 @@ fun BookingBottomSheet(
     Surface(
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         tonalElevation = 8.dp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
@@ -117,6 +117,9 @@ fun BookingBottomSheet(
 private fun BookingBottomSheetPrev() {
     TalentATheme {
         BookingBottomSheet(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             expertName = "Kieran",
             time = "02:30pm - 03:30pm",
             date = "Thursday, April 10th",

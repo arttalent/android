@@ -3,8 +3,10 @@ package com.example.talenta.presentation.expertBooking
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -23,13 +26,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.talenta.data.model.DaysOfMonth
+import com.example.talenta.data.model.ExpertAvailability
+import com.example.talenta.data.model.Service
+import com.example.talenta.data.model.ServiceType
+import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.model.User
 import com.example.talenta.ui.theme.TalentATheme
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.toJavaLocalTime
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -42,8 +48,7 @@ fun ExpertBooking(
     LaunchedEffect(Unit) {
         viewModel.onAction(
             BookingActions.InitData(
-                expertDetails.id ?: "",
-                expertDetails.expertService?.serviceId ?: ""
+                expertDetails
             )
         )
     }
@@ -63,51 +68,122 @@ fun ExpertBookingScreen(
     val selectedDate = rememberSaveable(saver = LocalDateSaver) {
         mutableStateOf(LocalDate.now())
     }
-    Column(Modifier.padding(top = 40.dp)) {
-        CustomCalender() {
-            selectedDate.value = it
-            action(BookingActions.OnDateSelected(it.toKotlinLocalDate()))
-        }
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            color = Color.LightGray.copy(alpha = 0.5f),
-            thickness = 2.dp
-        )
-        Text(
-            text = selectedDate.value.toPrettyString(),
-            modifier = Modifier.padding(16.dp),
-            color = Color.Black,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold
-        )
+    Box {
+        Column(Modifier.padding(top = 40.dp)) {
+            CustomCalender(
+                expertAvailability = uiState.expertDetails?.expertService?.expertAvailability
+            ) {
+                selectedDate.value = it
+                action(BookingActions.OnDateSelected(it.toKotlinLocalDate()))
+            }
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                color = Color.LightGray.copy(alpha = 0.5f),
+                thickness = 2.dp
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = selectedDate.value.toPrettyString(),
+                    color = Color.Black,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = uiState.expertDetails?.expertService?.expertAvailability?.timezone
+                        ?: "UTC",
+                    color = Color.Black,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
 
-        FlowRow(
-            modifier = Modifier
-                .scrollable(
-                    orientation = Orientation.Vertical,
-                    state = rememberScrollState(),
+            val timeSlotsByDate = uiState.timeSlotBySelectedDate
+            if (timeSlotsByDate.isEmpty()) {
+                LaunchedEffect(Unit) {
+                    action(BookingActions.OnTimeSelected(null))
+                }
+                Text(
+                    text = "No time slots available",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    color = Color.Black,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
                 )
-                .fillMaxWidth()
-                .fillMaxHeight(
-                )
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            maxItemsInEachRow = 3,
-        ) {
-            get24HourList().forEach { time ->
-                DateSlot(
-                    modifier = Modifier.fillMaxWidth(0.26f),
-                    text = time,
-                    selected = false,
-                    enabled = true,
-                    onClick = {
-                        action(BookingActions.OnTimeSelected(stringToLocalTime(time)))
-                    }
+            } else {
+                TimeSlotsRow(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    timeSlots = timeSlotsByDate,
+                    selectedTime = uiState.selectedTime,
+                    action = action
                 )
             }
         }
+
+        if (uiState.selectedTime != null) {
+            BookingBottomSheet(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                expertName = uiState.expertDetails?.firstName + " " + uiState.expertDetails?.lastName,
+                time = String.format(
+                    "%02d:%02d",
+                    uiState.selectedTime.hour,
+                    uiState.selectedTime.minute
+                ), date = selectedDate.value.toPrettyString(),
+                fees = "$${uiState.expertDetails?.expertService?.perHourCharge}",
+                onConfirmClick = {
+                    action(BookingActions.CreateBooking)
+                }
+            )
+        }
+
     }
 
+}
+
+@Composable
+fun TimeSlotsRow(
+    modifier: Modifier = Modifier,
+    selectedTime: LocalTime?,
+    timeSlots: List<String>,
+    action: (BookingActions) -> Unit
+) {
+    FlowRow(
+        modifier = modifier
+            .scrollable(
+                orientation = Orientation.Vertical,
+                state = rememberScrollState(),
+            )
+            .fillMaxWidth()
+            .fillMaxHeight(
+            )
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        maxItemsInEachRow = 3,
+    ) {
+        timeSlots.forEach { time ->
+            val selected = selectedTime?.let {
+                it.hour == stringToLocalTime(time).hour && it.minute == stringToLocalTime(time).minute
+            } ?: false
+            DateSlot(
+                modifier = Modifier.fillMaxWidth(0.26f),
+                text = time,
+                selected = selected,
+                enabled = true,
+                onClick = {
+                    action(BookingActions.OnTimeSelected(stringToLocalTime(time)))
+                }
+            )
+        }
+    }
 }
 
 fun LocalDate.toPrettyString(): String {
@@ -124,13 +200,6 @@ fun LocalDate.toPrettyString(): String {
     return "$dayOfWeek, ${dayOfMonth}$suffix $month"
 }
 
-fun get24HourList(): List<String> {
-    val formatter = DateTimeFormatter.ofPattern("HH:00")
-    return (8..20).map { hour ->
-        LocalTime(hour, 0).toJavaLocalTime().format(formatter)
-    }
-}
-
 fun stringToLocalTime(timeString: String): LocalTime {
     val parts = timeString.split(":")
     val hour = parts[0].toInt()
@@ -143,7 +212,36 @@ fun stringToLocalTime(timeString: String): LocalTime {
 private fun ExpertBookingScreenPRev() {
     TalentATheme {
         ExpertBookingScreen(
-            uiState = BookingStates(),
+            uiState = BookingStates(
+                expertDetails = User(
+                    firstName = "John",
+                    lastName = "Doe",
+                    expertService = Service(
+                        serviceId = "1",
+                        serviceType = ServiceType.VIDEO_ASSESSMENT,
+                        perHourCharge = 50.04f,
+                        expertAvailability = ExpertAvailability(
+                            timezone = "Asia/Kolkata",
+                            schedule = mapOf(
+                                DaysOfMonth(
+                                    days = listOf(1, 18, 19, 20),
+                                    month = 10,
+                                    year = 2025
+                                ) to
+                                        TimeSlot(
+                                            start = "00:00",
+                                            end = "12:00"
+                                        )
+
+                            )
+                        )
+                    )
+
+                ),
+                selectedDate = LocalDate.now().toKotlinLocalDate(),
+                selectedTime = LocalTime(10, 0),
+                timeSlotBySelectedDate = listOf("10:00", "11:00", "12:00")
+            ),
             action = { }
         )
     }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.talenta.data.UserPreferences
 import com.example.talenta.data.Utilities
 import com.example.talenta.data.model.Photo
 import com.example.talenta.data.model.Video
@@ -28,7 +29,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArtistProfileViewModel @Inject constructor(
-    private val repository: ArtistRepository, private val utilities: Utilities
+    private val repository: ArtistRepository, private val utilities: Utilities,
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
     private val firestore = FirebaseFirestore.getInstance()
@@ -59,7 +61,7 @@ class ArtistProfileViewModel @Inject constructor(
                     ?: throw Exception("User not authenticated")
 
                 val uid = currentUser.uid
-                Log.d("fetchArtistProfile", "Current user UID: $uid")
+                Timber.tag("fetchArtistProfile").d("Current user UID: $uid")
 
                 val artist = repository.fetchArtistProfile(uid)
 
