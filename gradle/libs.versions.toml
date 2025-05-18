@@ -9,19 +9,16 @@ coreSplashscreen = "1.0.1"
 coreVersion = "1.9.63"
 countryPicker = "2.1.0"
 datastorePreferences = "1.1.6"
-hiltAndroid = "2.51.1"
-hiltAndroidCompiler = "2.51.1"
+hiltAndroid = "2.56.2"
 hiltNavigationFragment = "1.2.0"
 jitsiMeetSdk = "10.2.1"
 jitsiMeetSdkVersion = "10.2.0"
-kotlin = "2.0.0"
+kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxDatetime = "0.6.2"
-kotlinxSerializationJson = "1.6.0"
-ksp = "1.9.63"
 lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
 composeBom = "2025.05.00"
@@ -35,7 +32,7 @@ retrofit = "2.11.0"
 googleGmsGoogleServices = "4.4.2"
 kotlinx-serialization-json-version = "1.8.0"
 runtimeLivedata = "1.8.1"
-
+timber = "5.0.1"
 firebaseBom = "33.13.0"
 
 
@@ -68,15 +65,16 @@ androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx",
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "ksp" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 okhttp3-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptorVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationFragment" }
+
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
 # Firebase libraries managed by BoM
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
@@ -96,5 +94,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 

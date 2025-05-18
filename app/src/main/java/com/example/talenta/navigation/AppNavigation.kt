@@ -5,14 +5,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Graphs.authNavGraph
 import com.example.talenta.navigation.Graphs.bottomNavGraph
 import com.example.talenta.navigation.Routes.Route
+import com.example.talenta.navigation.navTypes.UserNavType
 import com.example.talenta.presentation.expertAvailabilitySchedule.ExpertAvailabilitySchedule
 import com.example.talenta.presentation.expertBooking.ExpertBooking
 import com.example.talenta.presentation.ui.screens.MyBookingsScreen
 import com.example.talenta.presentation.ui.screens.experts.ExpertDetailedScreen
 import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
+import kotlin.reflect.typeOf
 
 @Composable
 fun AppNavigation(isLoggedIn: Boolean) {
@@ -47,9 +50,11 @@ fun AppNavigation(isLoggedIn: Boolean) {
             ExpertAvailabilitySchedule(expertId = args.expertId)
         }
 
-        composable<Route.ExpertBookingScreen> { backStackEntry ->
+        composable<Route.ExpertBookingScreen>(
+            typeMap = mapOf(typeOf<User>() to UserNavType)
+        ) { backStackEntry ->
             val args = backStackEntry.toRoute<Route.ExpertBookingScreen>()
-            ExpertBooking(expertId = args.expertId, serviceId = args.serviceId)
+            ExpertBooking(expertDetails = args.expert)
         }
 
     }

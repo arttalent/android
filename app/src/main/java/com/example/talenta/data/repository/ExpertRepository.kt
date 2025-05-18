@@ -1,9 +1,7 @@
 package com.example.talenta.data.repository
 
 import android.util.Log
-import com.example.talenta.data.model.DayOfWeek
 import com.example.talenta.data.model.ExpertAvailability
-import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.model.User
 import com.example.talenta.utils.FirestoreResult
 import com.example.talenta.utils.safeFirebaseCall
@@ -41,20 +39,6 @@ class ExpertRepository @Inject constructor(
             }
         }
 
-    suspend fun setExpertAvailability(
-        expertId: String,
-        weeklySchedule: Map<DayOfWeek, List<TimeSlot>>,
-        timezone: String,
-    ): FirestoreResult<Void> = withContext(Dispatchers.IO) {
-        safeFirebaseCall {
-            expertAvailabilityCollection.document(expertId).set(
-                ExpertAvailability(
-                    timezone = timezone,
-                    weeklySchedule = weeklySchedule,
-                ),
-            ).await()
-        }
-    }
 
     suspend fun getExpertAvailability(expertId: String): FirestoreResult<ExpertAvailability?> =
         withContext(Dispatchers.IO) {

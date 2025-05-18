@@ -19,6 +19,7 @@ data class User(
     val isVerified: Boolean? = null,
     val isBlocked: Boolean? = null,
     val professionalData: ProfessionalData = ProfessionalData(),
+    val expertService: Service? = null,
 ){}
 
 

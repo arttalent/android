@@ -2,7 +2,6 @@ package com.example.talenta.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.talenta.data.model.DayOfWeek
 import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.repository.ExpertRepository
 import com.example.talenta.utils.FirestoreResult
@@ -16,8 +15,8 @@ import javax.inject.Inject
 data class ExpertAvailabilityUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val weeklySchedule: Map<DayOfWeek, List<TimeSlot>> = emptyMap(),
-    val selectedDayOfWeek: DayOfWeek? = null
+/*    val weeklySchedule: Map<DayOfWeek, List<TimeSlot>> = emptyMap(),
+    val selectedDayOfWeek: DayOfWeek? = null*/
 )
 
 sealed class ExpertAvailabilityEvents {
@@ -58,7 +57,7 @@ class ExpertAvailabilityViewModel @Inject constructor(
     }
 
     private fun updateWeeklySchedule(timeSlot: TimeSlot) {
-        val weeklySchedule = _uiState.value.weeklySchedule.toMutableMap()
+/*        val weeklySchedule = _uiState.value.weeklySchedule.toMutableMap()
         val dayOfWeek = _uiState.value.selectedDayOfWeek
         val newTimeSlotList = arrayListOf<TimeSlot>()
         newTimeSlotList.addAll(weeklySchedule[dayOfWeek] ?: emptyList())
@@ -71,20 +70,23 @@ class ExpertAvailabilityViewModel @Inject constructor(
             it.copy(
                 weeklySchedule = weeklySchedule
             )
-        }
+        }*/
     }
 
     fun setExpertAvailability(
         expertId: String,
         timezone: String
     ) {
+/*
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val data = repository.setExpertAvailability(
+         */
+/*   val data = repository.setExpertAvailability(
                 expertId,
                 _uiState.value.weeklySchedule,
                 timezone
-            )
+            )*//*
+
             when (data) {
                 is FirestoreResult.Success -> {
                     _uiState.update {
@@ -104,6 +106,7 @@ class ExpertAvailabilityViewModel @Inject constructor(
                 }
             }
         }
+*/
 
     }
 
@@ -114,7 +117,7 @@ class ExpertAvailabilityViewModel @Inject constructor(
                 is FirestoreResult.Success -> {
                     _uiState.update {
                         it.copy(
-                            weeklySchedule = data.data?.weeklySchedule ?: emptyMap(),
+                        //    weeklySchedule = data.data?.weeklySchedule ?: emptyMap(),
                             isLoading = false
                         )
                     }
