@@ -19,8 +19,17 @@ data class User(
     val isVerified: Boolean? = null,
     val isBlocked: Boolean? = null,
     val professionalData: ProfessionalData = ProfessionalData(),
-    val expertService: Service? = null,
-){}
+    val expertService: List<Service>? = null,
+){
+    val isArtist: Boolean
+        get() = role == Role.ARTIST
+
+    val isExpert: Boolean
+        get() = role == Role.EXPERT
+
+    val fullName: String
+        get() = "$firstName $lastName"
+}
 
 
 @Serializable

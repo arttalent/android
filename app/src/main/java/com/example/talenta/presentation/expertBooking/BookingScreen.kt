@@ -42,13 +42,15 @@ import java.util.Locale
 @Composable
 fun ExpertBooking(
     expertDetails: User,
+    selectedServiceId: String
 ) {
     val viewModel = hiltViewModel<BookingViewModel>()
     val uiState = viewModel.uiStates.collectAsState().value
     LaunchedEffect(Unit) {
         viewModel.onAction(
             BookingActions.InitData(
-                expertDetails
+                expertDetails = expertDetails,
+                selectedServiceId = selectedServiceId
             )
         )
     }
@@ -71,7 +73,7 @@ fun ExpertBookingScreen(
     Box {
         Column(Modifier.padding(top = 40.dp)) {
             CustomCalender(
-                expertAvailability = uiState.expertDetails?.expertService?.expertAvailability
+                expertAvailability = uiState.selectedService?.expertAvailability
             ) {
                 selectedDate.value = it
                 action(BookingActions.OnDateSelected(it.toKotlinLocalDate()))
@@ -95,7 +97,7 @@ fun ExpertBookingScreen(
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = uiState.expertDetails?.expertService?.expertAvailability?.timezone
+                    text = uiState.selectedService?.expertAvailability?.timezone
                         ?: "UTC",
                     color = Color.Black,
                     fontSize = 18.sp,
@@ -138,7 +140,7 @@ fun ExpertBookingScreen(
                     uiState.selectedTime.hour,
                     uiState.selectedTime.minute
                 ), date = selectedDate.value.toPrettyString(),
-                fees = "$${uiState.expertDetails?.expertService?.perHourCharge}",
+                fees = "$${uiState.selectedService?.perHourCharge}",
                 onConfirmClick = {
                     action(BookingActions.CreateBooking)
                 }
@@ -210,31 +212,34 @@ fun stringToLocalTime(timeString: String): LocalTime {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun ExpertBookingScreenPRev() {
+    val service = Service(
+        serviceId = "1",
+        serviceType = ServiceType.VIDEO_ASSESSMENT,
+        perHourCharge = 50.04f,
+        expertAvailability = ExpertAvailability(
+            timezone = "Asia/Kolkata",
+            schedule = mapOf(
+                DaysOfMonth(
+                    days = listOf(1, 18, 19, 20),
+                    month = 10,
+                    year = 2025
+                ) to
+                        TimeSlot(
+                            start = "00:00",
+                            end = "12:00"
+                        )
+
+            )
+        )
+    )
     TalentATheme {
         ExpertBookingScreen(
             uiState = BookingStates(
                 expertDetails = User(
                     firstName = "John",
                     lastName = "Doe",
-                    expertService = Service(
-                        serviceId = "1",
-                        serviceType = ServiceType.VIDEO_ASSESSMENT,
-                        perHourCharge = 50.04f,
-                        expertAvailability = ExpertAvailability(
-                            timezone = "Asia/Kolkata",
-                            schedule = mapOf(
-                                DaysOfMonth(
-                                    days = listOf(1, 18, 19, 20),
-                                    month = 10,
-                                    year = 2025
-                                ) to
-                                        TimeSlot(
-                                            start = "00:00",
-                                            end = "12:00"
-                                        )
-
-                            )
-                        )
+                    expertService = listOf(
+                        service
                     )
 
                 ),

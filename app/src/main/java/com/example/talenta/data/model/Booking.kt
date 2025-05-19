@@ -20,7 +20,9 @@ enum class BookingStatus {
     CONFIRMED,
     COMPLETED,
     CANCELLED,
-    UNATTENDED
+    UNATTENDED,
+    REJECTED,
+    RESCHEDULED,
 }
 
 enum class PaymentStatus {

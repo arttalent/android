@@ -3,6 +3,7 @@ package com.example.talenta.presentation.expertBooking
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.talenta.data.model.ExpertAvailability
+import com.example.talenta.data.model.Service
 import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.model.User
 import com.example.talenta.data.repository.BookingRepository
@@ -28,7 +29,7 @@ sealed class BookingActions {
     data class OnDateSelected(val date: LocalDate) : BookingActions()
     data object ResetError : BookingActions()
     data class OnTimeSelected(val time: LocalTime?) : BookingActions()
-    data class InitData(val expertDetails: User) : BookingActions()
+    data class InitData(val expertDetails: User, val selectedServiceId:String) : BookingActions()
     data object CreateBooking : BookingActions()
 }
 
@@ -38,6 +39,7 @@ data class BookingStates(
     val selectedTime: LocalTime? = null,
     val timeSlotBySelectedDate: List<String> = emptyList(),
     val isLoading: Boolean = false,
+    val selectedService :Service ? = null,
     val errorMessage: String? = null
 )
 
@@ -48,6 +50,7 @@ class BookingViewModel @Inject constructor(
 
     private val _uiStates = MutableStateFlow(BookingStates())
     val uiStates = _uiStates.asStateFlow()
+
 
     fun onAction(action: BookingActions) {
         when (action) {
@@ -61,7 +64,7 @@ class BookingViewModel @Inject constructor(
 
             is BookingActions.OnDateSelected -> {
                 val timeSlot =
-                    uiStates.value.expertDetails?.expertService?.expertAvailability?.getDateTimeSlotsMap(
+                    uiStates.value.selectedService?.expertAvailability?.getDateTimeSlotsMap(
                         day = action.date.dayOfMonth,
                         month = action.date.monthNumber,
                         year = action.date.year
@@ -70,7 +73,7 @@ class BookingViewModel @Inject constructor(
                 _uiStates.update {
                     it.copy(
                         selectedDate = action.date,
-
+                        timeSlotBySelectedDate = timeSlot?.getTimeSlots() ?: emptyList(),
                     )
 
                 }
@@ -88,6 +91,9 @@ class BookingViewModel @Inject constructor(
                 _uiStates.update {
                     it.copy(
                         expertDetails = action.expertDetails,
+                        selectedService = action.expertDetails.expertService?.find { service ->
+                            service.serviceId == action.selectedServiceId
+                        },
                     )
                 }
             }
@@ -106,10 +112,15 @@ class BookingViewModel @Inject constructor(
         val startTime = localInstant?.format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
 
         viewModelScope.launch {
+            _uiStates.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
             _uiStates.value.expertDetails?.let { expert ->
                 val result = bookingRepository.createBooking(
                     expertId = expert.id ?: "",
-                    serviceId = expert.expertService?.serviceId
+                    serviceId = _uiStates.value.selectedService?.serviceId
                         ?: "", // Replace with actual service ID
                     scheduleStartTime = startTime ?: "N/A",
                     hours = "1" // Replace with actual hours
@@ -117,10 +128,20 @@ class BookingViewModel @Inject constructor(
                 when (result) {
                     is FirestoreResult.Success -> {
                         // Handle success
+                        _uiStates.update {
+                            it.copy(
+                                isLoading = false
+                            )
+                        }
                     }
 
                     is FirestoreResult.Failure -> {
                         // Handle error
+                        _uiStates.update {
+                            it.copy(
+                                isLoading = false
+                            )
+                        }
                     }
                 }
 

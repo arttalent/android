@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.ui.screens
+package com.example.talenta.presentation.myBookings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,9 +29,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,114 +44,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
-
-data class Booking(
-    val id: String,
-    val name: String,
-    val profileImage: Int, // Resource ID
-    val occupation: String,
-    val location: String,
-    val sessionType: String,
-    val paymentStatus: PaymentStatus,
-    val duration: Int, // in minutes
-    val date: String,
-    val bookingStatus: BookingStatus,
-    val hourlyRate: Int
-)
-
-enum class PaymentStatus {
-    PAID, NOT_PAID, PENDING
-}
-
-enum class BookingStatus {
-    ACCEPTED, REJECTED, RESCHEDULED
-}
+import com.example.talenta.data.model.Booking
+import com.example.talenta.data.model.BookingStatus
+import com.example.talenta.data.model.PaymentStatus
+import com.example.talenta.data.model.User
+import com.example.talenta.data.model.getTitle
+import com.example.talenta.ui.theme.TalentATheme
+import com.example.talenta.ui.theme.green
+import com.example.talenta.ui.theme.light_green
+import com.example.talenta.ui.theme.light_red
+import com.example.talenta.ui.theme.light_yellow
+import com.example.talenta.ui.theme.red
+import com.example.talenta.ui.theme.yellow
 
 @Composable
-fun MyBookingsScreen() {
-    // Sample data
-    val bookings = listOf(
-        Booking(
-            id = "123",
-            name = "Kieran",
-            profileImage = R.drawable.singer, // Replace with actual resource
-            occupation = "Guitarist",
-            location = "London, UK",
-            sessionType = "Online Video Assessment",
-            paymentStatus = PaymentStatus.PAID,
-            duration = 60,
-            date = "2 Jan 2025",
-            bookingStatus = BookingStatus.ACCEPTED,
-            hourlyRate = 25
-        ),
-        Booking(
-            id = "125",
-            name = "Samuel Moore",
-            profileImage = R.drawable.singer, // Replace with actual resource
-            occupation = "Guitarist",
-            location = "London, UK",
-            sessionType = "Online 1 on 1 Advise",
-            paymentStatus = PaymentStatus.NOT_PAID,
-            duration = 60,
-            date = "23 Dec 2024",
-            bookingStatus = BookingStatus.RESCHEDULED,
-            hourlyRate = 25
-        ),
-        Booking(
-            id = "126",
-            name = "Samuel Moore",
-            profileImage = R.drawable.singer, // Replace with actual resource
-            occupation = "Guitarist",
-            location = "London, UK",
-            sessionType = "Online Live Assessment",
-            paymentStatus = PaymentStatus.PENDING,
-            duration = 30,
-            date = "12 Dec 2024",
-            bookingStatus = BookingStatus.REJECTED,
-            hourlyRate = 25
-        ),
-        Booking(
-            id = "123",
-            name = "Kieran",
-            profileImage = R.drawable.singer, // Replace with actual resource
-            occupation = "Guitarist",
-            location = "London, UK",
-            sessionType = "Online Video Assessment",
-            paymentStatus = PaymentStatus.PAID,
-            duration = 60,
-            date = "2 Jan 2025",
-            bookingStatus = BookingStatus.ACCEPTED,
-            hourlyRate = 25
-        ),
-        Booking(
-            id = "125",
-            name = "Samuel Moore",
-            profileImage = R.drawable.singer, // Replace with actual resource
-            occupation = "Guitarist",
-            location = "London, UK",
-            sessionType = "Online 1 on 1 Advise",
-            paymentStatus = PaymentStatus.NOT_PAID,
-            duration = 60,
-            date = "23 Dec 2024",
-            bookingStatus = BookingStatus.RESCHEDULED,
-            hourlyRate = 25
-        ),
-        Booking(
-            id = "126",
-            name = "Samuel Moore",
-            profileImage = R.drawable.singer, // Replace with actual resource
-            occupation = "Guitarist",
-            location = "London, UK",
-            sessionType = "Online Live Assessment",
-            paymentStatus = PaymentStatus.PENDING,
-            duration = 30,
-            date = "12 Dec 2024",
-            bookingStatus = BookingStatus.REJECTED,
-            hourlyRate = 25
-        )
-    )
-
+fun MyBookingsScreen(
+    viewModel: MyBookingsViewModel = hiltViewModel()
+) {
+    LaunchedEffect(Unit) {
+        viewModel.fetchBookings()
+    }
+    val uiStates = viewModel.states.collectAsState().value
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -228,15 +145,25 @@ fun MyBookingsScreen() {
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(bookings) { booking ->
-                BookingCard(booking = booking)
+            items(uiStates.bookings) { booking ->
+                // Find the user associated with the booking
+                val isArtist = uiStates.currentUser?.isArtist
+                val userId = if (isArtist == true) booking.expertId else booking.artistId
+                val user = uiStates.users.find { it.id == userId }
+                if (user != null) {
+                    BookingCard(booking = booking, user = user)
+                }
             }
         }
     }
 }
 
+
 @Composable
-fun BookingCard(booking: Booking) {
+fun BookingCard(booking: Booking, user: User) {
+    val selectedService = user.expertService?.find {
+        it.serviceId == booking.serviceId
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -251,7 +178,7 @@ fun BookingCard(booking: Booking) {
         ) {
             // Booking ID
             Text(
-                text = "Booking ID: ${booking.id}",
+                text = "Booking ID: ${booking.bookingId}",
                 fontSize = 12.sp,
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -272,10 +199,9 @@ fun BookingCard(booking: Booking) {
                             .clip(CircleShape)
                             .background(Color.LightGray)
                     ) {
-                        // Replace with actual image
                         Image(
-                            painter = painterResource(R.drawable.singer),
-                            contentDescription = null,
+                            painter = rememberAsyncImagePainter(model = user.profilePicture),
+                            contentDescription = "Profile Image of ${user.firstName}",
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -285,13 +211,13 @@ fun BookingCard(booking: Booking) {
                     // Name and occupation
                     Column {
                         Text(
-                            text = booking.name,
+                            text = user.fullName,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = booking.occupation,
+                                text = user.professionalData.profession,
                                 fontSize = 14.sp,
                                 color = Color.Gray
                             )
@@ -303,7 +229,7 @@ fun BookingCard(booking: Booking) {
                                 tint = Color.Gray
                             )
                             Text(
-                                text = booking.location,
+                                text = user.professionalData.profession,
                                 fontSize = 14.sp,
                                 color = Color.Gray
                             )
@@ -313,7 +239,7 @@ fun BookingCard(booking: Booking) {
 
                 // Rate
                 Text(
-                    text = "$${booking.hourlyRate}/hr",
+                    text = "$${selectedService?.perHourCharge}/hr",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = colorResource(R.color.royal_blue)
@@ -337,7 +263,7 @@ fun BookingCard(booking: Booking) {
                         color = Color(0xFFF5F5F5)
                     ) {
                         Text(
-                            text = booking.sessionType,
+                            text = selectedService?.serviceType?.getTitle() ?: "",
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             fontSize = 12.sp,
                             color = Color.DarkGray
@@ -423,7 +349,7 @@ fun BookingCard(booking: Booking) {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${booking.duration} min",
+                            text = "${booking.timeInHrs} hrs",
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
@@ -439,7 +365,7 @@ fun BookingCard(booking: Booking) {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = booking.date,
+                            text = booking.scheduledStartTime,
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
@@ -447,23 +373,53 @@ fun BookingCard(booking: Booking) {
                 }
 
                 // Status chip
-                val (chipColor, textColor, statusText) = when (booking.bookingStatus) {
+                val (chipColor, textColor, statusText) = when (booking.status) {
                     BookingStatus.ACCEPTED -> Triple(
-                        Color(0xFFE9F7EF),
-                        Color(0xFF27AE60),
+                        light_green,
+                        green,
                         "Accepted"
                     )
 
                     BookingStatus.REJECTED -> Triple(
-                        Color(0xFFFAE9EF),
-                        Color(0xFFE74C3C),
+                        light_red,
+                        red,
                         "Rejected"
                     )
 
                     BookingStatus.RESCHEDULED -> Triple(
-                        Color(0xFFFFF9E6),
-                        Color(0xFFF39C12),
+                        light_yellow,
+                        yellow,
                         "Re-Scheduled"
+                    )
+
+                    BookingStatus.PENDING -> Triple(
+                        light_yellow,
+                        yellow,
+                        "Pending"
+                    )
+
+                    BookingStatus.CONFIRMED -> Triple(
+                        light_green,
+                        green,
+                        "Confirmed"
+                    )
+
+                    BookingStatus.COMPLETED -> Triple(
+                        light_green,
+                        green,
+                        "Completed"
+                    )
+
+                    BookingStatus.CANCELLED -> Triple(
+                        light_red,
+                        red,
+                        "Cancelled"
+                    )
+
+                    BookingStatus.UNATTENDED -> Triple(
+                        light_yellow,
+                        yellow,
+                        "Unattended"
                     )
                 }
 
@@ -486,6 +442,8 @@ fun BookingCard(booking: Booking) {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun Preview() {
-    MyBookingsScreen()
+    TalentATheme {
+        MyBookingsScreen()
+    }
 }
 

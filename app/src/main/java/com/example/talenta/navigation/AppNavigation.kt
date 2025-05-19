@@ -12,7 +12,7 @@ import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.navigation.navTypes.UserNavType
 import com.example.talenta.presentation.expertAvailabilitySchedule.ExpertAvailabilitySchedule
 import com.example.talenta.presentation.expertBooking.ExpertBooking
-import com.example.talenta.presentation.ui.screens.MyBookingsScreen
+import com.example.talenta.presentation.myBookings.MyBookingsScreen
 import com.example.talenta.presentation.ui.screens.experts.ExpertDetailedScreen
 import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
 import kotlin.reflect.typeOf
@@ -54,7 +54,7 @@ fun AppNavigation(isLoggedIn: Boolean) {
             typeMap = mapOf(typeOf<User>() to UserNavType)
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<Route.ExpertBookingScreen>()
-            ExpertBooking(expertDetails = args.expert)
+            ExpertBooking(expertDetails = args.expert, selectedServiceId = args.selectedServiceId)
         }
 
     }
