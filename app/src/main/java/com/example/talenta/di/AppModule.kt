@@ -6,8 +6,8 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.example.talenta.data.Utilities
-import com.example.talenta.data.repository.ArtistRepository
-import com.example.talenta.data.repository.EditProfileRepository
+import com.example.talenta.data.repository.SponsorRepositoryImpl
+import com.example.talenta.presentation.ui.screens.sponsor.repository.SponsorRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -56,6 +56,15 @@ object AppModule {
     @Singleton
     fun provideUserCollection(firestore: FirebaseFirestore): CollectionReference {
         return firestore.collection("users")
+    }
+
+    @Provides
+    @Singleton
+    fun provideSponsorRepository(
+        db: FirebaseFirestore,
+        @Named("users") userCollection: CollectionReference
+    ): SponsorRepository {
+        return SponsorRepositoryImpl(db, userCollection)
     }
 
     @Named("expertAvailability")

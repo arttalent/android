@@ -43,6 +43,7 @@ sealed class Route() {
     @Serializable
     object Dashboard : Route()
 
+
     @Serializable
     object ExpertDashboard : Route()
 
@@ -60,6 +61,17 @@ sealed class Route() {
 
     @Serializable
     object EditProfile : Route()
+
+    // sponsor
+    @Serializable
+    object SponsorDashboard : Route()
+
+    @Serializable
+    object SponsorApplication : Route()
+
+    @Serializable
+    object SponsorProfile : Route()
+
 
     object Routes {
         private const val ExpertBooking = "expert_booking"

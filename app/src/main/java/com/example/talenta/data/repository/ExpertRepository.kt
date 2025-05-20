@@ -1,6 +1,5 @@
 package com.example.talenta.data.repository
 
-import android.util.Log
 import com.example.talenta.data.model.DayOfWeek
 import com.example.talenta.data.model.ExpertAvailability
 import com.example.talenta.data.model.TimeSlot
@@ -17,17 +16,14 @@ import javax.inject.Singleton
 
 @Singleton
 class ExpertRepository @Inject constructor(
-    @Named("users")
-    private val userCollection: CollectionReference,
-    @Named("expertAvailability")
-    private val expertAvailabilityCollection: CollectionReference,
+    @Named("users") private val userCollection: CollectionReference,
+    @Named("expertAvailability") private val expertAvailabilityCollection: CollectionReference,
 ) {
 
     suspend fun fetchExperts(): FirestoreResult<List<User>> = withContext(Dispatchers.IO) {
         safeFirebaseCall {
             val snapshot = userCollection.whereEqualTo("role", "EXPERT").get().await()
-            snapshot.documents.mapNotNull { snapshot->
-                Log.d("TAG", "fetchExperts: "+snapshot.data)
+            snapshot.documents.mapNotNull { snapshot ->
                 snapshot.toObject(User::class.java)
             }
         }

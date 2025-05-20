@@ -30,8 +30,7 @@ import javax.inject.Singleton
 @Singleton
 class AuthRepository @Inject constructor(
     private val auth: FirebaseAuth,
-    @Named("users")
-    private val userCollection: CollectionReference,
+    @Named("users") private val userCollection: CollectionReference,
     private val preferences: UserPreferences,
 ) {
     private val TAG = "AuthRepository"
@@ -60,8 +59,7 @@ class AuthRepository @Inject constructor(
 
     suspend fun updateFirebaseToken(token: String): FirestoreResult<Unit> {
         return safeFirebaseCall {
-            val userId = auth.currentUser?.uid
-                ?: throw IllegalStateException("User not logged in")
+            val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
             userCollection.document(userId).update("firebaseToken", token).await()
             FirestoreResult.Success(Unit)
         }
@@ -69,8 +67,7 @@ class AuthRepository @Inject constructor(
 
 
     suspend fun startSignUp(
-        user: User,
-        password: String
+        user: User, password: String
     ): FirestoreResult<Unit> = withContext(Dispatchers.IO) {
         safeFirebaseCall {
             auth.createUserWithEmailAndPassword(user.email, password).await()
@@ -79,8 +76,7 @@ class AuthRepository @Inject constructor(
 
             Timber.tag(TAG).d("User Created with ID: $userId")
 
-            userCollection.document(userId).set(user.copy(id = userId), SetOptions.merge())
-                .await()
+            userCollection.document(userId).set(user.copy(id = userId), SetOptions.merge()).await()
             FirebaseAuth.getInstance().signOut()
         }
     }
@@ -99,18 +95,14 @@ class AuthRepository @Inject constructor(
                 }
 
                 override fun onCodeSent(
-                    vId: String,
-                    token: PhoneAuthProvider.ForceResendingToken
+                    vId: String, token: PhoneAuthProvider.ForceResendingToken
                 ) {
                     verificationId.complete(vId)
                 }
             }
 
-            val options = PhoneAuthOptions.newBuilder(auth)
-                .setPhoneNumber(phoneNumber)
-                .setTimeout(60L, TimeUnit.SECONDS)
-                .setCallbacks(callbacks)
-                .build()
+            val options = PhoneAuthOptions.newBuilder(auth).setPhoneNumber(phoneNumber)
+                .setTimeout(60L, TimeUnit.SECONDS).setCallbacks(callbacks).build()
 
             PhoneAuthProvider.verifyPhoneNumber(options)
             Result.success(verificationId.await())
