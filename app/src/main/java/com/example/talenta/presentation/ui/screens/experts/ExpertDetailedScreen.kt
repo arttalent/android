@@ -77,7 +77,7 @@ fun ExpertDetailedScreen(
         when (selectedTab) {
             0 -> ProfileContent(expertId)
             1 -> MediaContent()
-            2 -> ServicesContent(navController, expertId.toString())
+            2 -> ServicesContent()
         }
     }
 }
@@ -94,8 +94,7 @@ private fun TopBar(navController: NavController) {
             imageVector = Icons.Default.ArrowBack,
             contentDescription = "Back",
             modifier = Modifier.clickable {
-                navController.popBackStack()
-            })
+                navController.popBackStack() })
     }
 }
 
@@ -278,7 +277,8 @@ private fun TabSection(
             tabs.forEachIndexed { index, title ->
                 Tab(selected = selectedTab == index, onClick = { onTabSelected(index) }, text = {
                     Text(
-                        text = title, color = if (selectedTab == index) royalBlue else Color.Gray
+                        text = title,
+                        color = if (selectedTab == index) royalBlue else Color.Gray
                     )
                 })
             }
