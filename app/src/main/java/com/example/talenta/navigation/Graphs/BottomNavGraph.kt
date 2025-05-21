@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.talenta.navigation.Routes.Route
+import com.example.talenta.presentation.expertAvailabilitySchedule.CreateServiceScreen
 import com.example.talenta.presentation.ui.screens.ExpertDashBoardScreen
 import com.example.talenta.presentation.ui.screens.HostScreen
 import com.example.talenta.presentation.ui.screens.MyBookingsScreen
@@ -70,6 +71,11 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, startDestin
             HostScreen(
                 navController = navController, content = { ReportScreen() })
         }
+        composable<Route.CreateServiceScreen> {
+            HostScreen(
+                navController = navController, content = { CreateServiceScreen() })
+        }
+
 
 
         composable<Route.Profile> {

@@ -1,10 +1,21 @@
 package com.example.talenta.presentation.expertAvailabilitySchedule
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,8 +23,26 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,15 +52,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.PopupProperties
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,12 +79,11 @@ fun CreateServiceScreen() {
     var selectedServiceType by remember { mutableStateOf("") }
     var serviceDropdownExpanded by remember { mutableStateOf(false) }
     var hourlyPay by remember { mutableStateOf("") }
-    var additionalNotes by remember { mutableStateOf("") }
     var selectedStartTime by remember { mutableStateOf("00:00") }
     var selectedEndTime by remember { mutableStateOf("24:00") }
     var startTimeDropdownExpanded by remember { mutableStateOf(false) }
     var endTimeDropdownExpanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    LocalContext.current
 
     // Date range states
     var selectedStartDate by rememberSaveable { mutableStateOf<Long?>(null) }
@@ -85,13 +109,14 @@ fun CreateServiceScreen() {
 
     // Initialize month display
     LaunchedEffect(Unit) {
-        updateCalendarDisplay(0, currentCalendar,
+        updateCalendarDisplay(
+            0,
+            currentCalendar,
             { year -> currentViewYear = year },
             { month -> currentViewMonth = month },
             { firstDay -> currentMonthFirstDay = firstDay },
             { totalDays -> currentMonthTotalDays = totalDays },
-            { display -> displayMonth = display }
-        )
+            { display -> displayMonth = display })
     }
 
     Column(
@@ -108,8 +133,7 @@ fun CreateServiceScreen() {
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-                titleContentColor = Color.Black
+                containerColor = Color.White, titleContentColor = Color.Black
             )
         )
 
@@ -124,9 +148,7 @@ fun CreateServiceScreen() {
 
             // Type of service
             Text(
-                text = "Type of service",
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp
+                text = "Type of service", fontWeight = FontWeight.Medium, fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -136,15 +158,11 @@ fun CreateServiceScreen() {
                     .fillMaxWidth()
                     .height(56.dp)
                     .border(
-                        width = 1.dp,
-                        color = Color.LightGray,
-                        shape = RoundedCornerShape(8.dp)
+                        width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(8.dp)
                     )
                     .clip(RoundedCornerShape(8.dp))
                     .clickable { serviceDropdownExpanded = true }
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
+                    .padding(horizontal = 16.dp), contentAlignment = Alignment.CenterStart) {
                 Text(
                     text = if (selectedServiceType.isEmpty()) "Select the type of service" else selectedServiceType,
                     color = if (selectedServiceType.isEmpty()) Color.Gray else Color.Black
@@ -166,13 +184,10 @@ fun CreateServiceScreen() {
                     properties = PopupProperties(focusable = true)
                 ) {
                     serviceTypes.forEach { service ->
-                        DropdownMenuItem(
-                            text = { Text(service) },
-                            onClick = {
-                                selectedServiceType = service
-                                serviceDropdownExpanded = false
-                            }
-                        )
+                        DropdownMenuItem(text = { Text(service) }, onClick = {
+                            selectedServiceType = service
+                            serviceDropdownExpanded = false
+                        })
                     }
                 }
             }
@@ -181,9 +196,7 @@ fun CreateServiceScreen() {
 
             // Hourly pay
             Text(
-                text = "Hourly pay",
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp
+                text = "Hourly pay", fontWeight = FontWeight.Medium, fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -209,9 +222,7 @@ fun CreateServiceScreen() {
 
             // Set your availability
             Text(
-                text = "Set your availability",
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp
+                text = "Set your availability", fontWeight = FontWeight.Medium, fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -220,9 +231,7 @@ fun CreateServiceScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
-                        width = 1.dp,
-                        color = Color.LightGray,
-                        shape = RoundedCornerShape(8.dp)
+                        width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(8.dp)
                     )
                     .padding(16.dp)
             ) {
@@ -235,35 +244,33 @@ fun CreateServiceScreen() {
                     ) {
                         IconButton(onClick = {
                             // Only allow going back if we're not already in the current month
-                            if (currentMonthOffset > 0 ||
-                                (currentViewYear > currentYear) ||
-                                (currentViewYear == currentYear && currentViewMonth > currentMonth)) {
+                            if (currentMonthOffset > 0 || (currentViewYear > currentYear) || (currentViewYear == currentYear && currentViewMonth > currentMonth)) {
                                 currentMonthOffset -= 1
-                                updateCalendarDisplay(currentMonthOffset, currentCalendar,
+                                updateCalendarDisplay(
+                                    currentMonthOffset,
+                                    currentCalendar,
                                     { year -> currentViewYear = year },
                                     { month -> currentViewMonth = month },
                                     { firstDay -> currentMonthFirstDay = firstDay },
                                     { totalDays -> currentMonthTotalDays = totalDays },
-                                    { display -> displayMonth = display }
-                                )
+                                    { display -> displayMonth = display })
                             }
                         }) {
                             Text("◀", fontSize = 18.sp)
                         }
                         Text(
-                            text = displayMonth,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 16.sp
+                            text = displayMonth, fontWeight = FontWeight.Medium, fontSize = 16.sp
                         )
                         IconButton(onClick = {
                             currentMonthOffset += 1
-                            updateCalendarDisplay(currentMonthOffset, currentCalendar,
+                            updateCalendarDisplay(
+                                currentMonthOffset,
+                                currentCalendar,
                                 { year -> currentViewYear = year },
                                 { month -> currentViewMonth = month },
                                 { firstDay -> currentMonthFirstDay = firstDay },
                                 { totalDays -> currentMonthTotalDays = totalDays },
-                                { display -> displayMonth = display }
-                            )
+                                { display -> displayMonth = display })
                         }) {
                             Text("▶", fontSize = 18.sp)
                         }
@@ -304,12 +311,12 @@ fun CreateServiceScreen() {
 
                                 if (day in 1..currentMonthTotalDays) {
                                     val isSelected = day in selectedDates
-                                    val isRangeEndpoint = day == selectedDates.firstOrNull() || day == selectedDates.lastOrNull()
+                                    val isRangeEndpoint =
+                                        day == selectedDates.firstOrNull() || day == selectedDates.lastOrNull()
 
                                     // Check if date is in the past
-                                    val isPastDate = (currentViewYear < currentYear) ||
-                                            (currentViewYear == currentYear && currentViewMonth < currentMonth) ||
-                                            (currentViewYear == currentYear && currentViewMonth == currentMonth && day < currentDay)
+                                    val isPastDate =
+                                        (currentViewYear < currentYear) || (currentViewYear == currentYear && currentViewMonth < currentMonth) || (currentViewYear == currentYear && currentViewMonth == currentMonth && day < currentDay)
 
                                     val dateColor = when {
                                         isPastDate -> Color.LightGray
@@ -353,10 +360,18 @@ fun CreateServiceScreen() {
 
                                                     // Update selectedStartDate and selectedEndDate
                                                     val calendar = Calendar.getInstance()
-                                                    calendar.set(currentViewYear, currentViewMonth, selectedDates.minOrNull()!!)
+                                                    calendar.set(
+                                                        currentViewYear,
+                                                        currentViewMonth,
+                                                        selectedDates.minOrNull()!!
+                                                    )
                                                     selectedStartDate = calendar.timeInMillis
 
-                                                    calendar.set(currentViewYear, currentViewMonth, selectedDates.maxOrNull()!!)
+                                                    calendar.set(
+                                                        currentViewYear,
+                                                        currentViewMonth,
+                                                        selectedDates.maxOrNull()!!
+                                                    )
                                                     selectedEndDate = calendar.timeInMillis
 
                                                 } else {
@@ -366,8 +381,7 @@ fun CreateServiceScreen() {
                                                     selectionStartDay = day
                                                     isInSelectionMode.value = true
                                                 }
-                                            }
-                                    ) {
+                                            }) {
                                         Text(
                                             text = day.toString(),
                                             fontSize = 14.sp,
@@ -401,9 +415,7 @@ fun CreateServiceScreen() {
 
                     // Select your timings
                     Text(
-                        text = "Select your timings",
-                        fontSize = 14.sp,
-                        color = Color.Gray
+                        text = "Select your timings", fontSize = 14.sp, color = Color.Gray
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -416,9 +428,7 @@ fun CreateServiceScreen() {
                         // Start time selection
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Start Time",
-                                fontSize = 12.sp,
-                                color = Color.Gray
+                                text = "Start Time", fontSize = 12.sp, color = Color.Gray
                             )
 
                             Box(
@@ -433,11 +443,9 @@ fun CreateServiceScreen() {
                                     .clip(RoundedCornerShape(8.dp))
                                     .clickable { startTimeDropdownExpanded = true }
                                     .padding(horizontal = 16.dp),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
+                                contentAlignment = Alignment.CenterStart) {
                                 Text(
-                                    text = selectedStartTime,
-                                    fontSize = 16.sp
+                                    text = selectedStartTime, fontSize = 16.sp
                                 )
                                 Icon(
                                     imageVector = Icons.Default.KeyboardArrowDown,
@@ -459,7 +467,8 @@ fun CreateServiceScreen() {
                                     for (hour in 0..23) {
                                         for (minute in listOf(0, 30)) {
                                             val formattedHour = if (hour < 10) "0$hour" else "$hour"
-                                            val formattedMinute = if (minute == 0) "00" else "$minute"
+                                            val formattedMinute =
+                                                if (minute == 0) "00" else "$minute"
                                             val timeString = "$formattedHour:$formattedMinute"
 
                                             DropdownMenuItem(
@@ -467,8 +476,7 @@ fun CreateServiceScreen() {
                                                 onClick = {
                                                     selectedStartTime = timeString
                                                     startTimeDropdownExpanded = false
-                                                }
-                                            )
+                                                })
                                         }
                                     }
                                 }
@@ -480,9 +488,7 @@ fun CreateServiceScreen() {
                         // End time selection
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "End Time",
-                                fontSize = 12.sp,
-                                color = Color.Gray
+                                text = "End Time", fontSize = 12.sp, color = Color.Gray
                             )
 
                             Box(
@@ -497,11 +503,9 @@ fun CreateServiceScreen() {
                                     .clip(RoundedCornerShape(8.dp))
                                     .clickable { endTimeDropdownExpanded = true }
                                     .padding(horizontal = 16.dp),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
+                                contentAlignment = Alignment.CenterStart) {
                                 Text(
-                                    text = selectedEndTime,
-                                    fontSize = 16.sp
+                                    text = selectedEndTime, fontSize = 16.sp
                                 )
                                 Icon(
                                     imageVector = Icons.Default.KeyboardArrowDown,
@@ -523,7 +527,8 @@ fun CreateServiceScreen() {
                                     for (hour in 0..23) {
                                         for (minute in listOf(0, 30)) {
                                             val formattedHour = if (hour < 10) "0$hour" else "$hour"
-                                            val formattedMinute = if (minute == 0) "00" else "$minute"
+                                            val formattedMinute =
+                                                if (minute == 0) "00" else "$minute"
                                             val timeString = "$formattedHour:$formattedMinute"
 
                                             DropdownMenuItem(
@@ -531,19 +536,15 @@ fun CreateServiceScreen() {
                                                 onClick = {
                                                     selectedEndTime = timeString
                                                     endTimeDropdownExpanded = false
-                                                }
-                                            )
+                                                })
                                         }
                                     }
 
                                     // Add 24:00 as the last option
-                                    DropdownMenuItem(
-                                        text = { Text("24:00") },
-                                        onClick = {
-                                            selectedEndTime = "24:00"
-                                            endTimeDropdownExpanded = false
-                                        }
-                                    )
+                                    DropdownMenuItem(text = { Text("24:00") }, onClick = {
+                                        selectedEndTime = "24:00"
+                                        endTimeDropdownExpanded = false
+                                    })
                                 }
                             }
                         }

@@ -28,7 +28,6 @@ import com.example.talenta.navigation.Routes.BottomNavRoute
 import com.example.talenta.navigation.Routes.BottomNavRouteExpert
 import com.example.talenta.navigation.Routes.BottomNavRouteSponsor
 import com.example.talenta.navigation.Routes.Route
-import timber.log.Timber
 
 
 @Composable
@@ -40,8 +39,6 @@ fun HostScreen(
     val viewModel: HostViewModel = hiltViewModel()
     val role = viewModel.role.collectAsState()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination
-
-    //    val showFab = currentRoute == Route.ServiceTab && profileTabIndex == 1
 
 
     val flag = remember(role.value) {
@@ -65,8 +62,11 @@ fun HostScreen(
     } else {
         Scaffold(floatingActionButton = {
             if (showFab) {
-                Fab { Timber.tag("FAB").d("Clicked") }
+                Fab {
+                    navController.navigate(Route.CreateServiceScreen)
+                }
             }
+
         }, bottomBar = {
             when (flag) {
                 1 -> {
