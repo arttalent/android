@@ -52,15 +52,12 @@ fun ProfileContent(expertId: String?, viewModel: ExpertViewModel = hiltViewModel
             .verticalScroll(rememberScrollState())
     ) {
         OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "About Kieran",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    text = "About Kieran", fontSize = 18.sp, fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -77,22 +74,18 @@ fun ProfileContent(expertId: String?, viewModel: ExpertViewModel = hiltViewModel
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Musicianship",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    text = "Musicianship", fontSize = 18.sp, fontWeight = FontWeight.Bold
                 )
 
 
                 Spacer(modifier = Modifier.height(8.dp))
                 InfoSection(
-                    "Genres: ",
-                    "Rock, Soul, Funk, Folk, Latin, Reggae, Gypsy Jazz, Classical"
+                    "Genres: ", "Rock, Soul, Funk, Folk, Latin, Reggae, Gypsy Jazz, Classical"
                 )
                 InfoSection("Instruments: ", "Guitar, Singer (baritone), Singing pianist")
                 (if (expert?.professionalData?.skills?.isEmpty() == true) "No skills added" else expert?.professionalData?.skills?.joinToString(
@@ -110,15 +103,12 @@ fun ProfileContent(expertId: String?, viewModel: ExpertViewModel = hiltViewModel
 
 
         OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Awards",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    text = "Awards", fontSize = 18.sp, fontWeight = FontWeight.Bold
                 )
                 Column {
                     val certificates = expert?.professionalData?.certificatesList
@@ -155,13 +145,10 @@ fun InfoSection(title: String, content: String) {
             .padding(vertical = 2.dp)
     ) {
         Text(
-            text = title,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
+            text = title, fontSize = 14.sp, fontWeight = FontWeight.Bold
         )
         Text(
-            text = content,
-            fontSize = 14.sp
+            text = content, fontSize = 14.sp
         )
     }
 }
@@ -196,14 +183,10 @@ private fun AwardItem(title: String, subtitle: String, imageUrl: String?) {
 
             Column {
                 Text(
-                    text = title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
+                    text = title, fontSize = 14.sp, fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = subtitle,
-                    fontSize = 12.sp,
-                    color = Color.Gray
+                    text = subtitle, fontSize = 12.sp, color = Color.Gray
                 )
             }
         }

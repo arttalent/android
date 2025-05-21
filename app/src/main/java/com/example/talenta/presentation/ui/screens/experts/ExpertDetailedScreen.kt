@@ -71,15 +71,13 @@ fun ExpertDetailedScreen(
         RatingSection(expertId)
 
         TabSection(
-            selectedTab = selectedTab,
-            onTabSelected = { selectedTab = it }
-        )
+            selectedTab = selectedTab, onTabSelected = { selectedTab = it })
 
         // Content based on selected tab
         when (selectedTab) {
             0 -> ProfileContent(expertId)
             1 -> MediaContent()
-            2 -> ServicesContent()
+            2 -> ServicesContent(navController, expertId.toString())
         }
     }
 }
@@ -95,8 +93,9 @@ private fun TopBar(navController: NavController) {
         Icon(
             imageVector = Icons.Default.ArrowBack,
             contentDescription = "Back",
-            modifier = Modifier.clickable { navController.popBackStack() }
-        )
+            modifier = Modifier.clickable {
+                navController.popBackStack()
+            })
     }
 }
 
@@ -148,16 +147,11 @@ fun ProfileSection(
 
         // Profession & Location
         Text(text = expert?.professionalData?.profession?.let { "$it | ${expert?.bio?.country}" }
-            ?: "",
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
+            ?: "", fontSize = 14.sp, color = Color.Gray)
 
         // Languages
         Text(
-            text = expert?.bio?.language ?: "",
-            fontSize = 14.sp,
-            color = Color.Gray
+            text = expert?.bio?.language ?: "", fontSize = 14.sp, color = Color.Gray
         )
     }
 }
@@ -188,8 +182,7 @@ private fun SocialMediaIcon(icon: Int) {
         modifier = Modifier
             .size(29.dp)
             .clip(RoundedCornerShape(20.dp))
-            .clickable { /* Handle social media click */ }
-    )
+            .clickable { /* Handle social media click */ })
 }
 
 @Composable
@@ -206,7 +199,7 @@ private fun RatingSection(expertId: String?, viewModel: ExpertViewModel = hiltVi
     }
 
     // Todo Rating needs to be added
-   // println("rating: ${expert?}")
+    // println("rating: ${expert?}")
 
     Row(
         modifier = Modifier
@@ -216,26 +209,20 @@ private fun RatingSection(expertId: String?, viewModel: ExpertViewModel = hiltVi
     ) {
         // Todo - Fake Rating
         RatingItem(
-            rating = "10",
-            description = "50 reviews",
-            stars = true
+            rating = "10", description = "50 reviews", stars = true
         )
         RatingItem(
-            rating = "110",
-            description = "Followers"
+            rating = "110", description = "Followers"
         )
         RatingItem(
-            rating = "100+",
-            description = "Assessments evaluated"
+            rating = "100+", description = "Assessments evaluated"
         )
     }
 }
 
 @Composable
 private fun RatingItem(
-    rating: String,
-    description: String,
-    stars: Boolean = false
+    rating: String, description: String, stars: Boolean = false
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -260,17 +247,14 @@ private fun RatingItem(
             )
         }
         Text(
-            text = description,
-            fontSize = 12.sp,
-            color = Color.Gray
+            text = description, fontSize = 12.sp, color = Color.Gray
         )
     }
 }
 
 @Composable
 private fun TabSection(
-    selectedTab: Int,
-    onTabSelected: (Int) -> Unit
+    selectedTab: Int, onTabSelected: (Int) -> Unit
 ) {
     val tabs = listOf("Details", "Media", "Services")
     val royalBlue = colorResource(R.color.royal_blue)
@@ -290,19 +274,13 @@ private fun TabSection(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
                     color = royalBlue
                 )
-            }
-        ) {
+            }) {
             tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { onTabSelected(index) },
-                    text = {
-                        Text(
-                            text = title,
-                            color = if (selectedTab == index) royalBlue else Color.Gray
-                        )
-                    }
-                )
+                Tab(selected = selectedTab == index, onClick = { onTabSelected(index) }, text = {
+                    Text(
+                        text = title, color = if (selectedTab == index) royalBlue else Color.Gray
+                    )
+                })
             }
         }
     }

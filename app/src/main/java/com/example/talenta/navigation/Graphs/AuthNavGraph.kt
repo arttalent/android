@@ -24,8 +24,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             OnboardingScreen(
                 onComplete = {
                     navController.navigate(Route.Auth)
-                }
-            )
+                })
         }
         composable<Route.Auth> {
             AuthScreen(navController)
@@ -33,9 +32,9 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         composable<Route.SignUpAs> {
             SignUpAs(navController)
         }
-        composable<Route.SignUp> {navBackStackEntry ->
+        composable<Route.SignUp> { navBackStackEntry ->
             val role = navBackStackEntry.toRoute<Route.SignUp>().role
-            SignUpScreen(role,navController)
+            SignUpScreen(role, navController)
         }
         composable<Route.OTPVerification> {
             OTPVerificationScreen(navController)
@@ -51,14 +50,12 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
         composable<Route.Login> {
             LoginScreen(
-                navController = navController,
-                onLoginSuccess = {
+                navController = navController, onLoginSuccess = {
                     navController.navigate(Route.HostGraph) {
                         popUpTo(Route.AuthGraph) { inclusive = true }
                         launchSingleTop = true
                     }
-                }
-            )
+                })
         }
         composable<Route.ForgotPassword> {
             ForgotPasswordScreen(navController)

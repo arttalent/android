@@ -14,8 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class BookingRepository @Inject constructor(
-    @Named("bookings")
-    private val bookingCollection: CollectionReference,
+    @Named("bookings") private val bookingCollection: CollectionReference,
     private val userPreferences: UserPreferences
 ) {
 
@@ -41,22 +40,17 @@ class BookingRepository @Inject constructor(
     suspend fun getBookingsForUser(userId: String, role: String): FirestoreResult<List<Booking>> =
         safeFirebaseCall {
             val field = if (role == "ARTIST") "artistId" else "expertId"
-            val snapshot = bookingCollection
-                .whereEqualTo(field, userId)
-                .get()
-                .await()
+            val snapshot = bookingCollection.whereEqualTo(field, userId).get().await()
 
             val bookings = snapshot.documents.mapNotNull { it.toObject(Booking::class.java) }
             bookings
         }
 
     suspend fun updateBookingStatus(
-        bookingId: String,
-        newStatus: BookingStatus
-    ): FirestoreResult<Unit> =
-        safeFirebaseCall {
-            bookingCollection.document(bookingId).update("status", newStatus.name).await()
-            FirestoreResult.Success(Unit)
-        }
+        bookingId: String, newStatus: BookingStatus
+    ): FirestoreResult<Unit> = safeFirebaseCall {
+        bookingCollection.document(bookingId).update("status", newStatus.name).await()
+        FirestoreResult.Success(Unit)
+    }
 
 }
