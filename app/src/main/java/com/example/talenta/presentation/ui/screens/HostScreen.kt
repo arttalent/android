@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -32,6 +33,7 @@ import timber.log.Timber
 
 @Composable
 fun HostScreen(
+    showFab: Boolean = false,
     navController: NavController,
     content: @Composable () -> Unit,
 ) {
@@ -39,7 +41,8 @@ fun HostScreen(
     val role = viewModel.role.collectAsState()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination
 
-    val currentRoutes = currentDestinationRouteName(navController)
+    //    val showFab = currentRoute == Route.ServiceTab && profileTabIndex == 1
+
 
     val flag = remember(role.value) {
         when (role.value) {
@@ -51,14 +54,7 @@ fun HostScreen(
         }
     }
 
-    val fabScreensExpert = listOf(
-        Route.ExpertDashboard::class.qualifiedName,
-        Route.MyBookings::class.qualifiedName,
-        Route.Profile::class.qualifiedName
-    )
 
-
-    val showFab = role.value == "EXPERT" && currentRoutes in fabScreensExpert
 
     if (flag == null) {
         Box(
@@ -114,8 +110,8 @@ fun currentDestinationRouteName(navController: NavController): String? {
 @Composable
 fun Fab(onClick: () -> Unit) {
     FloatingActionButton(
-        containerColor = androidx.compose.ui.graphics.Color.Blue,
-        contentColor = androidx.compose.ui.graphics.Color.White,
+        containerColor = Color.Blue,
+        contentColor = Color.White,
         shape = CircleShape,
         onClick = { onClick() },
     ) {

@@ -1,5 +1,9 @@
 package com.example.talenta.navigation.Graphs
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -51,6 +55,12 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, startDestin
                     )
                 })
         }
+
+//        composable<Route.ServiceTab> {
+//            HostScreen(navController) { ServiceTab() }
+//        }
+
+
         composable<Route.MyBookings> {
             HostScreen(
                 navController = navController, content = { MyBookingsScreen() })
@@ -60,14 +70,21 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, startDestin
             HostScreen(
                 navController = navController, content = { ReportScreen() })
         }
+
+
         composable<Route.Profile> {
+            var selectedTabIndex by rememberSaveable { mutableStateOf(0) }
+
             HostScreen(
-                navController = navController, content = {
+                navController = navController,
+                showFab = selectedTabIndex == 3, // Show FAB only on Service tab
+                content = {
                     ProfileScreen(
-                        onEditProfileClick = {
-                            navController.navigate(Route.EditProfile)
-                        })
+                        onEditProfileClick = { navController.navigate(Route.EditProfile) },
+                        selectedTabIndex = selectedTabIndex,
+                        onTabSelected = { selectedTabIndex = it })
                 })
         }
+
     }
 }

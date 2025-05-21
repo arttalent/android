@@ -9,6 +9,9 @@ sealed class Route() {
     object AuthGraph : Route()
 
     @Serializable
+    object ServiceTab : Route()
+
+    @Serializable
     object HostGraph : Route()
 
     // Inside Auth Graph

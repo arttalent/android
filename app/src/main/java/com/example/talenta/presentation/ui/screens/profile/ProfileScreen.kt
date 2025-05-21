@@ -54,15 +54,19 @@ import com.example.talenta.presentation.state.ProfileUiState
 import com.example.talenta.presentation.ui.screens.profile.tabs.DetailsTab
 import com.example.talenta.presentation.ui.screens.profile.tabs.MediaContent
 import com.example.talenta.presentation.ui.screens.profile.tabs.ReviewsTab
+import com.example.talenta.presentation.ui.screens.profile.tabs.ServiceTab
 import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
 
 @Composable
 fun ProfileScreen(
     onEditProfileClick: () -> Unit,
-    viewModel: ArtistProfileViewModel = hiltViewModel()
+    viewModel: ArtistProfileViewModel = hiltViewModel(),
+    selectedTabIndex: Int,
+    onTabSelected: (Int) -> Unit
 ) {
-    var selectedTabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("Details", "Media", "Reviews")
+
+
+    val tabs = listOf("Details", "Media", "Reviews", "Service")
     val royalBlue = colorResource(R.color.royal_blue)
 
     // Collect the profile state
@@ -101,8 +105,7 @@ fun ProfileScreen(
             when (profileState) {
                 is ProfileUiState.Loading -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(color = royalBlue)
                     }
@@ -112,8 +115,7 @@ fun ProfileScreen(
                     // Show error state
                     val errorMessage = (profileState as ProfileUiState.Error).message
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
@@ -122,8 +124,7 @@ fun ProfileScreen(
                                 color = Color.Red
                             )
                             Text(
-                                text = errorMessage,
-                                style = MaterialTheme.typography.bodyMedium
+                                text = errorMessage, style = MaterialTheme.typography.bodyMedium
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(onClick = { viewModel.fetchArtistProfile() }) {
@@ -171,8 +172,7 @@ fun ProfileScreen(
                                 .align(Alignment.BottomEnd)
                                 .background(colorResource(R.color.royal_blue), CircleShape)
                                 .padding(4.dp)
-                                .clickable { photoPickerLauncher.launch("image/*") }
-                        ) {
+                                .clickable { photoPickerLauncher.launch("image/*") }) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Edit Profile Picture",
@@ -184,8 +184,7 @@ fun ProfileScreen(
 
                     // Username - use firstName and lastName if available
                     Text(
-                        text = if (artist.firstName.isNotEmpty() || artist.lastName.isNotEmpty())
-                            "${artist.firstName} ${artist.lastName}".trim() else "User Name",
+                        text = if (artist.firstName.isNotEmpty() || artist.lastName.isNotEmpty()) "${artist.firstName} ${artist.lastName}".trim() else "User Name",
                         modifier = Modifier.padding(top = 10.dp),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
@@ -226,20 +225,19 @@ fun ProfileScreen(
                                 color = royalBlue,
                                 height = 3.dp
                             )
-                        }
-                    ) {
+                        }) {
+
                         tabs.forEachIndexed { index, title ->
                             Tab(
                                 selected = selectedTabIndex == index,
-                                onClick = { selectedTabIndex = index },
+                                onClick = { onTabSelected(index) },
                                 text = {
                                     Text(
                                         text = title,
                                         color = if (selectedTabIndex == index) royalBlue else Color.Gray,
                                         fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal
                                     )
-                                }
-                            )
+                                })
                         }
                     }
 
@@ -248,6 +246,7 @@ fun ProfileScreen(
                         0 -> DetailsTab(artist)
                         1 -> MediaContent(viewModel)
                         2 -> ReviewsTab()
+                        3 -> ServiceTab()
                     }
                 }
             }
