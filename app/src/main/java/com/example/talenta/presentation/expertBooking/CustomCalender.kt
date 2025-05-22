@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.talenta.data.model.DateSlot
 import com.example.talenta.data.model.DaysOfMonth
 import com.example.talenta.data.model.ExpertAvailability
 import com.example.talenta.data.model.TimeSlot
@@ -32,15 +33,16 @@ import com.kizitonwose.calendar.compose.ContentHeightMode
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
-import kotlinx.datetime.Clock
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.toJavaLocalDateTime
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.Period
 import java.time.YearMonth
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalUnit
 import java.util.Locale
 
 
@@ -58,7 +60,7 @@ fun CustomCalender(
     val availableDaysAndMonth = remember {
         getAvailableDates(schedule)
     }
-    var selectedDay = rememberSaveable(saver = LocalDateSaver) {
+    val selectedDay = rememberSaveable(saver = LocalDateSaver) {
         mutableStateOf(LocalDate.now())
     }
 
@@ -90,7 +92,7 @@ fun CustomCalender(
             val daysOfWeek = it.weekDays.first().map { it.date.dayOfWeek }
             CalendarHeader(daysOfWeek = daysOfWeek)
         },
-        dayContent = { it ->
+        dayContent = {
             CalendarDayButton(
                 text = it.date.dayOfMonth.toString(),
                 modifier = Modifier,
@@ -167,14 +169,18 @@ fun DayOfWeek.displayText(uppercase: Boolean = false, narrow: Boolean = false): 
     }
 }
 
-fun getAvailableDates(schedule: Map<DaysOfMonth, TimeSlot>?): List<Pair<Int, Int>> {
+fun getAvailableDates(schedule: Map<DateSlot, TimeSlot>?): List<Pair<Int, Int>> {
     val availableDates = mutableListOf<Pair<Int, Int>>()
     schedule?.forEach {
-        val daysOfMonth = it.key
-        val month = daysOfMonth.month
-        daysOfMonth.days.forEach { day ->
-            availableDates.add(Pair(day, month))
+        val startDate = it.key.localStartDateTime()
+        val endDate = it.key.localEndDateTime()
+        val days = startDate.toJavaLocalDateTime().until(endDate.toJavaLocalDateTime(),ChronoUnit.DAYS)
+        val availability =  (0..days).map { offset ->
+            val currentDate = startDate.toJavaLocalDateTime().plus(
+                Period.ofDays(offset.toInt()))
+            currentDate.monthValue to currentDate.dayOfMonth
         }
+        availableDates.addAll(availability)
     }
     return availableDates
 }
@@ -200,11 +206,13 @@ private fun CustomCalendarScreenPreview() {
                 expertAvailability = ExpertAvailability(
                     timezone = "UTC",
                     schedule = mapOf(
-                        DaysOfMonth(
-                            days = listOf(1, 6, 18, 19, 20),
-                            month = 5,
-                            year = 2025
-                        ) to TimeSlot(start = "10:00", end = "12:00"),
+                        DateSlot(
+                            startDateTime = "2023-10-05T00:00:00Z",
+                            endDateTime = "2023-15-07T00:00:00Z"
+                        ) to TimeSlot(
+                            start = "15:00",
+                            end = "17:00"
+                        )
                     )
                 ),
             ) {

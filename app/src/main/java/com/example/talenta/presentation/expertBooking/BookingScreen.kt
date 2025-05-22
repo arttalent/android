@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.talenta.data.model.DaysOfMonth
 import com.example.talenta.data.model.ExpertAvailability
 import com.example.talenta.data.model.Service
 import com.example.talenta.data.model.ServiceType
@@ -41,31 +40,26 @@ import java.util.Locale
 
 @Composable
 fun ExpertBooking(
-    expertDetails: User,
-    selectedServiceId: String
+    expertDetails: User, selectedServiceId: String
 ) {
     val viewModel = hiltViewModel<BookingViewModel>()
     val uiState = viewModel.uiStates.collectAsState().value
     LaunchedEffect(Unit) {
         viewModel.onAction(
             BookingActions.InitData(
-                expertDetails = expertDetails,
-                selectedServiceId = selectedServiceId
+                expertDetails = expertDetails, selectedServiceId = selectedServiceId
             )
         )
     }
     ExpertBookingScreen(
-        uiState = uiState,
-        action = viewModel::onAction
+        uiState = uiState, action = viewModel::onAction
     )
 }
 
 
 @Composable
 fun ExpertBookingScreen(
-    modifier: Modifier = Modifier,
-    uiState: BookingStates,
-    action: (BookingActions) -> Unit
+    modifier: Modifier = Modifier, uiState: BookingStates, action: (BookingActions) -> Unit
 ) {
     val selectedDate = rememberSaveable(saver = LocalDateSaver) {
         mutableStateOf(LocalDate.now())
@@ -97,8 +91,7 @@ fun ExpertBookingScreen(
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = uiState.selectedService?.expertAvailability?.timezone
-                        ?: "UTC",
+                    text = uiState.selectedService?.expertAvailability?.timezone ?: "UTC",
                     color = Color.Black,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
@@ -136,15 +129,13 @@ fun ExpertBookingScreen(
                     .align(Alignment.BottomCenter),
                 expertName = uiState.expertDetails?.firstName + " " + uiState.expertDetails?.lastName,
                 time = String.format(
-                    "%02d:%02d",
-                    uiState.selectedTime.hour,
-                    uiState.selectedTime.minute
-                ), date = selectedDate.value.toPrettyString(),
+                    "%02d:%02d", uiState.selectedTime.hour, uiState.selectedTime.minute
+                ),
+                date = selectedDate.value.toPrettyString(),
                 fees = "$${uiState.selectedService?.perHourCharge}",
                 onConfirmClick = {
                     action(BookingActions.CreateBooking)
-                }
-            )
+                })
         }
 
     }
@@ -182,8 +173,7 @@ fun TimeSlotsRow(
                 enabled = true,
                 onClick = {
                     action(BookingActions.OnTimeSelected(stringToLocalTime(time)))
-                }
-            )
+                })
         }
     }
 }
@@ -217,18 +207,12 @@ private fun ExpertBookingScreenPRev() {
         serviceType = ServiceType.VIDEO_ASSESSMENT,
         perHourCharge = 50.04f,
         expertAvailability = ExpertAvailability(
-            timezone = "Asia/Kolkata",
-            schedule = mapOf(
-                DaysOfMonth(
-                    days = listOf(1, 18, 19, 20),
-                    month = 10,
-                    year = 2025
-                ) to
-                        TimeSlot(
-                            start = "00:00",
-                            end = "12:00"
-                        )
-
+            timezone = "Asia/Kolkata", schedule = mapOf(
+                com.example.talenta.data.model.DateSlot(
+                    startDateTime = "2023-10-01T00:00:00Z", endDateTime = "2023-11-10T00:00:00Z"
+                ) to TimeSlot(
+                    start = "15:00", end = "17:00"
+                )
             )
         )
     )
@@ -236,9 +220,7 @@ private fun ExpertBookingScreenPRev() {
         ExpertBookingScreen(
             uiState = BookingStates(
                 expertDetails = User(
-                    firstName = "John",
-                    lastName = "Doe",
-                    expertService = listOf(
+                    firstName = "John", lastName = "Doe", expertService = listOf(
                         service
                     )
 
@@ -246,8 +228,6 @@ private fun ExpertBookingScreenPRev() {
                 selectedDate = LocalDate.now().toKotlinLocalDate(),
                 selectedTime = LocalTime(10, 0),
                 timeSlotBySelectedDate = listOf("10:00", "11:00", "12:00")
-            ),
-            action = { }
-        )
+            ), action = { })
     }
 }

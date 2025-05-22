@@ -1,7 +1,6 @@
 package com.example.talenta.presentation.viewmodels
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -20,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
@@ -52,29 +52,27 @@ class ArtistProfileViewModel @Inject constructor(
         fetchArtistProfile()
     }
 
+
     fun fetchArtistProfile() {
         viewModelScope.launch {
             _profileState.value = ProfileUiState.Loading
 
             try {
-                val currentUser = FirebaseAuth.getInstance().currentUser
+                FirebaseAuth.getInstance().currentUser
                     ?: throw Exception("User not authenticated")
 
-                val uid = currentUser.uid
-                Timber.tag("fetchArtistProfile").d("Current user UID: $uid")
-
-                val artist = repository.fetchArtistProfile(uid)
-
-                if (artist != null) {
-                    Log.d("fetchArtistProfile", "Artist profile fetched: $artist")
-                    _profileState.value = ProfileUiState.Success(artist)
-                } else {
-                    Log.e("fetchArtistProfile", "Artist profile not found for UID: $uid")
-                    _profileState.value = ProfileUiState.Error("Artist profile not found")
+                userPreferences.getUserDataFlow().collectLatest { artist ->
+                    if (artist != null) {
+                        Timber.tag("fetchArtistProfile").d("Artist profile fetched: $artist")
+                        _profileState.value = ProfileUiState.Success(artist)
+                    } else {
+                        Timber.tag("fetchArtistProfile").e("Artist profile not found")
+                        _profileState.value = ProfileUiState.Error("Artist profile not found")
+                    }
                 }
 
             } catch (e: Exception) {
-                Log.e("fetchArtistProfile", "Error: ${e.message}", e)
+                Timber.tag("fetchArtistProfile").e(e, "Error: ${e.message}")
                 _profileState.value = ProfileUiState.Error(e.message ?: "Unknown error occurred")
             }
         }

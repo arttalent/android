@@ -14,12 +14,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.toInstant
+import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toJavaLocalTime
 import kotlinx.datetime.toKotlinLocalTime
 import javax.inject.Inject
@@ -155,12 +157,13 @@ class BookingViewModel @Inject constructor(
 }
 
 fun ExpertAvailability.getDateTimeSlotsMap(day: Int, month: Int, year: Int): TimeSlot? {
-    var dateTimeSlot: TimeSlot? = null
-    schedule.forEach { (daysOfMonth, timeSlot) ->
-        if (daysOfMonth.month == month && daysOfMonth.year == year) {
-            if (daysOfMonth.days.contains(day)) {
-                dateTimeSlot = timeSlot
-            }
+    val dateTime = LocalDateTime(year, month, day, 0, 0, 0)
+    var dateTimeSlot:TimeSlot ? = null
+    schedule.forEach { dateSlot, timeSlot->
+        val startDateTime = dateSlot.localStartDateTime().toJavaLocalDateTime()
+        val endDateTime = dateSlot.localEndDateTime().toJavaLocalDateTime()
+        if (dateTime.toJavaLocalDateTime().isAfter(startDateTime) && dateTime.toJavaLocalDateTime().isBefore(endDateTime)) {
+            dateTimeSlot = timeSlot
         }
     }
     return dateTimeSlot

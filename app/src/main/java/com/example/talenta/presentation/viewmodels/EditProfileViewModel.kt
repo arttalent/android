@@ -38,10 +38,10 @@ class EditProfileViewModel @Inject constructor(
     val currentStep: StateFlow<Int> = _currentStep.asStateFlow()
 
     init {
-        fetchArtistData()
+        fetchUserData()
     }
 
-    private fun fetchArtistData() {
+    private fun fetchUserData() {
         viewModelScope.launch {
             try {
                 _state.value = EditProfileState.Loading
