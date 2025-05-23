@@ -50,6 +50,13 @@ class ArtistProfileViewModel @Inject constructor(
         fetchArtistProfile()
     }
 
+    private val _selectedTabIndex = MutableStateFlow(0)
+    val selectedTabIndex: StateFlow<Int> = _selectedTabIndex
+
+    fun onTabSelected(index: Int) {
+        _selectedTabIndex.value = index
+    }
+
     fun fetchArtistProfile() {
         viewModelScope.launch {
             _profileState.value = ProfileUiState.Loading
@@ -81,10 +88,11 @@ class ArtistProfileViewModel @Inject constructor(
 
     private suspend fun fetchPhotos(userId: String) {
         try {
-            val photosList = firestore.collection("artists").document(userId)
-                .collection("photos")
-                .get().await()
-                .documents.mapNotNull { it.toObject(Photo::class.java)?.copy(id = it.id) }
+            val photosList =
+                firestore.collection("artists").document(userId).collection("photos").get()
+                    .await().documents.mapNotNull {
+                        it.toObject(Photo::class.java)?.copy(id = it.id)
+                    }
 
             _photos.value = photosList
         } catch (e: Exception) {
