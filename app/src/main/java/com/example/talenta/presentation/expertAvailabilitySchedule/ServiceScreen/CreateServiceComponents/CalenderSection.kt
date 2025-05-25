@@ -278,6 +278,30 @@ fun CalendarGrid(
     }
 }
 
+// Helper function remains the same
+private fun updateCalendarDisplay(
+    monthOffset: Int,
+    baseCalendar: Calendar,
+    updateYear: (Int) -> Unit,
+    updateMonth: (Int) -> Unit,
+    updateFirstDay: (Int) -> Unit,
+    updateTotalDays: (Int) -> Unit,
+    updateDisplay: (String) -> Unit
+) {
+    val calendar = Calendar.getInstance()
+    calendar.time = baseCalendar.time
+    calendar.add(Calendar.MONTH, monthOffset)
+
+    val monthFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+    updateDisplay(monthFormat.format(calendar.time))
+
+    updateYear(calendar.get(Calendar.YEAR))
+    updateMonth(calendar.get(Calendar.MONTH))
+    updateFirstDay((calendar.get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7)
+    updateTotalDays(calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+}
+
+
 @Composable
 fun TimeSelectionSection(
     selectedStartTime: String,
@@ -398,26 +422,4 @@ fun TimeDropdown(
             }
         }
     }
-}
-// Helper function remains the same
-private fun updateCalendarDisplay(
-    monthOffset: Int,
-    baseCalendar: Calendar,
-    updateYear: (Int) -> Unit,
-    updateMonth: (Int) -> Unit,
-    updateFirstDay: (Int) -> Unit,
-    updateTotalDays: (Int) -> Unit,
-    updateDisplay: (String) -> Unit
-) {
-    val calendar = Calendar.getInstance()
-    calendar.time = baseCalendar.time
-    calendar.add(Calendar.MONTH, monthOffset)
-
-    val monthFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-    updateDisplay(monthFormat.format(calendar.time))
-
-    updateYear(calendar.get(Calendar.YEAR))
-    updateMonth(calendar.get(Calendar.MONTH))
-    updateFirstDay((calendar.get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7)
-    updateTotalDays(calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
 }
