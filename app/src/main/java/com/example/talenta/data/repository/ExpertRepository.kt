@@ -1,8 +1,8 @@
 package com.example.talenta.data.repository
 
-import android.util.Log
 import com.example.talenta.data.UserPreferences
 import com.example.talenta.data.model.ExpertAvailability
+import com.example.talenta.data.model.Schedule
 import com.example.talenta.data.model.Service
 import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.User
@@ -13,6 +13,8 @@ import com.google.firebase.firestore.CollectionReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.TimeZone
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -30,8 +32,13 @@ class ExpertRepository @Inject constructor(
         safeFirebaseCall {
             val snapshot = userCollection.whereEqualTo("role", "EXPERT").get().await()
             snapshot.documents.mapNotNull { snapshot ->
-                Log.d("TAG", "fetchExperts: " + snapshot.data)
-                snapshot.toObject(User::class.java)
+                Timber.tag("ExpertRepository").d("fetchExperts: %s", snapshot.data)
+                try {
+                    snapshot.toObject(User::class.java)
+                } catch (e: Exception) {
+                    Timber.tag("ExpertRepository").e(e, "Error parsing expert data")
+                    null
+                }
             }
         }
     }
@@ -54,22 +61,27 @@ class ExpertRepository @Inject constructor(
         }
 
     suspend fun createExpertService(
-        serviceID: String,
         perHrPrice: Float,
         serviceType: ServiceType,
-        expertAvailability: ExpertAvailability
+        schedule: Schedule,
     ): FirestoreResult<Unit> = withContext(Dispatchers.IO) {
+        val expertId = userPreferences.getUserData()?.id ?: ""
+        val serviceId = expertId + (userPreferences.getUserData()?.expertService?.size ?: 0)
         val service = Service(
-            serviceId = serviceID,
+            serviceId = serviceId,
             serviceTitle = serviceType.getTitle(),
             perHourCharge = perHrPrice,
             serviceType = serviceType,
-            expertAvailability = expertAvailability,
+            expertAvailability = ExpertAvailability(
+                timezone = TimeZone.currentSystemDefault().toString(),
+                schedule = listOf(schedule)
+            ),
             isActive = true
         )
         safeFirebaseCall {
-            val expertId = userPreferences.getUserData()?.id ?: ""
-            expertAvailabilityCollection.document(expertId).set(service).await()
+            userCollection.document(expertId)
+                .update(mapOf(User::expertService.name to listOf(service)))
+                .await()
             Unit
         }
     }

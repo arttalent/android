@@ -80,21 +80,17 @@ sealed class Route() {
     object SponsorProfile : Route()
 
 
-    object Routes {
-        private const val ExpertBooking = "expert_booking"
-        fun withArgs(expertId: String, serviceId: String): String =
-            "$ExpertBooking/$expertId/$serviceId"
-    }
-
-
     @Serializable
-    data class ExpertDetail(val expertId: String) : Route()
+    data class ExpertDetail(val expert: User) : Route()
 
     @Serializable
     data class ExpertAvailabilitySetScreen(val expertId: String) : Route()
 
     @Serializable
     data class ExpertBookingScreen(val expert: User, val selectedServiceId:String) : Route()
+
+    @Serializable
+    data object ExpertCreateServiceScreen : Route()
 
 
 }

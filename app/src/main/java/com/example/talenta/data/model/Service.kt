@@ -4,12 +4,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Service(
-    val serviceId: String,
-    val serviceType: ServiceType,
-    val serviceTitle: String = serviceType.getTitle(),
+    val serviceId: String? = null,
+    val serviceType: ServiceType? = null,
+    val serviceTitle: String = serviceType?.getTitle()?:"",
     val perHourCharge: Float = 0.0f,
     val isActive: Boolean = true,
-    val expertAvailability: ExpertAvailability
+    val expertAvailability: ExpertAvailability? = null
 ){}
 
 enum class ServiceType {

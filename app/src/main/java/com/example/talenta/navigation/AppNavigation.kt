@@ -19,10 +19,11 @@ import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Graphs.authNavGraph
 import com.example.talenta.navigation.Graphs.bottomNavGraph
 import com.example.talenta.navigation.Routes.Route
+import com.example.talenta.navigation.navTypes.UserNavType
 import com.example.talenta.presentation.expertAvailabilitySchedule.ExpertAvailabilitySchedule
 import com.example.talenta.presentation.expertBooking.ExpertBooking
-import com.example.talenta.presentation.ui.screens.MyBookingsScreen
-import com.example.talenta.presentation.ui.screens.experts.ExpertDetailedScreen
+import com.example.talenta.presentation.myBookings.MyBookingsScreen
+import com.example.talenta.presentation.ui.screens.HostViewModel
 import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
 import kotlin.reflect.typeOf
 
@@ -68,35 +69,33 @@ fun AppNavigation(isLoggedIn: Boolean) {
             authNavGraph(navController)
             bottomNavGraph(navController, dynamicStartDestination)
 
-        // Screens accessible from anywhere
-        composable<Route.EditProfile> {
-            EditProfileScreen(
-                navController = navController
-            )
-        }
-        composable<Route.MyBookings> {
-            MyBookingsScreen()
-        }
-        composable<Route.ExpertDetail> { backStackEntry ->
-            val args = backStackEntry.toRoute<Route.ExpertDetail>()
-            ExpertDetailedScreen(navController, args.expertId)
-        }
-
-        composable("expert_booking/{expertId}/{serviceId}") { backStackEntry ->
-            val expertId = backStackEntry.arguments?.getString("expertId") ?: ""
-            val serviceId = backStackEntry.arguments?.getString("serviceId") ?: ""
-            ExpertBooking(expertId = expertId, serviceId = serviceId)
-        }
+            // Screens accessible from anywhere
+            composable<Route.EditProfile> {
+                EditProfileScreen(
+                    navController = navController
+                )
+            }
+            composable<Route.MyBookings> {
+                MyBookingsScreen()
+            }
 
 
-        composable<Route.ExpertAvailabilitySetScreen> { backStackEntry ->
-            val args = backStackEntry.toRoute<Route.ExpertAvailabilitySetScreen>()
-            ExpertAvailabilitySchedule(expertId = args.expertId)
-        }
 
-        composable<Route.ExpertBookingScreen> { backStackEntry ->
-            val args = backStackEntry.toRoute<Route.ExpertBookingScreen>()
-            ExpertBooking(expertId = args.expertId, serviceId = args.serviceId)
+            composable<Route.ExpertAvailabilitySetScreen> { backStackEntry ->
+                val args = backStackEntry.toRoute<Route.ExpertAvailabilitySetScreen>()
+                ExpertAvailabilitySchedule(expertId = args.expertId)
+            }
+
+            composable<Route.ExpertBookingScreen>(
+                typeMap = mapOf(typeOf<User>() to UserNavType)
+            ) { backStackEntry ->
+                val args = backStackEntry.toRoute<Route.ExpertBookingScreen>()
+                ExpertBooking(
+                    expertDetails = args.expert,
+                    selectedServiceId = args.selectedServiceId
+                )
+            }
+
         }
     }
 }

@@ -159,7 +159,9 @@ class BookingViewModel @Inject constructor(
 fun ExpertAvailability.getDateTimeSlotsMap(day: Int, month: Int, year: Int): TimeSlot? {
     val dateTime = LocalDateTime(year, month, day, 0, 0, 0)
     var dateTimeSlot:TimeSlot ? = null
-    schedule.forEach { dateSlot, timeSlot->
+    schedule.forEach {
+        val dateSlot = it.dateSlot
+        val timeSlot = it.timeSlot
         val startDateTime = dateSlot.localStartDateTime().toJavaLocalDateTime()
         val endDateTime = dateSlot.localEndDateTime().toJavaLocalDateTime()
         if (dateTime.toJavaLocalDateTime().isAfter(startDateTime) && dateTime.toJavaLocalDateTime().isBefore(endDateTime)) {

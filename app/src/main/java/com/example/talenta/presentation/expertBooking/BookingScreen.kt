@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.talenta.data.model.ExpertAvailability
+import com.example.talenta.data.model.Schedule
 import com.example.talenta.data.model.Service
 import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.TimeSlot
@@ -65,7 +66,7 @@ fun ExpertBookingScreen(
         mutableStateOf(LocalDate.now())
     }
     Box {
-        Column(Modifier.padding(top = 40.dp)) {
+        Column(Modifier.padding(top = 10.dp)) {
             CustomCalender(
                 expertAvailability = uiState.selectedService?.expertAvailability
             ) {
@@ -207,13 +208,13 @@ private fun ExpertBookingScreenPRev() {
         serviceType = ServiceType.VIDEO_ASSESSMENT,
         perHourCharge = 50.04f,
         expertAvailability = ExpertAvailability(
-            timezone = "Asia/Kolkata", schedule = mapOf(
+            timezone = "Asia/Kolkata", schedule = listOf(Schedule(
                 com.example.talenta.data.model.DateSlot(
                     startDateTime = "2023-10-01T00:00:00Z", endDateTime = "2023-11-10T00:00:00Z"
-                ) to TimeSlot(
+                ), TimeSlot(
                     start = "15:00", end = "17:00"
                 )
-            )
+            ))
         )
     )
     TalentATheme {

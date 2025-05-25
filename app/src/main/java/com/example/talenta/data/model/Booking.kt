@@ -1,13 +1,13 @@
 package com.example.talenta.data.model
 
 data class Booking(
-    val bookingId: String,
-    val expertId: String,
-    val artistId: String,
+    val bookingId: String = "",
+    val expertId: String = "",
+    val artistId: String = "",
     val serviceId: String = "",
 
     val scheduledStartTime: String = "", // UTC ISO 8601 format
-    val timeInHrs: Int,   // UTC ISO 8601 format
+    val timeInHrs: Int = 0,   // UTC ISO 8601 format
 
     val status: BookingStatus = BookingStatus.PENDING,
     val paymentStatus: PaymentStatus = PaymentStatus.NOT_PAID,

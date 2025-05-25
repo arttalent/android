@@ -2,27 +2,28 @@ package com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScree
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.talenta.data.model.ExpertAvailability
-import com.example.talenta.data.model.Service
-import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.DateSlot
+import com.example.talenta.data.model.Schedule
+import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.TimeSlot
-import com.example.talenta.data.model.getTitle
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.talenta.data.repository.ExpertRepository
+import com.example.talenta.utils.FirestoreResult
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.datetime.*
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import java.util.*
+import kotlinx.datetime.toInstant
+import javax.inject.Inject
 
 data class CreateServiceUiState(
     val selectedServiceType: ServiceType? = null,
     val hourlyPay: String = "",
-    val selectedStartDate: Long? = null,
-    val selectedEndDate: Long? = null,
+    val selectedStartDate: LocalDateTime? = null,
+    val selectedEndDate: LocalDateTime? = null,
     val selectedStartTime: String = "00:00",
     val selectedEndTime: String = "24:00",
     val selectedTimezone: String = TimeZone.currentSystemDefault().id,
@@ -32,9 +33,10 @@ data class CreateServiceUiState(
     val isServiceCreated: Boolean = false
 )
 
-class CreateServiceViewModel : ViewModel() {
-
-    private val firestore = FirebaseFirestore.getInstance()
+@HiltViewModel
+class CreateServiceViewModel @Inject constructor(
+    private val expertRepo: ExpertRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateServiceUiState())
     val uiState: StateFlow<CreateServiceUiState> = _uiState.asStateFlow()
@@ -49,7 +51,7 @@ class CreateServiceViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(hourlyPay = filteredPay)
     }
 
-    fun updateSelectedDates(startDate: Long?, endDate: Long?) {
+    fun updateSelectedDates(startDate: LocalDateTime?, endDate: LocalDateTime?) {
         _uiState.value = _uiState.value.copy(
             selectedStartDate = startDate,
             selectedEndDate = endDate
@@ -63,6 +65,7 @@ class CreateServiceViewModel : ViewModel() {
     fun updateEndTime(time: String) {
         _uiState.value = _uiState.value.copy(selectedEndTime = time)
     }
+
     fun clearError() {
         _uiState.value = _uiState.value.copy(errorMessage = null)
     }
@@ -79,12 +82,17 @@ class CreateServiceViewModel : ViewModel() {
             currentState.selectedStartDate == null -> "Please select start date"
             currentState.selectedEndDate == null -> "Please select end date"
             currentState.selectedStartDate!! > currentState.selectedEndDate!! -> "End date must be after start date"
-            !isValidTimeRange(currentState.selectedStartTime, currentState.selectedEndTime) -> "End time must be after start time"
+            !isValidTimeRange(
+                currentState.selectedStartTime,
+                currentState.selectedEndTime
+            ) -> "End time must be after start time"
+
             else -> null
         }
 
         if (errorMessage != null) {
             _uiState.value = currentState.copy(errorMessage = errorMessage)
+            print("Validation Error: $errorMessage")
             return
         }
 
@@ -105,24 +113,8 @@ class CreateServiceViewModel : ViewModel() {
         return endTotalMinutes > startTotalMinutes
     }
 
-    private fun createDateTimeString(dateMillis: Long, time: String, timezone: String): String {
+    private fun createDateTimeString(localDateTime:LocalDateTime, timezone: String): String {
         // Convert milliseconds to LocalDate
-        val instant = Instant.fromEpochMilliseconds(dateMillis)
-        val localDate = instant.toLocalDateTime(TimeZone.of(timezone)).date
-
-        // Parse time
-        val timeParts = time.split(":")
-        val hour = if (time == "24:00") 0 else timeParts[0].toInt()
-        val minute = timeParts[1].toInt()
-
-        // Create LocalDateTime
-        val localDateTime = LocalDateTime(
-            year = localDate.year,
-            month = localDate.month,
-            dayOfMonth = localDate.dayOfMonth,
-            hour = hour,
-            minute = minute
-        )
 
         // Convert to UTC Instant and return ISO string
         val utcInstant = localDateTime.toInstant(TimeZone.of(timezone))
@@ -132,21 +124,24 @@ class CreateServiceViewModel : ViewModel() {
     private fun createService() {
         viewModelScope.launch {
             try {
-                _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+                _uiState.update {
+                    it.copy(
+                        isLoading = true,
+                        errorMessage = null,
+                        isServiceCreated = false
+                    )
+                }
 
                 val currentState = _uiState.value
-                val serviceId = UUID.randomUUID().toString()
 
                 // Create DateSlot with UTC ISO 8601 format
                 val startDateTime = createDateTimeString(
                     currentState.selectedStartDate!!,
-                    currentState.selectedStartTime,
                     currentState.selectedTimezone
                 )
 
                 val endDateTime = createDateTimeString(
                     currentState.selectedEndDate!!,
-                    if (currentState.selectedEndTime == "24:00") "23:59" else currentState.selectedEndTime,
                     currentState.selectedTimezone
                 )
 
@@ -160,31 +155,38 @@ class CreateServiceViewModel : ViewModel() {
                     end = currentState.selectedEndTime
                 )
 
-                val expertAvailability = ExpertAvailability(
-                    timezone = currentState.selectedTimezone,
-                    schedule = mapOf(dateSlot to timeSlot)
+                val schedule = Schedule(
+                    dateSlot = dateSlot,
+                    timeSlot = timeSlot
                 )
-
-                val service = Service(
-                    serviceId = serviceId,
-                    serviceType = currentState.selectedServiceType!!,
-                    serviceTitle = currentState.selectedServiceType.getTitle(),
-                    perHourCharge = currentState.hourlyPay.toFloat(),
-                    isActive = true,
-                    expertAvailability = expertAvailability
-                )
-
                 // Save to Firebase
-                firestore.collection("services")
-                    .document(serviceId)
-                    .set(service)
-                    .await()
+                viewModelScope.launch {
+                    val res = expertRepo.createExpertService(
+                        serviceType = currentState.selectedServiceType!!,
+                        perHrPrice = currentState.hourlyPay.toFloat(),
+                        schedule = schedule,
+                    )
+                    when (res) {
+                        is FirestoreResult.Failure -> {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isServiceCreated = false,
+                                    errorMessage = "Failed to create service: ${res.errorMessage}"
+                                )
+                            }
+                        }
 
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    isServiceCreated = true
-                )
-
+                        is FirestoreResult.Success -> {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isServiceCreated = true,
+                                )
+                            }
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,

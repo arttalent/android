@@ -46,6 +46,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.talenta.R
+import com.example.talenta.data.model.User
+import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.ui.screens.experts.tabs.MediaContent
 import com.example.talenta.presentation.ui.screens.experts.tabs.ProfileContent
 import com.example.talenta.presentation.ui.screens.experts.tabs.ServicesContent
@@ -53,7 +55,7 @@ import com.example.talenta.presentation.viewmodels.ExpertViewModel
 
 @Composable
 fun ExpertDetailedScreen(
-    navController: NavController, expertId: String?
+    navController: NavController, expert: User
 ) {
 
 
@@ -66,18 +68,24 @@ fun ExpertDetailedScreen(
     ) {
 
         TopBar(navController)
-        ProfileSection(expertId = expertId)
+        ProfileSection(expertId = expert.id)
         SocialMediaSection()
-        RatingSection(expertId)
+        RatingSection(expert.id)
 
         TabSection(
             selectedTab = selectedTab, onTabSelected = { selectedTab = it })
 
         // Content based on selected tab
         when (selectedTab) {
-            0 -> ProfileContent(expertId)
+            0 -> ProfileContent(expert.id)
             1 -> MediaContent()
-            2 -> ServicesContent()
+            2 -> ServicesContent(expert) { serviceId ->
+                navController.navigate(
+                    Route.ExpertBookingScreen(
+                        expert = expert, selectedServiceId = serviceId
+                    )
+                )
+            }
         }
     }
 }
@@ -94,7 +102,8 @@ private fun TopBar(navController: NavController) {
             imageVector = Icons.Default.ArrowBack,
             contentDescription = "Back",
             modifier = Modifier.clickable {
-                navController.popBackStack() })
+                navController.popBackStack()
+            })
     }
 }
 

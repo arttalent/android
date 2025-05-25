@@ -37,22 +37,15 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.data.model.Bio
 import com.example.talenta.data.model.Booking
-import com.example.talenta.data.model.BookingStatus
 import com.example.talenta.data.model.DateSlot
 import com.example.talenta.data.model.ExpertAvailability
-import com.example.talenta.data.model.PaymentStatus
 import com.example.talenta.data.model.ProfessionalData
+import com.example.talenta.data.model.Schedule
 import com.example.talenta.data.model.Service
 import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.model.User
 import com.example.talenta.data.model.getTitle
-import com.example.talenta.ui.theme.green
-import com.example.talenta.ui.theme.light_green
-import com.example.talenta.ui.theme.light_red
-import com.example.talenta.ui.theme.light_yellow
-import com.example.talenta.ui.theme.red
-import com.example.talenta.ui.theme.yellow
 
 @Composable
 fun BookingListCard(
@@ -131,7 +124,7 @@ fun BookingListCard(
                                 tint = Color.Gray
                             )
                             Text(
-                                text =user.bio.country,
+                                text = user.bio.country,
                                 fontSize = 14.sp,
                                 color = Color.Gray
                             )
@@ -276,13 +269,15 @@ private fun BookingListCardPreview() {
                     isActive = true,
                     expertAvailability = ExpertAvailability(
                         timezone = "Asia/Kolkata",
-                        schedule = mapOf(
-                            DateSlot(
-                                startDateTime = "2025-06-01T10:00:00Z",
-                                endDateTime = "2025-06-01T12:00:00Z"
-                            ) to TimeSlot(
-                                start = "10:00",
-                                end = "12:00"
+                        schedule = listOf(
+                            Schedule(
+                                DateSlot(
+                                    startDateTime = "2025-06-01T10:00:00Z",
+                                    endDateTime = "2025-06-01T12:00:00Z"
+                                ), TimeSlot(
+                                    start = "10:00",
+                                    end = "12:00"
+                                )
                             )
                         )
                     )

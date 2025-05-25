@@ -1,5 +1,6 @@
 package com.example.talenta.navigation.navTypes
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavType
 import com.example.talenta.data.model.User
@@ -12,7 +13,11 @@ object UserNavType : NavType<User>(isNullableAllowed = false) {
     }
 
     override fun parseValue(value: String): User {
-        return Json.decodeFromString(value)
+        return Json.decodeFromString(Uri.decode(value))
+    }
+
+    override fun serializeAsValue(value: User): String {
+        return Uri.encode(Json.encodeToString(value))
     }
 
     override fun put(bundle: Bundle, key: String, value: User) {
