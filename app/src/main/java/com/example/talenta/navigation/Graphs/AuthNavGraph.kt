@@ -48,9 +48,10 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                     }
                 })
         }
+
         composable<Route.Login> {
             LoginScreen(
-                navController = navController, onLoginSuccess = {
+                navController = navController, onLoginSuccess = { role ->
                     navController.navigate(Route.HostGraph) {
                         popUpTo(Route.AuthGraph) { inclusive = true }
                         launchSingleTop = true

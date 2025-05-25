@@ -10,6 +10,12 @@ sealed class Route() {
     object AuthGraph : Route()
 
     @Serializable
+    object ServiceTab : Route()
+
+    @Serializable
+    object CreateServiceScreen : Route()
+
+    @Serializable
     object HostGraph : Route()
 
     // Inside Auth Graph
@@ -44,6 +50,10 @@ sealed class Route() {
     @Serializable
     object Dashboard : Route()
 
+
+    @Serializable
+    object ExpertDashboard : Route()
+
     @Serializable
     object Experts : Route()
 
@@ -59,9 +69,21 @@ sealed class Route() {
     @Serializable
     object EditProfile : Route()
 
+    // sponsor
+    @Serializable
+    object SponsorDashboard : Route()
+
+    @Serializable
+    object SponsorApplication : Route()
+
+    @Serializable
+    object SponsorProfile : Route()
+
+
     object Routes {
-        const val ExpertBooking = "expert_booking"
-        fun withArgs(expertId: String, serviceId: String): String = "$ExpertBooking/$expertId/$serviceId"
+        private const val ExpertBooking = "expert_booking"
+        fun withArgs(expertId: String, serviceId: String): String =
+            "$ExpertBooking/$expertId/$serviceId"
     }
 
 

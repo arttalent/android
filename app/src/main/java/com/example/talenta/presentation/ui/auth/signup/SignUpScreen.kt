@@ -222,7 +222,5 @@ fun SignUpScreen(
             }
 
         }
-
-
     }
 }

@@ -9,11 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun DashBoardScreen() {
+fun ExpertDashBoardScreen() {
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
-        Text("Home Screen For Artist", fontWeight = FontWeight.Bold)
+        Text("Home Screen For Expert", fontWeight = FontWeight.Bold)
     }
-}
 
+}

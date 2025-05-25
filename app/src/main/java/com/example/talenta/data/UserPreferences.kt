@@ -17,12 +17,22 @@ import javax.inject.Singleton
 class UserPreferences @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
-    private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
-    private val USER_DATA = stringPreferencesKey("user_data")
+    companion object {
+        val USER_ROLE_KEY = stringPreferencesKey("user_role")
+        private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
+        private val USER_DATA = stringPreferencesKey("user_data")
+
+    }
+
+    val roleFlow: Flow<String?> = dataStore.data.map { preferences -> preferences[USER_ROLE_KEY] }
 
 
     val isLoggedIn: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[IS_LOGGED_IN] == true
+    }
+
+    suspend fun clearUserRole() {
+        dataStore.edit { it.remove(USER_ROLE_KEY) }
     }
 
     suspend fun setLoggedIn(isLoggedIn: Boolean) {
@@ -35,6 +45,12 @@ class UserPreferences @Inject constructor(
         val userJson = Json.encodeToString(user)
         dataStore.edit { preferences ->
             preferences[USER_DATA] = userJson
+        }
+    }
+
+    suspend fun saveUserRole(role: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey("user_role")] = role
         }
     }
 

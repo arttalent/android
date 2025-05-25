@@ -19,7 +19,7 @@ data class User(
     val isVerified: Boolean? = null,
     val isBlocked: Boolean? = null,
     val professionalData: ProfessionalData = ProfessionalData(),
-    val expertService: List<Service>? = null,
+    val sponsorDetails: SponsorDetails? = null
 ){
     val isArtist: Boolean
         get() = role == Role.ARTIST
@@ -29,6 +29,22 @@ data class User(
 
     val fullName: String
         get() = "$firstName $lastName"
+}
+
+@Serializable
+data class SponsorDetails(
+    val sponsorType: SponsorType = SponsorType.INDIVIDUAL,
+    val profileInterests: List<String> = emptyList(),
+    val companyName: String = "",
+    val address: String = ""
+)
+    val expertService: List<Service>? = null,
+)
+
+
+@Serializable
+enum class SponsorType {
+    INDIVIDUAL, COMPANY
 }
 
 
