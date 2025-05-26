@@ -60,6 +60,7 @@ import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
 @Composable
 fun ProfileScreen(
     onEditProfileClick: () -> Unit,
+    navigateToCreateService: () -> Unit,
     viewModel: ArtistProfileViewModel = hiltViewModel(),
     selectedTabIndex: Int,
     onTabSelected: (Int) -> Unit
@@ -246,7 +247,9 @@ fun ProfileScreen(
                         0 -> DetailsTab(artist)
                         1 -> MediaContent(viewModel)
                         2 -> ReviewsTab()
-                        3 -> ServiceTab()
+                        3 -> ServiceTab(artist){
+                            navigateToCreateService()
+                        }
                     }
                 }
             }

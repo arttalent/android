@@ -50,10 +50,6 @@ sealed class Route() {
     @Serializable
     object Dashboard : Route()
 
-
-    @Serializable
-    object ExpertDashboard : Route()
-
     @Serializable
     object Experts : Route()
 
@@ -69,9 +65,6 @@ sealed class Route() {
     @Serializable
     object EditProfile : Route()
 
-    // sponsor
-    @Serializable
-    object SponsorDashboard : Route()
 
     @Serializable
     object SponsorApplication : Route()

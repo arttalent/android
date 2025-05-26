@@ -67,6 +67,8 @@ class ExpertRepository @Inject constructor(
     ): FirestoreResult<Unit> = withContext(Dispatchers.IO) {
         val expertId = userPreferences.getUserData()?.id ?: ""
         val serviceId = expertId + (userPreferences.getUserData()?.expertService?.size ?: 0)
+        val oldServices = userPreferences.getUserData()?.expertService ?: emptyList()
+        val serviceList = oldServices.toMutableList()
         val service = Service(
             serviceId = serviceId,
             serviceTitle = serviceType.getTitle(),
@@ -78,9 +80,10 @@ class ExpertRepository @Inject constructor(
             ),
             isActive = true
         )
+        serviceList.add(service)
         safeFirebaseCall {
             userCollection.document(expertId)
-                .update(mapOf(User::expertService.name to listOf(service)))
+                .update(mapOf(User::expertService.name to serviceList))
                 .await()
             Unit
         }

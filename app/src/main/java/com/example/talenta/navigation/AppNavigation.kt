@@ -6,24 +6,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Graphs.authNavGraph
-import com.example.talenta.navigation.Graphs.bottomNavGraph
+import com.example.talenta.navigation.Graphs.appNavGraph
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.navigation.navTypes.UserNavType
 import com.example.talenta.presentation.expertAvailabilitySchedule.ExpertAvailabilitySchedule
 import com.example.talenta.presentation.expertBooking.ExpertBooking
 import com.example.talenta.presentation.myBookings.MyBookingsScreen
-import com.example.talenta.presentation.ui.screens.HostViewModel
 import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
 import kotlin.reflect.typeOf
 
@@ -39,25 +35,12 @@ fun LoadingScreen() {
 @Composable
 fun AppNavigation(isLoggedIn: Boolean) {
     val navController = rememberNavController()
-    val hostViewModel: HostViewModel = hiltViewModel()
-    val roleState = hostViewModel.role.collectAsState()
-    navController.currentBackStackEntryAsState()
 
-
-    val role = roleState.value
-
-    if (isLoggedIn && role == null) {
-        LoadingScreen()
-        return
-    }
-
-    val dynamicStartDestination = when (role) {
-        "ARTIST" -> Route.Dashboard
-        "EXPERT" -> Route.ExpertDashboard
-        else -> Route.Dashboard
-    }
-
-    Scaffold { padding ->
+    Scaffold (
+        bottomBar = {
+            BottomNavBar(navController = navController)
+        }
+    ){ padding ->
 
         NavHost(
             navController = navController,
@@ -67,7 +50,7 @@ fun AppNavigation(isLoggedIn: Boolean) {
                 .fillMaxSize()
         ) {
             authNavGraph(navController)
-            bottomNavGraph(navController, dynamicStartDestination)
+            appNavGraph(navController)
 
             // Screens accessible from anywhere
             composable<Route.EditProfile> {

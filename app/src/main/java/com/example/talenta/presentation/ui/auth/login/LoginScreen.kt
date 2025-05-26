@@ -61,15 +61,13 @@ import androidx.navigation.NavController
 import com.example.talenta.R
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.state.AuthUiState
-import com.example.talenta.presentation.ui.screens.HostViewModel
 import com.example.talenta.presentation.viewmodels.SignInViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    onLoginSuccess: (String) -> Unit = {},
+    onLoginSuccess: () -> Unit = {},
     viewModel: SignInViewModel = hiltViewModel(),
-    hostViewModel: HostViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showError by remember { mutableStateOf(false) }
@@ -86,8 +84,6 @@ fun LoginScreen(
         android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    val role = hostViewModel.role.collectAsState()
-
     val isValidPassword = remember(password) {
         password.length >= 6
     }
@@ -97,7 +93,7 @@ fun LoginScreen(
         when (uiState) {
             is AuthUiState.Success -> {
                 Toast.makeText(context, "Login Success", Toast.LENGTH_SHORT).show()
-                onLoginSuccess(role.toString())
+                onLoginSuccess()
             }
 
             is AuthUiState.Error -> {
