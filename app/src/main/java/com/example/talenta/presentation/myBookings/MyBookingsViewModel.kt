@@ -34,6 +34,24 @@ class MyBookingsViewModel @Inject constructor(
     private val _states = MutableStateFlow(MyBookingStates())
     val states = _states.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            userPreferences.getUserDataFlow().collect {
+                if (it != null) {
+                    _states.update { currentState ->
+                        currentState.copy(currentUser = it)
+                    }
+                    fetchBookings()
+                } else {
+                    _states.update { currentState ->
+                        currentState.copy(error = "User not found")
+                    }
+                }
+            }
+        }
+
+    }
+
     fun fetchBookings() {
         viewModelScope.launch {
             _states.update {

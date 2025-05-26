@@ -134,6 +134,7 @@ fun ExpertBookingScreen(
                 ),
                 date = selectedDate.value.toPrettyString(),
                 fees = "$${uiState.selectedService?.perHourCharge}",
+                loading = uiState.isLoading,
                 onConfirmClick = {
                     action(BookingActions.CreateBooking)
                 })

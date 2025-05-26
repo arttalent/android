@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ fun BookingBottomSheet(
     time: String = "02:30pm - 03:30pm",
     date: String = "Thursday, April 10th",
     fees: String = "$25",
+    loading: Boolean = false,
     onConfirmClick: () -> Unit = {}
 ) {
     Surface(
@@ -106,7 +108,11 @@ fun BookingBottomSheet(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text(text = "Confirm")
+                if (loading) {
+                    CircularProgressIndicator()
+                } else {
+                    Text(text = "Confirm")
+                }
             }
         }
     }
