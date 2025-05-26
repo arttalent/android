@@ -79,6 +79,11 @@ fun NavGraphBuilder.appNavGraph(navController: NavHostController) {
                 onEditProfileClick = { navController.navigate(Route.EditProfile) },
                 selectedTabIndex = selectedTabIndex,
                 onTabSelected = { selectedTabIndex = it },
+                onLogoutClick = {
+                    navController.navigate(Route.AuthGraph) {
+                        popUpTo(Route.Dashboard) { inclusive = true }
+                    }
+                },
                 navigateToCreateService = {
                     navController.navigate(Route.CreateServiceScreen)
                 }
