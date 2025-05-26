@@ -1,6 +1,7 @@
 package com.example.talenta.navigation.Routes
 
 import com.example.talenta.data.model.Role
+import com.example.talenta.data.model.User
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -49,10 +50,6 @@ sealed class Route() {
     @Serializable
     object Dashboard : Route()
 
-
-    @Serializable
-    object ExpertDashboard : Route()
-
     @Serializable
     object Experts : Route()
 
@@ -68,9 +65,6 @@ sealed class Route() {
     @Serializable
     object EditProfile : Route()
 
-    // sponsor
-    @Serializable
-    object SponsorDashboard : Route()
 
     @Serializable
     object SponsorApplication : Route()
@@ -79,21 +73,17 @@ sealed class Route() {
     object SponsorProfile : Route()
 
 
-    object Routes {
-        private const val ExpertBooking = "expert_booking"
-        fun withArgs(expertId: String, serviceId: String): String =
-            "$ExpertBooking/$expertId/$serviceId"
-    }
-
-
     @Serializable
-    data class ExpertDetail(val expertId: String) : Route()
+    data class ExpertDetail(val expert: User) : Route()
 
     @Serializable
     data class ExpertAvailabilitySetScreen(val expertId: String) : Route()
 
     @Serializable
-    data class ExpertBookingScreen(val expertId: String, val serviceId: String) : Route()
+    data class ExpertBookingScreen(val expert: User, val selectedServiceId:String) : Route()
+
+    @Serializable
+    data object ExpertCreateServiceScreen : Route()
 
 
 }

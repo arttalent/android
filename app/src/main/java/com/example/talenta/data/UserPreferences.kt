@@ -60,4 +60,11 @@ class UserPreferences @Inject constructor(
         return userJson?.let { Json.decodeFromString<User>(it) }
     }
 
+    fun getUserDataFlow(): Flow<User?> {
+        return dataStore.data.map { preferences ->
+            val userJson = preferences[USER_DATA]
+            userJson?.let { Json.decodeFromString<User>(it) }
+        }
+    }
+
 }

@@ -42,7 +42,7 @@ sealed class BottomNavRouteExpert(
 ) {
 
     object ExpertDashboard :
-        BottomNavRouteExpert(Route.ExpertDashboard, "ExpertDashBoard", R.drawable.dashboard)
+        BottomNavRouteExpert(Route.Dashboard, "ExpertDashBoard", R.drawable.dashboard)
 
     object ExpertMyBookings :
         BottomNavRouteExpert(Route.MyBookings, "Bookings", R.drawable.mybookings)

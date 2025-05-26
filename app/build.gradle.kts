@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
+    alias(libs.plugins.hilt)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.serialization)
 }
@@ -31,11 +31,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_18
-        targetCompatibility = JavaVersion.VERSION_18
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "18"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -79,8 +79,9 @@ dependencies {
 
     // Dependency Injection
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+
     implementation(libs.okhttp3.logging.interceptor)
 
 
@@ -102,7 +103,7 @@ dependencies {
     implementation(libs.lottie.compose)
 
     //jitsi
-    implementation(libs.jitsi.meet.sdk.v1020)
+  //  implementation(libs.jitsi.meet.sdk.v1020)
 
     //Country code picker
     implementation(libs.country.picker)
@@ -114,5 +115,8 @@ dependencies {
 
     // In your commonMain or app-level build.gradle.kts
     implementation(libs.kotlinx.datetime) // or latest
+
+    // Timber
+    implementation(libs.timber)
 
 }

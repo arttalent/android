@@ -17,11 +17,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -50,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.talenta.R
+import com.example.talenta.data.model.Role
 import com.example.talenta.presentation.state.ProfileUiState
 import com.example.talenta.presentation.ui.screens.profile.tabs.DetailsTab
 import com.example.talenta.presentation.ui.screens.profile.tabs.MediaContent
@@ -60,13 +63,14 @@ import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
 @Composable
 fun ProfileScreen(
     onEditProfileClick: () -> Unit,
+    navigateToCreateService: () -> Unit,
+    onLogoutClick: () -> Unit,
     viewModel: ArtistProfileViewModel = hiltViewModel(),
     selectedTabIndex: Int,
     onTabSelected: (Int) -> Unit
 ) {
 
 
-    val tabs = listOf("Details", "Media", "Reviews", "Service")
     val royalBlue = colorResource(R.color.royal_blue)
 
     // Collect the profile state
@@ -136,12 +140,47 @@ fun ProfileScreen(
 
                 is ProfileUiState.Success -> {
                     val artist = (profileState as ProfileUiState.Success).user
+                    val tabs = when (artist.role) {
+                        Role.EXPERT -> {
+                            listOf("Details", "Media", "Reviews", "Services")
+                        }
+
+                        Role.ARTIST -> {
+                            listOf("Details", "Media", "Reviews")
+                        }
+
+                        Role.SPONSOR -> {
+                            listOf("Details", "Media")
+                        }
+
+                        Role.FAN -> listOf("Details", "Media")
+
+                        null -> TODO()
+                    }
 
                     // Profile Header with photo
+                    Box(Modifier.fillMaxWidth()) {
+                        IconButton(
+                            onClick = {
+                                viewModel.logout()
+                                onLogoutClick()
+                            },
+                            modifier = Modifier.align(Alignment.TopEnd)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                contentDescription = "Logout",
+                                tint = royalBlue,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    }
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.padding(top = 10.dp)
                     ) {
+
+
                         Box(
                             modifier = Modifier
                                 .size(100.dp)
@@ -180,7 +219,10 @@ fun ProfileScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                         }
+
                     }
+
+
 
                     // Username - use firstName and lastName if available
                     Text(
@@ -246,7 +288,9 @@ fun ProfileScreen(
                         0 -> DetailsTab(artist)
                         1 -> MediaContent(viewModel)
                         2 -> ReviewsTab()
-                        3 -> ServiceTab()
+                        3 -> ServiceTab(artist) {
+                            navigateToCreateService()
+                        }
                     }
                 }
             }

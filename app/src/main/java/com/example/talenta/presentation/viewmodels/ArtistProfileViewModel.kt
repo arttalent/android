@@ -30,6 +30,7 @@ import javax.inject.Inject
 class ArtistProfileViewModel @Inject constructor(
     private val repository: ArtistRepository, private val utilities: Utilities
 ) : ViewModel() {
+    val firebaseAuth = FirebaseAuth.getInstance()
 
     private val firestore = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
@@ -183,6 +184,17 @@ class ArtistProfileViewModel @Inject constructor(
                 repository.deleteMedia(mediaId, isVideo)
             } catch (e: Exception) {
                 // Handling error (e.g., show a Toast or update UI state)
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                firebaseAuth.signOut()
+                _profileState.value = ProfileUiState.Loading
+            } catch (e: Exception) {
+                Log.e("ArtistProfileViewModel", "Logout error: ${e.message}", e)
             }
         }
     }

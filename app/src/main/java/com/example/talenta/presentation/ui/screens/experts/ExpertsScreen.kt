@@ -1,6 +1,5 @@
 package com.example.talenta.presentation.ui.screens.experts
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,10 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Routes.Route
@@ -57,10 +54,10 @@ import com.example.talenta.presentation.viewmodels.ExpertViewModel
 @Composable
 fun ExpertsScreen(navController: NavController, viewModel: ExpertViewModel = hiltViewModel()) {
     var searchQuery by remember { mutableStateOf("") }
-    val experts = viewModel.experts.collectAsStateWithLifecycle().value
+    val experts = viewModel.experts.collectAsState()
 
-    LaunchedEffect(experts) {
-        println("Experts: $experts")
+    LaunchedEffect(experts.value) {
+        println("Experts: ${experts.value}")
     }
     Scaffold { paddingValues ->
         Column(
@@ -99,7 +96,7 @@ fun ExpertsScreen(navController: NavController, viewModel: ExpertViewModel = hil
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
-                items(experts) { expert ->
+                items(experts.value) { expert ->
                     ExpertCard(expert, navController)
                 }
 
@@ -118,9 +115,11 @@ fun ExpertCard(expert: User, navController: NavController) {
             .clip(RoundedCornerShape(12.dp))
             .clickable {
                 println("id from expert screen ${expert.id}")
-                navController.navigate(Route.ExpertDetail(
-                    expertId = expert.id?:""
-                ))
+                navController.navigate(
+                    Route.ExpertDetail(
+                        expert = expert
+                    )
+                )
 
             },
         elevation = CardDefaults.cardElevation(4.dp),

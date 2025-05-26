@@ -2,7 +2,6 @@ package com.example.talenta.presentation.expertAvailabilitySchedule
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.talenta.data.model.DayOfWeek
 import com.example.talenta.data.model.ExpertAvailability
 import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.repository.ExpertRepository
@@ -18,15 +17,12 @@ import kotlinx.coroutines.launch
 
 
 sealed class ExpertAvailabilityScheduleActions {
-    data class OnWeekdayDaySelect(val day: DayOfWeek) : ExpertAvailabilityScheduleActions()
-    data class AddSlotByDay(val day: DayOfWeek, val timeSlot: TimeSlot) : ExpertAvailabilityScheduleActions()
     data object SetSchedule : ExpertAvailabilityScheduleActions()
     data object ResetError : ExpertAvailabilityScheduleActions()
 }
 
 data class ExpertAvailabilityScheduleState(
     val expertAvailability: ExpertAvailability? = null,
-    val selectedDay: DayOfWeek? = null,
     val selectedDayAvailabilitySlot: List<TimeSlot> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null
@@ -55,39 +51,8 @@ class ExpertAvailabilityScheduleViewModel @AssistedInject constructor(
                 }
             }
 
-            is ExpertAvailabilityScheduleActions.OnWeekdayDaySelect -> {
-                _uiStates.update {
-                    it.copy(
-                        selectedDay = action.day,
-                        selectedDayAvailabilitySlot = it.expertAvailability?.weeklySchedule?.get(
-                            action.day
-                        )
-                            ?: emptyList()
-                    )
-                }
-            }
-
-            is ExpertAvailabilityScheduleActions.AddSlotByDay -> {
-                _uiStates.update {
-                    val currentWeeklySchedule = it.expertAvailability?.weeklySchedule
-                    currentWeeklySchedule?.get(action.day)?.toMutableList()?.add(action.timeSlot)
-                    it.copy(
-                        selectedDay = action.day,
-                        selectedDayAvailabilitySlot = it.expertAvailability?.weeklySchedule?.get(
-                            action.day
-                        )
-                            ?.plus(action.timeSlot)
-                            ?: emptyList(),
-                        expertAvailability = it.expertAvailability?.copy(
-                            weeklySchedule = currentWeeklySchedule
-                                ?: it.expertAvailability.weeklySchedule
-                        )
-                    )
-                }
-            }
-
             ExpertAvailabilityScheduleActions.SetSchedule -> {
-                viewModelScope.launch {
+            /*    viewModelScope.launch {
                     _uiStates.update {
                         it.copy(
                             isLoading = true,
@@ -118,7 +83,7 @@ class ExpertAvailabilityScheduleViewModel @AssistedInject constructor(
                             }
                         }
                     }
-                }
+                }*/
             }
         }
     }

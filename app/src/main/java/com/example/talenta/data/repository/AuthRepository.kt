@@ -14,6 +14,7 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.toObject
 import com.google.firebase.messaging.FirebaseMessaging
@@ -41,6 +42,7 @@ class AuthRepository @Inject constructor(
             val result = auth.signInWithEmailAndPassword(email, password).await()
             if (result.user != null) {
                 updateFirebaseToken(firebaseMessaging.token.await())
+                getUserProfile()
                 AuthUiState.Success
             } else {
                 AuthUiState.Error("Authentication failed. Please try again.")
@@ -129,7 +131,7 @@ class AuthRepository @Inject constructor(
         return auth.currentUser != null
     }
 
-    suspend fun logout() {
+    fun logout() {
         auth.signOut()
     }
 
@@ -146,6 +148,18 @@ class AuthRepository @Inject constructor(
             Result.success(user)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun getUsers(ids: List<String>): FirestoreResult<List<User>> {
+        return safeFirebaseCall {
+            val snapshot = userCollection
+                .whereIn(FieldPath.documentId(), ids)
+                .get()
+                .await()
+
+            val users = snapshot.documents.mapNotNull { it.toObject(User::class.java) }
+            users
         }
     }
 
