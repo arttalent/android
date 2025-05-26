@@ -1,6 +1,5 @@
 package com.example.talenta.presentation.myBookings
 
-import com.example.talenta.presentation.myBookings.components.BookingListCard
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,11 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.talenta.R
+import com.example.talenta.presentation.myBookings.components.BookingListCard
 
 @Composable
 fun MyBookingsScreen(
@@ -132,12 +131,7 @@ fun MyBookingsScreen(
                     BookingListCard(
                         booking = booking,
                         user = user,
-                        onDocumentClick = {
-                            // Handle document click
-                        },
-                        onViewClick = {
-                            // Handle view click
-                        }
+                        onCardClick = {}
                     )
                 }
             }

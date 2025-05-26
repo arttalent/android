@@ -1,6 +1,5 @@
 package com.example.talenta.presentation.myBookings.components
 
-import com.example.talenta.data.model.getTitle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +39,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.data.model.Booking
 import com.example.talenta.data.model.User
+import com.example.talenta.data.model.getTitle
+import com.example.talenta.utils.formatIsoToFormatterDateTime
 
 @Composable
 fun BookingDetailCard(
@@ -224,7 +225,8 @@ fun BookingDetailCard(
                         modifier = Modifier.padding(bottom = 16.dp)
                     ) {
                         Text(
-                            text = selectedService?.serviceType?.getTitle() ?: "Online Video Assessment",
+                            text = selectedService?.serviceType?.getTitle()
+                                ?: "Online Video Assessment",
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             fontSize = 14.sp,
                             color = Color.DarkGray
@@ -286,7 +288,7 @@ fun BookingDetailCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = booking.scheduledStartTime,
+                        text = formatIsoToFormatterDateTime(booking.scheduledStartTime),
                         fontSize = 14.sp,
                         color = Color.Gray
                     )

@@ -46,14 +46,14 @@ import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.model.User
 import com.example.talenta.data.model.getTitle
+import com.example.talenta.utils.formatIsoToFormatterDateTime
 
 @Composable
 fun BookingListCard(
     booking: Booking,
     user: User,
-    onDocumentClick: () -> Unit = {},
-    onViewClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCardClick: () -> Unit = {}
 ) {
     val selectedService = user.expertService?.find {
         it.serviceId == booking.serviceId
@@ -63,7 +63,8 @@ fun BookingListCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        onClick = onCardClick
     ) {
         Column(
             modifier = Modifier
@@ -168,24 +169,6 @@ fun BookingListCard(
                     // Payment status chip
                     PaymentStatusChip(paymentStatus = booking.paymentStatus)
                 }
-
-                // Action icons
-                Row {
-                    Icon(
-                        painter = painterResource(R.drawable.document),
-                        contentDescription = "Document",
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(20.dp),
-                        tint = Color.Gray
-                    )
-                    Icon(
-                        painter = painterResource(R.drawable.view),
-                        contentDescription = "View",
-                        modifier = Modifier.size(20.dp),
-                        tint = Color.Gray
-                    )
-                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -227,7 +210,7 @@ fun BookingListCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = booking.scheduledStartTime,
+                            text = formatIsoToFormatterDateTime(booking.scheduledStartTime),
                             fontSize = 14.sp,
                             color = Color.Gray
                         )

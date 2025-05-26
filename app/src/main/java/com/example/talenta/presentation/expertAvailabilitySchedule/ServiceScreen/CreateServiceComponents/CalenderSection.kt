@@ -39,16 +39,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
+import kotlinx.datetime.LocalDateTime
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 @Composable
 fun CalendarSection(
-    selectedStartDate: Long?,
-    selectedEndDate: Long?,
-    onDatesSelected: (Long?, Long?) -> Unit
+    selectedStartDate: LocalDateTime?,
+    selectedEndDate: LocalDateTime?,
+    onDatesSelected: (LocalDateTime?, LocalDateTime?) -> Unit
 ) {
     val primaryBlue = Color(0xFF4A6FFF)
     val lightBlue = Color(0xFFE6EEFF)
@@ -90,7 +90,8 @@ fun CalendarSection(
         IconButton(onClick = {
             if (currentMonthOffset > 0 ||
                 (currentViewYear > currentYear) ||
-                (currentViewYear == currentYear && currentViewMonth > currentMonth)) {
+                (currentViewYear == currentYear && currentViewMonth > currentMonth)
+            ) {
                 currentMonthOffset -= 1
                 updateCalendarDisplay(
                     currentMonthOffset, currentCalendar,
@@ -164,8 +165,8 @@ fun CalendarSection(
 
     // Selected date range display
     if (selectedStartDate != null && selectedEndDate != null) {
-        val startDateStr = dateFormat.format(Date(selectedStartDate))
-        val endDateStr = dateFormat.format(Date(selectedEndDate))
+        val startDateStr = selectedStartDate.dayOfMonth.toString() + "/" + selectedStartDate.month
+        val endDateStr = selectedEndDate.dayOfMonth.toString() + "/" + selectedEndDate.month
         Text(
             text = "Selected Range: $startDateStr - $endDateStr",
             fontSize = 14.sp,
@@ -185,7 +186,7 @@ fun CalendarGrid(
     currentMonth: Int,
     currentDay: Int,
     selectedDates: MutableList<Int>,
-    onDatesSelected: (Long?, Long?) -> Unit,
+    onDatesSelected: (LocalDateTime?, LocalDateTime?) -> Unit,
     primaryBlue: Color,
     lightBlue: Color
 ) {
@@ -202,7 +203,8 @@ fun CalendarGrid(
 
                 if (day in 1..currentMonthTotalDays) {
                     val isSelected = day in selectedDates
-                    val isRangeEndpoint = day == selectedDates.firstOrNull() || day == selectedDates.lastOrNull()
+                    val isRangeEndpoint =
+                        day == selectedDates.firstOrNull() || day == selectedDates.lastOrNull()
 
                     val isPastDate = (currentViewYear < currentYear) ||
                             (currentViewYear == currentYear && currentViewMonth < currentMonth) ||
@@ -246,12 +248,20 @@ fun CalendarGrid(
                                     selectionStartDay = null
 
                                     // Update dates
-                                    val calendar = Calendar.getInstance()
-                                    calendar.set(currentViewYear, currentViewMonth, selectedDates.minOrNull()!!)
-                                    val startDate = calendar.timeInMillis
-
-                                    calendar.set(currentViewYear, currentViewMonth, selectedDates.maxOrNull()!!)
-                                    val endDate = calendar.timeInMillis
+                                   val startDate = kotlinx.datetime.LocalDateTime(
+                                        year = currentViewYear,
+                                        monthNumber = currentViewMonth,
+                                        dayOfMonth = selectedDates.minOrNull()!!,
+                                        hour = 0,
+                                        minute = 0,
+                                    )
+                                    val endDate = kotlinx.datetime.LocalDateTime(
+                                        year = currentViewYear,
+                                        monthNumber = currentViewMonth,
+                                        dayOfMonth = selectedDates.maxOrNull()!!,
+                                        hour = 0,
+                                        minute = 0,
+                                    )
 
                                     onDatesSelected(startDate, endDate)
                                 } else {

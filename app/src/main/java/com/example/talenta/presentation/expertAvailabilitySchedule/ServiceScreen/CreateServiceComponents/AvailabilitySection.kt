@@ -15,14 +15,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 fun AvailabilitySection(
-    selectedStartDate: Long?,
-    selectedEndDate: Long?,
+    selectedStartDate: LocalDateTime?,
+    selectedEndDate: LocalDateTime?,
     selectedStartTime: String,
     selectedEndTime: String,
-    onDatesSelected: (Long?, Long?) -> Unit,
+    onDatesSelected: (LocalDateTime?, LocalDateTime?) -> Unit,
     onStartTimeSelected: (String) -> Unit,
     onEndTimeSelected: (String) -> Unit
 ) {
