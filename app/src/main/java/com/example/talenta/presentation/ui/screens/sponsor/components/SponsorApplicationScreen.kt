@@ -9,24 +9,18 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.talenta.presentation.ui.screens.sponsor.SponsorViewModel
 
 @Composable
-fun SponsorDashboardScreen(
-    sponsorViewModel: SponsorViewModel = hiltViewModel()
-) {
-    val user = sponsorViewModel.user.value.user
+fun SponsorApplicationScreen() {
     Box(
         modifier = Modifier
             .padding(50.dp)
     ) {
         Text(
-            text = "Sponsor Dashboard",
+            text = "Sponsor Applications",
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp,
             fontFamily = FontFamily.SansSerif,
-
-            )
+        )
     }
 }

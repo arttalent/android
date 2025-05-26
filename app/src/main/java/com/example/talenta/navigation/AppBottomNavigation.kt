@@ -96,6 +96,8 @@ fun AppBottomNavigationForArtist(navController: NavController) {
 fun AppBottomNavigationForSponsor(navController: NavController) {
     val items = listOf(
         BottomNavRouteSponsor.SponsorDashBoard,
+        BottomNavRouteSponsor.SponsorArtist,
+        BottomNavRouteSponsor.SponsorExpert,
         BottomNavRouteSponsor.SponsorApplication,
         BottomNavRouteSponsor.SponsorProfile
     )

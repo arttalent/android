@@ -1,6 +1,5 @@
 package com.example.talenta.presentation.ui.screens.experts
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +45,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Routes.Route
@@ -118,9 +115,11 @@ fun ExpertCard(expert: User, navController: NavController) {
             .clip(RoundedCornerShape(12.dp))
             .clickable {
                 println("id from expert screen ${expert.id}")
-                navController.navigate(Route.ExpertDetail(
-                    expertId = expert.id?:""
-                ))
+                navController.navigate(
+                    Route.ExpertDetail(
+                        expertId = expert.id ?: ""
+                    )
+                )
 
             },
         elevation = CardDefaults.cardElevation(4.dp),

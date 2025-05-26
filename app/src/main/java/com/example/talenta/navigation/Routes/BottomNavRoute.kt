@@ -23,16 +23,27 @@ sealed class BottomNavRouteSponsor(
     val route: Route, val title: String, val icon: Int
 ) {
     object SponsorDashBoard :
-        BottomNavRouteSponsor(Route.Dashboard, "Explore", R.drawable.dashboard)
+        BottomNavRouteSponsor(Route.SponsorDashboard, "Dashboard", R.drawable.dashboard)
+
+    object SponsorArtist :
+        BottomNavRouteSponsor(Route.SponsorArtist, "Artist", R.drawable.dashboard)
+
+    object SponsorExpert :
+        BottomNavRouteSponsor(Route.SponsorExpert, "Expert", R.drawable.dashboard)
+
 
     object SponsorApplication :
-        BottomNavRouteSponsor(Route.MyBookings, "Applications", R.drawable.mybookings)
+        BottomNavRouteSponsor(Route.SponsorApplication, "Application", R.drawable.mybookings)
 
     object SponsorProfile : BottomNavRouteSponsor(Route.Profile, "Profile", R.drawable.profile)
 
     companion object {
         fun getAllRoutes(): List<Route> = listOf(
-            SponsorDashBoard.route, SponsorApplication.route, SponsorProfile.route
+            SponsorDashBoard.route,
+            SponsorApplication.route,
+            SponsorProfile.route,
+            SponsorArtist.route,
+            SponsorExpert.route
         )
     }
 }

@@ -17,7 +17,7 @@ class SponsorRepositoryImpl @Inject constructor(
     @Named("users") private val userCollection: CollectionReference,
 ) : SponsorRepository {
 
-    suspend fun fetchExperts(): FirestoreResult<List<User>> = withContext(Dispatchers.IO) {
+    override suspend fun fetchExpert(): FirestoreResult<List<User>> = withContext(Dispatchers.IO) {
         safeFirebaseCall {
             val snapshot = userCollection.whereEqualTo("role", "EXPERT").get().await()
             snapshot.documents.mapNotNull { snapshot ->
@@ -29,6 +29,16 @@ class SponsorRepositoryImpl @Inject constructor(
     override suspend fun fetchUser(): FirestoreResult<List<User>> = withContext(Dispatchers.IO) {
         safeFirebaseCall {
             val snapshot = userCollection.get().await()
+            snapshot.documents.mapNotNull { snapshot ->
+                snapshot.toObject(User::class.java)
+            }
+        }
+    }
+
+
+    override suspend fun fetchArtist(): FirestoreResult<List<User>> = withContext(Dispatchers.IO) {
+        safeFirebaseCall {
+            val snapshot = userCollection.whereEqualTo("role", "ARTIST").get().await()
             snapshot.documents.mapNotNull { snapshot ->
                 snapshot.toObject(User::class.java)
             }

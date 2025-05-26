@@ -10,42 +10,63 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.expertAvailabilitySchedule.CreateServiceScreen
-import com.example.talenta.presentation.ui.screens.ExpertDashBoardScreen
 import com.example.talenta.presentation.ui.screens.HostScreen
-import com.example.talenta.presentation.ui.screens.MyBookingsScreen
-import com.example.talenta.presentation.ui.screens.ReportScreen
+import com.example.talenta.presentation.ui.screens.booking.MyBookingsScreen
+import com.example.talenta.presentation.ui.screens.booking.ReportScreen
+import com.example.talenta.presentation.ui.screens.experts.ExpertDashBoardScreen
 import com.example.talenta.presentation.ui.screens.experts.ExpertsScreen
+import com.example.talenta.presentation.ui.screens.experts.tabs.DashBoardScreen
 import com.example.talenta.presentation.ui.screens.profile.ProfileScreen
+import com.example.talenta.presentation.ui.screens.sponsor.components.SponsorApplicationScreen
+import com.example.talenta.presentation.ui.screens.sponsor.components.SponsorArtistScreen
 import com.example.talenta.presentation.ui.screens.sponsor.components.SponsorDashboardScreen
+import com.example.talenta.presentation.ui.screens.sponsor.components.SponsorExpertScreen
 
 fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, startDestination: Route) {
     navigation<Route.HostGraph>(
         startDestination = startDestination
     ) {
         composable<Route.Dashboard> {
+
             HostScreen(
-                navController = navController, content = { SponsorDashboardScreen() })
+                navController = navController, content = { DashBoardScreen() })
         }
 
         composable<Route.ExpertDashboard> {
             HostScreen(
+
                 navController = navController, content = { ExpertDashBoardScreen() })
         }
 
+        // Sponsor Nav
+
         composable<Route.SponsorDashboard> {
             HostScreen(
-                navController = navController, content = { ExpertDashBoardScreen() })
+                navController = navController, content = {
+                    SponsorDashboardScreen()
+                })
         }
 
         composable<Route.SponsorApplication> {
             HostScreen(
-                navController = navController, content = { ExpertDashBoardScreen() })
+                navController = navController, content = { SponsorApplicationScreen() })
         }
 
-        composable<Route.SponsorProfile> {
+//        composable<Route.SponsorProfile> {
+//            HostScreen(
+//                navController = navController, content = { () })
+//        }
+
+        composable<Route.SponsorArtist> {
             HostScreen(
-                navController = navController, content = { ExpertDashBoardScreen() })
+                navController = navController, content = { SponsorArtistScreen() })
         }
+
+        composable<Route.SponsorExpert> {
+            HostScreen(
+                navController = navController, content = { SponsorExpertScreen() })
+        }
+
 
 
         composable<Route.Experts> {

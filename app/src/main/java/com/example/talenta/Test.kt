@@ -1,199 +1,314 @@
-//package com.example.talenta
-//
-//import com.example.talenta.data.model.Certificate
-//import com.example.talenta.data.model.Expert
-//import com.example.talenta.data.model.Person
-//import com.example.talenta.data.model.Photo
-//import com.example.talenta.data.model.Video
-//import com.google.firebase.firestore.FirebaseFirestore
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.tasks.await
-//import kotlinx.coroutines.withContext
-//
-//object Test {
-//    private val firestore = FirebaseFirestore.getInstance()
-//    private val expertsCollection = firestore.collection("experts")
-//    suspend fun addMultipleDummyExperts() {
-//        val dummyExperts = listOf(
-//            Expert(
-//                person = Person(
-//                    id = "exp001", firstName = "Alice", lastName = "Smith",
-//                    email = "alice.smith@example.com", profession = "Graphic Designer",
-//                    subProfession = "UI/UX Designer", countryCode = "+1",
-//                    mobileNumber = "9876543210", photoUrl = "https://example.com/alice.jpg",
-//                    gender = "Female", age = 28, birthYear = 1996,
-//                    language = "English, French", height = "168 cm",
-//                    weight = "60 kg", ethnicity = "Caucasian", color = "Fair",
-//                    city = "Los Angeles", country = "USA", bioData = "Creative UI/UX Designer"
-//                ),
-//                reviews = 5, // Changed to an Int as per your model
-//                location = "Los Angeles, USA", // Changed to a String as per your model
-//                rating = 4,
-//                followers = 1200
-//            ),
-//            Expert(
-//                person = Person(
-//                    id = "exp002",
-//                    firstName = "Bob",
-//                    lastName = "Johnson",
-//                    email = "bob.johnson@example.com",
-//                    profession = "Software Engineer",
-//                    subProfession = "Backend Developer",
-//                    countryCode = "+44",
-//                    mobileNumber = "123456789",
-//                    photoUrl = "https://example.com/bob.jpg",
-//                    gender = "Male",
-//                    age = 32,
-//                    birthYear = 1992,
-//                    language = "English, German",
-//                    height = "180 cm",
-//                    weight = "75 kg",
-//                    ethnicity = "African",
-//                    color = "Dark",
-//                    city = "London",
-//                    country = "UK",
-//                    bioData = "Backend engineer specializing in Java"
-//                ),
-//                reviews = 7, // Changed to an Int
-//                location = "London, UK", // Changed to a String
-//                rating = 5,
-//                followers = 900
-//            ),
-//            Expert(
-//                person = Person(
-//                    id = "exp003",
-//                    firstName = "Charlie",
-//                    lastName = "Brown",
-//                    email = "charlie.brown@example.com",
-//                    profession = "Data Scientist",
-//                    subProfession = "Machine Learning Engineer",
-//                    countryCode = "+91",
-//                    mobileNumber = "9876543210",
-//                    photoUrl = "https://example.com/charlie.jpg",
-//                    gender = "Male",
-//                    age = 29,
-//                    birthYear = 1995,
-//                    language = "English, Hindi",
-//                    height = "175 cm",
-//                    weight = "72 kg",
-//                    ethnicity = "Asian",
-//                    color = "Medium",
-//                    city = "Bangalore",
-//                    country = "India",
-//                    bioData = "ML Engineer with Python expertise"
-//                ),
-//                reviews = 10, // Changed to an Int
-//                location = "Bangalore, India", // Changed to a String
-//                rating = 5,
-//                followers = 1100
-//            )
-//        )
-//
-//        for (expert in dummyExperts) {
-//            val result = uploadExpert(expert)
-//            if (result.isSuccess) {
-//                println("Uploaded: ${expert.person.firstName} ${expert.person.lastName}")
-//            } else {
-//                println("Failed to upload: ${expert.person.firstName} ${expert.person.lastName}")
-//            }
-//        }
-//    }
-//
-//    private suspend fun uploadExpert(expert: Expert): Result<Unit> = withContext(Dispatchers.IO) {
-//        return@withContext try {
-//            expertsCollection.document(expert.person.id).set(expert).await()
-//            println("Successfully uploaded: ${expert.person.firstName} ${expert.person.lastName}")
-//            Result.success(Unit)
-//        } catch (e: Exception) {
-//            println("Error uploading ${expert.person.firstName} ${expert.person.lastName}: ${e.localizedMessage}")
-//            Result.failure(e)
-//        }
-//    }
-//
-//
-//    suspend fun updateExpertWithDummyData(expert: Expert): Result<Unit> =
-//        withContext(Dispatchers.IO) {
-//            return@withContext try {
-//                val updatedExpert = expert.copy(
-//                    person = expert.person.copy(
-//                        firstName = "John",
-//                        lastName = "Doe",
-//                        email = "john.doe@example.com",
-//                        profession = "Software Developer",
-//                        subProfession = "Android Developer",
-//                        countryCode = "+1",
-//                        mobileNumber = "9876543210",
-//                        photoUrl = "https://example.com/john.jpg",
-//                        gender = "Male",
-//                        age = 30,
-//                        birthYear = 1994,
-//                        language = "English",
-//                        height = "180 cm",
-//                        weight = "75 kg",
-//                        ethnicity = "Caucasian",
-//                        color = "Fair",
-//                        city = "New York",
-//                        country = "USA",
-//                        bioData = "Experienced Android Developer with 8 years in Kotlin and Java.",
-//                        socialMediaLinks = expert.person.socialMediaLinks.copy(
-//                            facebook = "https://facebook.com/johndoe",
-//                            instagram = "https://instagram.com/johndoe",
-//                            linkedin = "https://linkedin.com/in/johndoe",
-//                            twitter = "https://twitter.com/johndoe"
-//                        ),
-//                        certificatesList = listOf(
-//                            Certificate(
-//                                id = "cert001",
-//                                imageUrl = "https://example.com/cert1.jpg",
-//                                description = "Kotlin Certified"
-//                            ),
-//                            Certificate(
-//                                id = "cert002",
-//                                imageUrl = "https://example.com/cert2.jpg",
-//                                description = "Google AAD Certified"
-//                            )
-//                        ),
-//                        photos = listOf(
-//                            Photo(
-//                                id = "photo001",
-//                                imageUrl = "https://example.com/photo1.jpg",
-//                                description = "At a tech conference"
-//                            ),
-//                            Photo(
-//                                id = "photo002",
-//                                imageUrl = "https://example.com/photo2.jpg",
-//                                description = "Winning Hackathon"
-//                            )
-//                        ),
-//                        videos = listOf(
-//                            Video(
-//                                id = "video001",
-//                                videoUrl = "https://example.com/video1.mp4",
-//                                thumbnailUrl = "https://example.com/thumb1.jpg",
-//                                description = "Kotlin tutorial"
-//                            ),
-//                            Video(
-//                                id = "video002",
-//                                videoUrl = "https://example.com/video2.mp4",
-//                                thumbnailUrl = "https://example.com/thumb2.jpg",
-//                                description = "Jetpack Compose workshop"
-//                            )
-//                        ),
-//                        skills = listOf("Kotlin", "Jetpack Compose", "MVVM", "Firestore")
-//                    ),
-//                    reviews = 12,
-//                    location = "New York, USA",
-//                    rating = 5,
-//                    followers = 2500
-//                )
-//
-//                expertsCollection.document(expert.person.id).set(updatedExpert).await()
-//                println("Successfully updated expert: ${updatedExpert.person.firstName} ${updatedExpert.person.lastName}")
-//                Result.success(Unit)
-//            } catch (e: Exception) {
-//                println("Error updating dummy expert: ${e.localizedMessage}")
-//                Result.failure(e)
-//            }
-//        }
-//
-//}
+package com.example.talenta
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.example.talenta.data.model.Bio
+import com.example.talenta.data.model.Certificate
+import com.example.talenta.data.model.Ethnicity
+import com.example.talenta.data.model.Media
+import com.example.talenta.data.model.MediaType
+import com.example.talenta.data.model.PhysicalAttributes
+import com.example.talenta.data.model.ProfessionalData
+import com.example.talenta.data.model.SocialMediaLinks
+import com.example.talenta.data.model.SponsorDetails
+import com.example.talenta.data.model.SponsorType
+import com.example.talenta.data.model.User
+
+
+object Test {
+    val mockUser = User(
+        id = "user_001",
+        firstName = "John",
+        lastName = "Doe",
+        email = "john.doe@example.com",
+        phoneNumber = "+1234567890",
+        physicalAttributes = PhysicalAttributes(
+            height = "180 cm",
+            weight = "75 kg",
+            gender = "Male",
+            age = 30,
+            ethnicity = Ethnicity.WHITE,
+            color = "Fair"
+        ),
+        profilePicture = "https://example.com/images/john_doe.jpg",
+        bio = Bio(
+            city = "New York",
+            country = "USA",
+            bioData = "Professional guitarist and music teacher with over 10 years of experience.",
+            language = "English",
+            socialMediaLinks = SocialMediaLinks(
+                facebook = "john.doe.fb",
+                instagram = "john_doe_ig",
+                linkedin = "john-doe-linkedin",
+                twitter = "john_doe_tw"
+            )
+        ),
+        role = null,
+        isVerified = true,
+        isBlocked = false,
+        professionalData = ProfessionalData(
+            profession = "Musician",
+            subProfession = "Guitarist",
+            media = listOf(
+                Media(
+                    url = "https://example.com/media/guitar1.jpg",
+                    type = MediaType.IMAGE,
+                    description = "Playing live concert",
+                    timestamp = System.currentTimeMillis()
+                )
+            ),
+            skills = listOf("GUITAR", "THEORY_TEACHING"),
+            certifications = listOf("Guitar Level 1", "Music Theory Certificate"),
+            certificatesList = listOf(
+                Certificate(
+                    id = "cert_01",
+                    imageUrl = "https://example.com/certificates/cert1.jpg",
+                    description = "Guitar Level 1 Certificate",
+                    timestamp = System.currentTimeMillis()
+                )
+            )
+        ),
+        sponsorDetails = SponsorDetails(
+            sponsorType = SponsorType.INDIVIDUAL,
+            profileInterests = listOf("Music", "Teaching"),
+            companyName = "",
+            address = ""
+        )
+    )
+
+    val mockUsersList = listOf(
+        mockUser,
+        mockUser.copy(
+            id = "user_002",
+            firstName = "Alice",
+            lastName = "Smith",
+            bio = mockUser.bio.copy(city = "Los Angeles"),
+            professionalData = mockUser.professionalData.copy(profession = "Singer")
+        ),
+        mockUser.copy(
+            id = "user_003",
+            firstName = "Bob",
+            lastName = "Johnson",
+            bio = mockUser.bio.copy(city = "Chicago"),
+            professionalData = mockUser.professionalData.copy(profession = "Pianist")
+        ),
+        mockUser.copy(
+            id = "user_004",
+            firstName = "Carol",
+            lastName = "Williams",
+            bio = mockUser.bio.copy(city = "Miami"),
+            professionalData = mockUser.professionalData.copy(profession = "Music Teacher")
+        ),
+        mockUser.copy(
+            id = "user_005",
+            firstName = "David",
+            lastName = "Brown",
+            bio = mockUser.bio.copy(city = "Seattle"),
+            professionalData = mockUser.professionalData.copy(profession = "Music Therapist")
+        ),
+        mockUser.copy(
+            id = "user_006",
+            firstName = "Eva",
+            lastName = "Davis",
+            bio = mockUser.bio.copy(city = "Austin"),
+            professionalData = mockUser.professionalData.copy(profession = "Singer")
+        ),
+        mockUser.copy(
+            id = "user_007",
+            firstName = "Frank",
+            lastName = "Miller",
+            bio = mockUser.bio.copy(city = "Denver"),
+            professionalData = mockUser.professionalData.copy(profession = "Guitarist")
+        ),
+        mockUser.copy(
+            id = "user_008",
+            firstName = "Grace",
+            lastName = "Wilson",
+            bio = mockUser.bio.copy(city = "Boston"),
+            professionalData = mockUser.professionalData.copy(profession = "Pianist")
+        ),
+        mockUser.copy(
+            id = "user_009",
+            firstName = "Henry",
+            lastName = "Moore",
+            bio = mockUser.bio.copy(city = "San Francisco"),
+            professionalData = mockUser.professionalData.copy(profession = "Composer")
+        ),
+        mockUser.copy(
+            id = "user_010",
+            firstName = "Isabel",
+            lastName = "Taylor",
+            bio = mockUser.bio.copy(city = "Portland"),
+            professionalData = mockUser.professionalData.copy(profession = "Instrumental Teacher")
+        )
+    )
+}
+
+@Composable
+fun SponsorTemplateScreen(
+    experts: List<User>,
+    onSearchQueryChange: (String) -> Unit,
+    searchQuery: String,
+    onExpertClick: (User) -> Unit,
+    modifier: Modifier = Modifier,
+    showSearch: Boolean = true,
+) {
+    Scaffold { paddingValues ->
+        Column(
+            modifier = modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            // Optional Search Bar
+            if (showSearch) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    placeholder = { Text("Search") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search"
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Color.LightGray,
+                        focusedBorderColor = Color.Gray,
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
+                )
+            }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(items = experts) { expert ->
+                    ExpertCard(expert = expert, onClick = { onExpertClick(expert) })
+                }
+            }
+
+        }
+    }
+
+}
+
+@Composable
+fun ExpertCard(
+    expert: User,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+    ) {
+        Column(modifier = Modifier.padding(10.dp)) {
+            // Image
+            AsyncImage(
+                model = expert.profilePicture,
+                contentDescription = null,
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center,
+                placeholder = painterResource(R.drawable.placeholder),
+                error = painterResource(R.drawable.placeholder)
+            )
+
+            Spacer(Modifier.height(5.dp))
+
+            // Rating Row (Dummy)
+            Row {
+                repeat(5) { index ->
+                    Icon(
+                        painter = painterResource(id = if (index < 2) R.drawable.star_filled else R.drawable.star_outline),
+                        contentDescription = null,
+                        tint = Color(0xFFFFC107),
+                        modifier = Modifier.run { size(16.dp) }
+                    )
+                }
+            }
+
+            Text(
+                text = "Todo reviews",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray,
+                modifier = Modifier.padding(start = 4.dp)
+            )
+
+            Spacer(Modifier.height(5.dp))
+
+            // Name & Location
+            Text(
+                text = "${expert.firstName} ${expert.lastName}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = "${expert.professionalData.profession} | ${expert.bio.country}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // Description
+            Text(
+                text = expert.bio.bioData,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.DarkGray,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+

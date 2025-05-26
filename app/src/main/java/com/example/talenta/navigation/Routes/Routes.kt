@@ -71,6 +71,10 @@ sealed class Route() {
     // sponsor
     @Serializable
     object SponsorDashboard : Route()
+    @Serializable
+    object SponsorExpert : Route()
+    @Serializable
+    object SponsorArtist : Route()
 
     @Serializable
     object SponsorApplication : Route()

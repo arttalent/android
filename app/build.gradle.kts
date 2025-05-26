@@ -71,6 +71,7 @@ dependencies {
 
     // Viewmodel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
 
     // Navigation
     implementation(libs.androidx.navigation.runtime.ktx)
@@ -114,5 +115,6 @@ dependencies {
 
     // In your commonMain or app-level build.gradle.kts
     implementation(libs.kotlinx.datetime) // or latest
+    implementation(kotlin("test"))
 
 }

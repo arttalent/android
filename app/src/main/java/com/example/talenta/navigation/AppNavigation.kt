@@ -21,7 +21,7 @@ import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.expertAvailabilitySchedule.ExpertAvailabilitySchedule
 import com.example.talenta.presentation.expertBooking.ExpertBooking
 import com.example.talenta.presentation.ui.screens.HostViewModel
-import com.example.talenta.presentation.ui.screens.MyBookingsScreen
+import com.example.talenta.presentation.ui.screens.booking.MyBookingsScreen
 import com.example.talenta.presentation.ui.screens.experts.ExpertDetailedScreen
 import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
 
@@ -52,6 +52,7 @@ fun AppNavigation(isLoggedIn: Boolean) {
     val dynamicStartDestination = when (role) {
         "ARTIST" -> Route.Dashboard
         "EXPERT" -> Route.ExpertDashboard
+        "SPONSOR" -> Route.SponsorDashboard
         else -> Route.Dashboard
     }
 

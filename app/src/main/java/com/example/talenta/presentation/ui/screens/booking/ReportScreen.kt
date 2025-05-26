@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.ui.screens
+package com.example.talenta.presentation.ui.screens.booking
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
