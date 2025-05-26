@@ -51,11 +51,14 @@ import com.example.talenta.utils.formatIsoToFormatterDateTime
 @Composable
 fun BookingListCard(
     booking: Booking,
+    currentUser: User?,
     user: User,
     modifier: Modifier = Modifier,
     onCardClick: () -> Unit = {}
 ) {
-    val selectedService = user.expertService?.find {
+    var selectedService = user.expertService?.find {
+        it.serviceId == booking.serviceId
+    } ?: currentUser?.expertService?.find {
         it.serviceId == booking.serviceId
     }
 
@@ -134,12 +137,14 @@ fun BookingListCard(
                 }
 
                 // Rate
-                Text(
-                    text = "$${selectedService?.perHourCharge}/hr",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = colorResource(R.color.royal_blue)
-                )
+                if (currentUser?.isArtist == true) {
+                    Text(
+                        text = "$${selectedService?.perHourCharge}/hr",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = colorResource(R.color.royal_blue)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -227,6 +232,38 @@ fun BookingListCard(
 @Preview(showBackground = true)
 @Composable
 private fun BookingListCardPreview() {
+    val fakeUser = User(
+        id = "U1",
+        firstName = "John",
+        lastName = "Doe",
+        profilePicture = "",
+        bio = Bio(country = "USA"),
+        professionalData = ProfessionalData(profession = "Guitarist"),
+        expertService = listOf(
+            Service(
+                serviceId = "S1",
+                serviceType = ServiceType.TRAINING,
+                serviceTitle = ServiceType.TRAINING.getTitle(),
+                perHourCharge = 50f,
+                isActive = true,
+                expertAvailability = ExpertAvailability(
+                    timezone = "Asia/Kolkata",
+                    schedule = listOf(
+                        Schedule(
+                            DateSlot(
+                                startDateTime = "2025-06-01T10:00:00Z",
+                                endDateTime = "2025-06-01T12:00:00Z"
+                            ), TimeSlot(
+                                start = "10:00",
+                                end = "12:00"
+                            )
+                        )
+                    )
+                )
+
+            )
+        )
+    )
     BookingListCard(
         booking = Booking(
             bookingId = "B1234",
@@ -236,38 +273,10 @@ private fun BookingListCardPreview() {
             scheduledStartTime = "2025-06-01T10:00:00Z",
             timeInHrs = 2
         ),
-        user = User(
-            id = "U1",
-            firstName = "John",
-            lastName = "Doe",
-            profilePicture = "",
-            bio = Bio(country = "USA"),
-            professionalData = ProfessionalData(profession = "Guitarist"),
-            expertService = listOf(
-                Service(
-                    serviceId = "S1",
-                    serviceType = ServiceType.TRAINING,
-                    serviceTitle = ServiceType.TRAINING.getTitle(),
-                    perHourCharge = 50f,
-                    isActive = true,
-                    expertAvailability = ExpertAvailability(
-                        timezone = "Asia/Kolkata",
-                        schedule = listOf(
-                            Schedule(
-                                DateSlot(
-                                    startDateTime = "2025-06-01T10:00:00Z",
-                                    endDateTime = "2025-06-01T12:00:00Z"
-                                ), TimeSlot(
-                                    start = "10:00",
-                                    end = "12:00"
-                                )
-                            )
-                        )
-                    )
-
-                )
-            )
-        )
+        currentUser = fakeUser,
+        user = fakeUser
     )
+
+
 }
 

@@ -127,6 +127,7 @@ fun MyBookingsScreen(
                     BookingListCard(
                         booking = booking,
                         user = user,
+                        currentUser = uiStates.currentUser,
                         onCardClick = {}
                     )
                 }
