@@ -2,7 +2,8 @@ package com.example.talenta.presentation.ui.screens.profile
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,12 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -34,16 +31,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
-import com.example.talenta.R
-import com.example.talenta.presentation.state.UploadState
+import com.example.talenta.data.model.MediaType
+import com.example.talenta.presentation.ui.screens.Fab
 import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
+import com.example.talenta.presentation.viewmodels.UploadMediaState
 
 @Composable
 fun Field(
@@ -76,34 +72,24 @@ fun Field(
 
 @Composable
 fun AddMediaButton(
+    modifier: Modifier = Modifier,
     viewModel: ArtistProfileViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
     // Add button in the top-right corner
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp, end = 16.dp),
         contentAlignment = Alignment.TopEnd
     ) {
-        IconButton(
-            onClick = { showDialog = true }
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Add Media",
-                tint = colorResource(R.color.royal_blue)
-            )
+        Fab {
+            showDialog = true
         }
     }
 
-    if (showDialog) {
-        AddMediaDialog(
-            onDismiss = { showDialog = false },
-            viewModel = viewModel
-        )
-    }
+
 }
 
 @Composable
@@ -111,36 +97,35 @@ fun AddMediaDialog(
     onDismiss: () -> Unit,
     viewModel: ArtistProfileViewModel
 ) {
-    var selectedMediaType by remember { mutableStateOf<String?>(null) }
+    var selectedMediaType by remember { mutableStateOf<MediaType?>(null) }
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     var description by remember { mutableStateOf("") }
     var isUploading by remember { mutableStateOf(false) }
 
     // Observe the upload state
-    val uploadState by viewModel.uploadState.collectAsState()
+    val uploadState by viewModel.profileState.collectAsState()
 
     // Set up image/video picker
-    val context = LocalContext.current
     val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = PickVisualMedia()
     ) { uri: Uri? ->
         selectedUri = uri
     }
 
     // Effect to handle upload state changes
     LaunchedEffect(uploadState) {
-        when (uploadState) {
-            is UploadState.Success -> {
+        when (uploadState.uploadMediaState) {
+            is UploadMediaState.Success -> {
                 isUploading = false
                 onDismiss()
             }
 
-            is UploadState.Error -> {
+            is UploadMediaState.Error -> {
                 isUploading = false
                 // Show error (could use a snackbar or toast)
             }
 
-            is UploadState.Loading -> {
+            is UploadMediaState.Loading -> {
                 isUploading = true
             }
 
@@ -175,8 +160,8 @@ fun AddMediaDialog(
                     // Media type selection
                     Button(
                         onClick = {
-                            selectedMediaType = "photo"
-                            photoPickerLauncher.launch("image/*")
+                            selectedMediaType = MediaType.IMAGE
+                            photoPickerLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -187,8 +172,8 @@ fun AddMediaDialog(
 
                     Button(
                         onClick = {
-                            selectedMediaType = "video"
-                            photoPickerLauncher.launch("video/*")
+                            selectedMediaType = MediaType.VIDEO
+                            photoPickerLauncher.launch(PickVisualMediaRequest(PickVisualMedia.VideoOnly))
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -198,7 +183,7 @@ fun AddMediaDialog(
                     }
                 } else if (selectedUri != null) {
                     // Media selected, show preview and description field
-                    if (selectedMediaType == "photo") {
+                    if (selectedMediaType == MediaType.IMAGE) {
                         AsyncImage(
                             model = selectedUri,
                             contentDescription = "Selected photo",
@@ -245,7 +230,8 @@ fun AddMediaDialog(
                                 selectedUri?.let { uri ->
                                     viewModel.startUpload(
                                         imageUri = uri,
-                                        description = description, isVideo = true
+                                        description = description,
+                                        mediaType = selectedMediaType ?: MediaType.IMAGE
                                     )
                                 }
                             },
@@ -271,10 +257,10 @@ fun AddMediaDialog(
 
                     Button(
                         onClick = {
-                            if (selectedMediaType == "photo") {
-                                photoPickerLauncher.launch("image/*")
+                            if (selectedMediaType == MediaType.IMAGE) {
+                                photoPickerLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
                             } else {
-                                photoPickerLauncher.launch("video/*")
+                                photoPickerLauncher.launch(PickVisualMediaRequest(PickVisualMedia.VideoOnly))
                             }
                         },
                         modifier = Modifier.padding(vertical = 8.dp)
