@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -23,6 +24,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +45,26 @@ fun MyBookingsScreen(
     viewModel: MyBookingsViewModel = hiltViewModel()
 ) {
     val uiStates = viewModel.states.collectAsStateWithLifecycle().value
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredBookings = remember(searchQuery, uiStates.bookings, uiStates.users) {
+        if (searchQuery.isBlank()) {
+            uiStates.bookings
+        } else {
+            val query = searchQuery.trim().lowercase()
+            uiStates.bookings.filter { booking ->
+                val isArtist = uiStates.currentUser?.isArtist == true
+                val userId = if (isArtist) booking.expertId else booking.artistId
+                val user = uiStates.users.find { it.id == userId }
+                user?.let {
+                    val fullName = "${it.firstName} ${it.lastName}".lowercase()
+                    it.firstName.lowercase().contains(query) ||
+                            it.lastName.lowercase().contains(query) ||
+                            fullName.contains(query)
+                } ?: false
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -64,24 +89,11 @@ fun MyBookingsScreen(
         ) {
             // Search field
             OutlinedTextField(
-                value = "",
-                onValueChange = { },
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
                 placeholder = { Text("Search") },
                 leadingIcon = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        DropdownMenu(
-                            expanded = false,
-                            onDismissRequest = {}
-                        ) {
-                            // Dropdown items would go here
-                        }
-                        Text(
-                            "Booking ID",
-                            modifier = Modifier.padding(end = 4.dp, start = 7.dp),
-                            fontSize = 14.sp
-                        )
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "search")
-                    }
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -100,7 +112,7 @@ fun MyBookingsScreen(
 
             // Filter button
             IconButton(
-                onClick = { },
+                onClick = { /* Handle filter click */ },
                 modifier = Modifier
                     .size(48.dp)
                     .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
@@ -118,8 +130,7 @@ fun MyBookingsScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(uiStates.bookings) { booking ->
-                // Find the user associated with the booking
+            items(filteredBookings) { booking ->
                 val isArtist = uiStates.currentUser?.isArtist
                 val userId = if (isArtist == true) booking.expertId else booking.artistId
                 val user = uiStates.users.find { it.id == userId }
