@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -134,49 +132,59 @@ private fun AboutSection(user: User) {
 
 @Composable
 private fun AppearanceSection(user: User) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.height(200.dp),
+    Column(
+        modifier = Modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             AttributeCard(
+                modifier = Modifier.weight(1f),
                 icon = "🎂",
                 label = "Age",
                 value = if (user.physicalAttributes.age > 0)
                     "${user.physicalAttributes.age} years" else "Not specified"
             )
-        }
-        item {
+
             AttributeCard(
+                modifier = Modifier.weight(1f),
                 icon = "⚧",
                 label = "Gender",
                 value = user.physicalAttributes.gender.ifEmpty { "Not specified" }
             )
         }
-        item {
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             AttributeCard(
+                modifier = Modifier.weight(1f),
                 icon = "🌍",
                 label = "Ethnicity",
                 value = user.physicalAttributes.ethnicity?.name ?: "Not specified"
             )
-        }
-        item {
             AttributeCard(
+                modifier = Modifier.weight(1f),
+                icon = "\uD83D\uDCCD",
+                label = "City",
+                value = user.bio.city
+            )
+        }
+
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            AttributeCard(
+                modifier = Modifier.weight(1f),
                 icon = "📏",
                 label = "Height",
                 value = if (user.physicalAttributes.height > 0.toString())
                     "${user.physicalAttributes.height}cm" else "Not specified"
             )
-        }
-        item {
             AttributeCard(
+                modifier = Modifier.weight(1f),
                 icon = "⚖️",
                 label = "Weight",
                 value = if (user.physicalAttributes.weight > 0.toString())
                     "${user.physicalAttributes.weight}kg" else "Not specified"
             )
+
         }
     }
 }
@@ -279,13 +287,13 @@ private fun ProfileCard(
 
 @Composable
 private fun AttributeCard(
+    modifier: Modifier = Modifier,
     icon: String,
     label: String,
     value: String
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(80.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF8F9FA)
