@@ -109,7 +109,9 @@ fun BookingBottomSheet(
                     .height(48.dp)
             ) {
                 if (loading) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        color = Color.White,
+                    )
                 } else {
                     Text(text = "Confirm")
                 }

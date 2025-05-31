@@ -18,8 +18,13 @@ class BookingRepository @Inject constructor(
     private val userPreferences: UserPreferences
 ) {
 
-    suspend fun createBooking(expertId: String,serviceId: String, scheduleStartTime: String, hours: String ): FirestoreResult<Unit> = safeFirebaseCall {
-        val userId = userPreferences.getUserData()?.id?:""
+    suspend fun createBooking(
+        expertId: String,
+        serviceId: String,
+        scheduleStartTime: String,
+        hours: String
+    ): FirestoreResult<Unit> = safeFirebaseCall {
+        val userId = userPreferences.getUserData()?.id ?: ""
         val bookingId = bookingCollection.document().id
         val booking = Booking(
             bookingId = bookingId,
@@ -27,11 +32,11 @@ class BookingRepository @Inject constructor(
             expertId = expertId,
             status = BookingStatus.PENDING,
             serviceId = serviceId,
-            scheduledStartTime = scheduleStartTime ,
+            scheduledStartTime = scheduleStartTime,
             timeInHrs = hours.toInt(),
             paymentStatus = PaymentStatus.PENDING,
+            createdAt = System.currentTimeMillis().toString(),
         )
-
         val docRef = bookingCollection.document(booking.bookingId)
         docRef.set(booking).await()
         FirestoreResult.Success(Unit)
@@ -41,7 +46,6 @@ class BookingRepository @Inject constructor(
         safeFirebaseCall {
             val field = if (role == "ARTIST") "artistId" else "expertId"
             val snapshot = bookingCollection.whereEqualTo(field, userId).get().await()
-
             val bookings = snapshot.documents.mapNotNull { it.toObject(Booking::class.java) }
             bookings
         }
@@ -49,7 +53,10 @@ class BookingRepository @Inject constructor(
     suspend fun updateBookingStatus(
         bookingId: String, newStatus: BookingStatus
     ): FirestoreResult<Unit> = safeFirebaseCall {
-        bookingCollection.document(bookingId).update("status", newStatus.name).await()
+        bookingCollection.document(bookingId).update(
+            Booking::status.name, newStatus.name,
+            Booking::updatedAt.name, System.currentTimeMillis().toString()
+        ).await()
         FirestoreResult.Success(Unit)
     }
 

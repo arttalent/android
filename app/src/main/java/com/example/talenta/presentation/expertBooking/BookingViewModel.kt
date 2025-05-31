@@ -42,7 +42,8 @@ data class BookingStates(
     val timeSlotBySelectedDate: List<String> = emptyList(),
     val isLoading: Boolean = false,
     val selectedService :Service ? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val onBookingComplete: Boolean = false,
 )
 
 @HiltViewModel
@@ -132,7 +133,8 @@ class BookingViewModel @Inject constructor(
                         // Handle success
                         _uiStates.update {
                             it.copy(
-                                isLoading = false
+                                isLoading = false,
+                                onBookingComplete = true,
                             )
                         }
                     }

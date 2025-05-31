@@ -41,7 +41,7 @@ import java.util.Locale
 
 @Composable
 fun ExpertBooking(
-    expertDetails: User, selectedServiceId: String
+    expertDetails: User, selectedServiceId: String, onBookingDone:()-> Unit
 ) {
     val viewModel = hiltViewModel<BookingViewModel>()
     val uiState = viewModel.uiStates.collectAsState().value
@@ -51,6 +51,13 @@ fun ExpertBooking(
                 expertDetails = expertDetails, selectedServiceId = selectedServiceId
             )
         )
+    }
+    if (uiState.onBookingComplete) {
+        LaunchedEffect(Unit) {
+            viewModel.onAction(BookingActions.ResetError)
+            onBookingDone()
+        }
+
     }
     ExpertBookingScreen(
         uiState = uiState, action = viewModel::onAction
