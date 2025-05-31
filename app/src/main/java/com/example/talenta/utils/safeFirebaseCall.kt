@@ -1,5 +1,7 @@
 package com.example.talenta.utils
 
+import timber.log.Timber
+
 
 sealed class FirestoreResult<out T>(
     val data: T? = null, val errorMessage: String? = null
@@ -15,6 +17,7 @@ suspend fun <T> safeFirebaseCall(
     return try {
         FirestoreResult.Success(block())
     } catch (e: Exception) {
+        Timber.tag("Firebase Call Error").e(e)
         FirestoreResult.Failure(e.message ?: "Unknown error occurred")
     }
 }
