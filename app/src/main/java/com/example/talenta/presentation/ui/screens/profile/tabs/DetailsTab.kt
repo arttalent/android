@@ -47,6 +47,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -361,7 +362,7 @@ private fun SocialMediaSection(socialMediaLinks: SocialMediaLinks) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 availableLinks.forEach { (platform, _) ->
-                    EnhancedSocialMediaIcon(platform = platform)
+                    SocialMediaIcon(platform = platform)
                 }
             }
         }
@@ -375,63 +376,29 @@ private fun SocialMediaSection(socialMediaLinks: SocialMediaLinks) {
 }
 
 @Composable
-private fun EnhancedSocialMediaIcon(platform: String) {
-    val backgroundColor = when (platform.lowercase()) {
-        "linkedin" -> Color(0xFF0077B5)
-        "facebook" -> Color(0xFF1877F2)
-        "instagram" -> Color(0xFFE4405F)
-        "twitter" -> Color(0xFF1DA1F2)
-        else -> Color(0xFF6C757D)
+private fun SocialMediaIcon(platform: String) {
+    val iconResId = when (platform.lowercase()) {
+        "linkedin" -> R.drawable.linkedin
+        "facebook" -> R.drawable.facebook
+        "instagram" -> R.drawable.instagram
+        "twitter" -> R.drawable.twitter
+        else -> null
     }
 
-    var isPressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
-        animationSpec = tween(100)
-    )
-
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .scale(scale)
-            .clip(RoundedCornerShape(12.dp))
-            .background(backgroundColor)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                isPressed = true
-                // Handle social media link click
-            }
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onPress = {
-                        isPressed = true
-                        tryAwaitRelease()
-                        isPressed = false
-                    }
-                )
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        val iconResId = when (platform.lowercase()) {
-            "linkedin" -> R.drawable.linkedin
-            "facebook" -> R.drawable.facebook
-            "instagram" -> R.drawable.instagram
-            "twitter" -> R.drawable.twitter
-            else -> null
-        }
-
-        iconResId?.let {
-            Image(
-                painter = painterResource(id = it),
-                contentDescription = platform,
-                modifier = Modifier.size(24.dp),
-                colorFilter = ColorFilter.tint(Color.White)
-            )
-        }
+    iconResId?.let {
+        Image(
+            painter = painterResource(id = it),
+            contentDescription = platform,
+            modifier = Modifier
+                .size(32.dp) // Adjust size as needed
+                .clickable {
+                    // Handle icon click
+                },
+            contentScale = ContentScale.Fit
+        )
     }
 }
+
 
 @Composable
 private fun EnhancedSkillChip(skill: String) {

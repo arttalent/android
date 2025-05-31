@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -47,28 +48,46 @@ fun Field(
     hint: String,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    maxLines: Int = 1,
+    isMultiline: Boolean = false
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(4.dp)
     ) {
-        Text(text = header, fontWeight = FontWeight.Bold, maxLines = 1)
-        Spacer(Modifier.height(4.dp))
+        Text(
+            text = header,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(hint, color = Color.Gray) },
+            placeholder = {
+                Text(
+                    hint,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.LightGray,
-                focusedBorderColor = Color.Gray,
-            )
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            ),
+            shape = RoundedCornerShape(12.dp),
+            maxLines = if (isMultiline) Int.MAX_VALUE else maxLines,
+            singleLine = !isMultiline
         )
     }
 }
-
 
 @Composable
 fun AddMediaButton(

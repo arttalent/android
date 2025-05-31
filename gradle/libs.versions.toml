@@ -2,6 +2,7 @@
 agp = "8.6.1"
 animationsCore = "1.10.0"
 bottomSheet = "1.9.63"
+chipNavigationBar = "1.4.0"
 coilCompose = "2.5.0"
 converterGson = "2.11.0"
 core = "1.9.63"
@@ -19,6 +20,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxDatetime = "0.6.2"
+library = "1.1.0"
 lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
 composeBom = "2025.05.00"
@@ -42,6 +44,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 bottom-sheet = { module = "io.github.raamcosta.compose-destinations:bottom-sheet", version.ref = "bottomSheet" }
+chip-navigation-bar = { module = "com.github.ismaeldivita:chip-navigation-bar", version.ref = "chipNavigationBar" }
 core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "coreVersion" }
 country-picker = { module = "com.github.arpitkatiyar1999:Country-Picker", version.ref = "countryPicker" }
 jitsi-meet-sdk = { module = "org.jitsi.react:jitsi-meet-sdk", version.ref = "jitsiMeetSdk" }
@@ -70,6 +73,7 @@ hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", ve
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+library = { module = "nl.joery.animatedbottombar:library", version.ref = "library" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 okhttp3-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptorVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
