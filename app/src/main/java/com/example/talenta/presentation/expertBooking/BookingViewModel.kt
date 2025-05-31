@@ -33,6 +33,8 @@ sealed class BookingActions {
     data class OnTimeSelected(val time: LocalTime?) : BookingActions()
     data class InitData(val expertDetails: User, val selectedServiceId:String) : BookingActions()
     data object CreateBooking : BookingActions()
+    object ResetBookingState : BookingActions()
+    object DismissBottomSheet : BookingActions()
 }
 
 data class BookingStates(
@@ -42,7 +44,10 @@ data class BookingStates(
     val timeSlotBySelectedDate: List<String> = emptyList(),
     val isLoading: Boolean = false,
     val selectedService :Service ? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isBookingSuccessful: Boolean? = null,
+    val showBottomSheet: Boolean = false,
+    val bookingError: String? = null
 )
 
 @HiltViewModel
@@ -103,6 +108,32 @@ class BookingViewModel @Inject constructor(
             BookingActions.CreateBooking -> {
                 createInitialBookingFromArtist()
             }
+
+            is BookingActions.ResetBookingState -> {
+                _uiStates.value = _uiStates.value.copy(
+                    isBookingSuccessful = null,
+                    bookingError = null,
+                    showBottomSheet = false
+                )
+            }
+
+            is BookingActions.DismissBottomSheet -> {
+                _uiStates.value = _uiStates.value.copy(
+                    selectedTime = null,
+                    showBottomSheet = false
+                )
+            }
+
+            is BookingActions.OnTimeSelected -> {
+                _uiStates.value = _uiStates.value.copy(
+                    selectedTime = action.time,
+                    showBottomSheet = action.time != null
+                )
+            }
+
+            is BookingActions.CreateBooking -> {
+                createInitialBookingFromArtist()
+            }
         }
     }
 
@@ -132,7 +163,8 @@ class BookingViewModel @Inject constructor(
                         // Handle success
                         _uiStates.update {
                             it.copy(
-                                isLoading = false
+                                isLoading = false,
+                                isBookingSuccessful = true
                             )
                         }
                     }
@@ -173,7 +205,8 @@ fun ExpertAvailability.getDateTimeSlotsMap(day: Int, month: Int, year: Int): Tim
 
 fun TimeSlot.getTimeSlots(): List<String> {
     val startTime = LocalTime.parse(start)
-    val endTime = LocalTime.parse(end)
+    val safeEnd = if (end == "24:00") "00:00" else end
+    val endTime = LocalTime.parse(safeEnd)
     val timeSlots = mutableListOf<String>()
     var currentTime = startTime
 

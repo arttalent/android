@@ -9,6 +9,6 @@ import com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen
 @Composable
 fun ReportScreen() {
     Column(modifier = Modifier.fillMaxSize()) {
-        CreateServiceScreen()
+
     }
 }

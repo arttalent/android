@@ -188,6 +188,7 @@ class EditProfileViewModel @Inject constructor(
             "instagram" -> currentState.copy(instagram = value)
             "linkedin" -> currentState.copy(linkedin = value)
             "twitter" -> currentState.copy(twitter = value)
+            "skills" -> currentState.copy(skills = value.split(",").map { it.trim() })
             else -> currentState
         }
     }
