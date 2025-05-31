@@ -119,4 +119,7 @@ dependencies {
     // Timber
     implementation(libs.timber)
 
+    implementation (libs.chip.navigation.bar)
+    implementation (libs.library)
+
 }

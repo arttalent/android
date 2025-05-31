@@ -4,8 +4,10 @@ import androidx.annotation.Keep
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toKotlinInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
+import java.time.format.DateTimeFormatter
 
 @Serializable
 data class ExpertAvailability(
@@ -34,16 +36,24 @@ data class DateSlot(
 ) {
 
     fun localStartDateTime(): LocalDateTime {
-        val timeZone = TimeZone.currentSystemDefault() // Replace with the actual timezone
-        val instant = Instant.parse(startDateTime) // parse ISO8601 string to Instant
-        return instant.toLocalDateTime(timeZone)
+        val timeZone = TimeZone.currentSystemDefault()
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy") // match your input format
+        val localDate = java.time.LocalDate.parse(startDateTime, formatter)
+        val javaLocalDateTime = localDate.atStartOfDay()
+        val instant = javaLocalDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant()
+        return instant.toKotlinInstant().toLocalDateTime(timeZone)
     }
 
+
     fun localEndDateTime(): LocalDateTime {
-        val timeZone = TimeZone.currentSystemDefault() // Replace with the actual timezone
-        val instant = Instant.parse(endDateTime) // parse ISO8601 string to Instant
-        return instant.toLocalDateTime(timeZone)
+        val timeZone = TimeZone.currentSystemDefault()
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val localDate = java.time.LocalDate.parse(endDateTime, formatter)
+        val javaLocalDateTime = localDate.atStartOfDay()
+        val instant = javaLocalDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant()
+        return instant.toKotlinInstant().toLocalDateTime(timeZone)
     }
+
 }
 
 

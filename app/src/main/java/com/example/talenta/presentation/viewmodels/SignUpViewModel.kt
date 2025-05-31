@@ -1,9 +1,11 @@
 package com.example.talenta.presentation.viewmodels
 
+
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.talenta.data.UserPreferences
+import com.example.talenta.data.model.ProfessionalData
 import com.example.talenta.data.model.Role
 import com.example.talenta.data.model.User
 import com.example.talenta.data.repository.AuthRepository
@@ -27,9 +29,10 @@ data class SignUpUiStates(
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
-    val countryCode: String = "",
+    val countryCode: String = "+91",
     val phoneNumber: String = "",
     val selectedRole: Role? = null,
+    val profession: String = ""
 )
 
 sealed class AuthUiActions {
@@ -42,7 +45,8 @@ sealed class AuthUiActions {
         val confirmPassword: String? = null,
         val countryCode: String? = null,
         val phoneNumber: String? = null,
-        val selectedRole: Role? = null
+        val selectedRole: Role? = null,
+        val profession: String? = null
     ) : AuthUiActions()
 }
 
@@ -79,7 +83,8 @@ class SignUpViewModel @Inject constructor(
                         confirmPassword = action.confirmPassword ?: currentState.confirmPassword,
                         countryCode = action.countryCode ?: currentState.countryCode,
                         phoneNumber = action.phoneNumber ?: currentState.phoneNumber,
-                        selectedRole = action.selectedRole ?: currentState.selectedRole
+                        selectedRole = action.selectedRole ?: currentState.selectedRole,
+                        profession = action.profession ?: currentState.profession
                     )
                 }
             }
@@ -96,20 +101,30 @@ class SignUpViewModel @Inject constructor(
                 _uiState.value.countryCode, _uiState.value.phoneNumber
             )
 
+            // Create ProfessionalData with the selected profession
+            val professionalData = ProfessionalData(
+                profession = _uiState.value.profession,
+                subProfession = "", // Can be added later or set based on profession
+                media = emptyList(),
+                skills = emptyList(),
+                certifications = emptyList(),
+                certificatesList = emptyList()
+            )
+
             val user = User(
                 id = auth.currentUser?.uid ?: "",
                 firstName = _uiState.value.firstName.trim(),
                 lastName = _uiState.value.lastName.trim(),
                 email = _uiState.value.email.trim(),
                 phoneNumber = formattedPhone,
-                role = _uiState.value.selectedRole ?: Role.ARTIST
+                role = _uiState.value.selectedRole ?: Role.ARTIST,
+                professionalData = professionalData
             )
 
             val selectedRole = (_uiState.value.selectedRole ?: Role.ARTIST).toString()
             viewModelScope.launch {
                 preferences.saveUserRole(selectedRole)
             }
-
 
             val password = _uiState.value.password
             val confirmPassword = _uiState.value.confirmPassword
@@ -137,7 +152,6 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-
     private fun formatPhoneNumber(countryCode: String, phoneNumber: String): String {
         val cleanCountryCode = countryCode.replace("+", "").trim()
         val cleanPhoneNumber = phoneNumber.replace(Regex("[^0-9]"), "")
@@ -152,9 +166,9 @@ class SignUpViewModel @Inject constructor(
         if (password.length < 6) return "Password must be at least 6 characters."
         if (password != confirmPassword) return "Passwords do not match."
         if (user.phoneNumber.isBlank()) return "Phone number is required."
-        if (user.role.toString().isBlank()) return "Role must be selected."
+        if (user.role == null) return "Role must be selected."
+        if (user.professionalData.profession.isBlank()) return "Profession must be selected."
 
         return null
     }
-
 }
