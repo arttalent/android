@@ -4,6 +4,7 @@ import com.example.talenta.data.UserPreferences
 import com.example.talenta.data.model.Booking
 import com.example.talenta.data.model.BookingStatus
 import com.example.talenta.data.model.PaymentStatus
+import com.example.talenta.data.model.Role
 import com.example.talenta.utils.FirestoreResult
 import com.example.talenta.utils.safeFirebaseCall
 import com.google.firebase.firestore.CollectionReference
@@ -42,10 +43,13 @@ class BookingRepository @Inject constructor(
         FirestoreResult.Success(Unit)
     }
 
-    suspend fun getBookingsForUser(userId: String, role: String): FirestoreResult<List<Booking>> =
+    suspend fun getBookingsForUser(userId: String, role: Role): FirestoreResult<List<Booking>> =
         safeFirebaseCall {
-            val field = if (role == "ARTIST") "artistId" else "expertId"
-            val snapshot = bookingCollection.whereEqualTo(field, userId).get().await()
+            val field = if (role == Role.ARTIST) Booking::artistId.name else Booking::expertId.name
+            val snapshot = bookingCollection
+                .whereEqualTo(field, userId)
+                .orderBy(Booking::createdAt.name)
+                .get().await()
             val bookings = snapshot.documents.mapNotNull { it.toObject(Booking::class.java) }
             bookings
         }

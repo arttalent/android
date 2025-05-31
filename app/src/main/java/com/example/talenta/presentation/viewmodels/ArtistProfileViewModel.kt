@@ -11,6 +11,7 @@ import com.example.talenta.data.repository.ExpertRepository
 import com.example.talenta.utils.FirestoreResult
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -135,6 +136,10 @@ class ArtistProfileViewModel @Inject constructor(
                 fetchArtistProfile()
                 _profileState.update {
                     it.copy(uploadMediaState = UploadMediaState.Success)
+                }
+                delay(500)
+                _profileState.update {
+                    it.copy(uploadMediaState = UploadMediaState.None)
                 }
             }
         }
