@@ -13,8 +13,8 @@ data class Booking(
     val paymentStatus: PaymentStatus = PaymentStatus.NOT_PAID,
     val report: Report? = null, // Expert assessment (structure to be defined)
 
-    val createdAt: String = "", // UTC ISO 8601 format,
-    val updatedAt: String = "", // UTC ISO 8601 format
+    val createdAt: Long = System.currentTimeMillis(), // UTC ISO 8601 format,
+    val updatedAt:Long = System.currentTimeMillis(), // UTC ISO 8601 format
 ) {}
 
 enum class BookingStatus {

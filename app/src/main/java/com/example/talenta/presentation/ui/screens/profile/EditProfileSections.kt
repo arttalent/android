@@ -269,18 +269,6 @@ private fun BasicInfoSection(viewModel: EditProfileViewModel) {
             value = state.lastName,
             onValueChange = { viewModel.updateField("lastName", it) }
         )
-        Field(
-            header = "Email",
-            hint = "Ex: Abc@gmail.com",
-            value = state.email,
-            onValueChange = { viewModel.updateField("email", it) }
-        )
-        Field(
-            header = "Profession",
-            hint = "Ex: Singer",
-            value = state.profession,
-            onValueChange = { viewModel.updateField("profession", it) }
-        )
     }
 }
 

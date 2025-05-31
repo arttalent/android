@@ -20,10 +20,14 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.MonthNames
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toJavaLocalTime
 import kotlinx.datetime.toKotlinLocalTime
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
 
@@ -31,7 +35,7 @@ sealed class BookingActions {
     data class OnDateSelected(val date: LocalDate) : BookingActions()
     data object ResetError : BookingActions()
     data class OnTimeSelected(val time: LocalTime?) : BookingActions()
-    data class InitData(val expertDetails: User, val selectedServiceId:String) : BookingActions()
+    data class InitData(val expertDetails: User, val selectedServiceId: String) : BookingActions()
     data object CreateBooking : BookingActions()
 }
 
@@ -41,7 +45,7 @@ data class BookingStates(
     val selectedTime: LocalTime? = null,
     val timeSlotBySelectedDate: List<String> = emptyList(),
     val isLoading: Boolean = false,
-    val selectedService :Service ? = null,
+    val selectedService: Service? = null,
     val errorMessage: String? = null,
     val onBookingComplete: Boolean = false,
 )
@@ -154,19 +158,23 @@ class BookingViewModel @Inject constructor(
     }
 
 
-
-
 }
 
 fun ExpertAvailability.getDateTimeSlotsMap(day: Int, month: Int, year: Int): TimeSlot? {
     val dateTime = LocalDateTime(year, month, day, 0, 0, 0)
-    var dateTimeSlot:TimeSlot ? = null
+    var dateTimeSlot: TimeSlot? = null
     schedule.forEach {
         val dateSlot = it.dateSlot
         val timeSlot = it.timeSlot
         val startDateTime = dateSlot.localStartDateTime().toJavaLocalDateTime()
         val endDateTime = dateSlot.localEndDateTime().toJavaLocalDateTime()
-        if (dateTime.toJavaLocalDateTime().isAfter(startDateTime) && dateTime.toJavaLocalDateTime().isBefore(endDateTime)) {
+        val startDateIsAfterOrEqual =
+            dateTime.toJavaLocalDateTime().isAfter(startDateTime) || dateTime.toJavaLocalDateTime()
+                .isEqual(startDateTime)
+        val endDateIsAfterOrEqual =
+            dateTime.toJavaLocalDateTime().isBefore(endDateTime) || dateTime.toJavaLocalDateTime()
+                .isEqual(endDateTime)
+        if (startDateIsAfterOrEqual && endDateIsAfterOrEqual) {
             dateTimeSlot = timeSlot
         }
     }
@@ -185,3 +193,24 @@ fun TimeSlot.getTimeSlots(): List<String> {
     }
     return timeSlots
 }
+
+fun convertIntoLocalDateTime(date: LocalDate?, hr: Int, min: Int,expertTimeZone: String): String{
+    if (date == null) return "Invalid Date"
+    val localDateTime = date.atTime(hr,min)
+    val isoTime =  localDateTime.toInstant(TimeZone.of(expertTimeZone))
+    val localTime = isoTime.toLocalDateTime(TimeZone.currentSystemDefault())
+    val formatter = LocalDateTime.Format {
+        dayOfMonth(Padding.ZERO)
+        char(' ')
+        monthName(MonthNames.ENGLISH_ABBREVIATED)
+        char('/')
+        year(Padding.ZERO)
+        char(' ')
+        amPmHour(Padding.ZERO)
+        char(':')
+        minute(Padding.ZERO)
+        amPmMarker(am = "AM", pm = "PM")
+    }
+    return localTime.format(formatter)
+}
+

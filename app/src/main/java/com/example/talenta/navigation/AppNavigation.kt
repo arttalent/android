@@ -17,7 +17,6 @@ import com.example.talenta.navigation.Graphs.appNavGraph
 import com.example.talenta.navigation.Graphs.authNavGraph
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.navigation.navTypes.UserNavType
-import com.example.talenta.presentation.expertAvailabilitySchedule.ExpertAvailabilitySchedule
 import com.example.talenta.presentation.expertBooking.ExpertBooking
 import com.example.talenta.presentation.myBookings.MyBookingsScreen
 import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
@@ -60,13 +59,6 @@ fun AppNavigation(isLoggedIn: Boolean) {
             }
             composable<Route.MyBookings> {
                 MyBookingsScreen()
-            }
-
-
-
-            composable<Route.ExpertAvailabilitySetScreen> { backStackEntry ->
-                val args = backStackEntry.toRoute<Route.ExpertAvailabilitySetScreen>()
-                ExpertAvailabilitySchedule(expertId = args.expertId)
             }
 
             composable<Route.ExpertBookingScreen>(

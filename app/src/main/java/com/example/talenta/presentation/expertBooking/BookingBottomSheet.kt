@@ -30,9 +30,8 @@ import com.example.talenta.ui.theme.TalentATheme
 @Composable
 fun BookingBottomSheet(
     modifier: Modifier,
-    expertName: String = "Kieran",
-    time: String = "02:30pm - 03:30pm",
-    date: String = "Thursday, April 10th",
+    expertName: String = "",
+    formattedDateTime: String = "",
     fees: String = "$25",
     loading: Boolean = false,
     onConfirmClick: () -> Unit = {}
@@ -80,7 +79,7 @@ fun BookingBottomSheet(
                         .clip(RoundedCornerShape(20.dp))
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "$time,\n$date", color = Color.DarkGray)
+                Text(text = formattedDateTime, color = Color.DarkGray)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -129,8 +128,7 @@ private fun BookingBottomSheetPrev() {
                 .fillMaxWidth()
                 .padding(16.dp),
             expertName = "Kieran",
-            time = "02:30pm - 03:30pm",
-            date = "Thursday, April 10th",
+            formattedDateTime = "2023-10-01 10:00 AM",
             fees = "$25"
         )
     }

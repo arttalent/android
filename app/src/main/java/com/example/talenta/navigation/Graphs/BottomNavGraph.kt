@@ -67,7 +67,11 @@ fun NavGraphBuilder.appNavGraph(navController: NavHostController) {
         composable<Route.CreateServiceScreen> {
             CreateServiceScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onServiceCreated = { navController.navigate(Route.Dashboard) }
+                onServiceCreated = {
+                    navController.navigate(Route.Profile){
+                        popUpTo(Route.Dashboard) { inclusive = true }
+                    }
+                }
             )
         }
 

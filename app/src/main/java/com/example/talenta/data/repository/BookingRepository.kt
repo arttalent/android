@@ -36,7 +36,7 @@ class BookingRepository @Inject constructor(
             scheduledStartTime = scheduleStartTime,
             timeInHrs = hours.toInt(),
             paymentStatus = PaymentStatus.PENDING,
-            createdAt = System.currentTimeMillis().toString(),
+            createdAt = System.currentTimeMillis(),
         )
         val docRef = bookingCollection.document(booking.bookingId)
         docRef.set(booking).await()
@@ -59,7 +59,7 @@ class BookingRepository @Inject constructor(
     ): FirestoreResult<Unit> = safeFirebaseCall {
         bookingCollection.document(bookingId).update(
             Booking::status.name, newStatus.name,
-            Booking::updatedAt.name, System.currentTimeMillis().toString()
+            Booking::updatedAt.name, System.currentTimeMillis()
         ).await()
         FirestoreResult.Success(Unit)
     }

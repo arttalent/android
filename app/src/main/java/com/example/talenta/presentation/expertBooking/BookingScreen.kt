@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.talenta.data.model.DateSlot
 import com.example.talenta.data.model.ExpertAvailability
 import com.example.talenta.data.model.Schedule
 import com.example.talenta.data.model.Service
@@ -136,15 +137,18 @@ fun ExpertBookingScreen(
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter),
                 expertName = uiState.expertDetails?.firstName + " " + uiState.expertDetails?.lastName,
-                time = String.format(
-                    "%02d:%02d", uiState.selectedTime.hour, uiState.selectedTime.minute
+                formattedDateTime = convertIntoLocalDateTime(
+                    date = selectedDate.value.toKotlinLocalDate(),
+                    hr = uiState.selectedTime.hour,
+                    min = uiState.selectedTime.minute,
+                    expertTimeZone = uiState.selectedService?.expertAvailability?.timezone ?: "UTC"
                 ),
-                date = selectedDate.value.toPrettyString(),
                 fees = "$${uiState.selectedService?.perHourCharge}",
                 loading = uiState.isLoading,
                 onConfirmClick = {
                     action(BookingActions.CreateBooking)
-                })
+                }
+            )
         }
 
     }
@@ -174,7 +178,7 @@ fun TimeSlotsRow(
         timeSlots.forEach { time ->
             val selected = selectedTime?.let {
                 it.hour == stringToLocalTime(time).hour && it.minute == stringToLocalTime(time).minute
-            } ?: false
+            } == true
             DateSlot(
                 modifier = Modifier.fillMaxWidth(0.26f),
                 text = time,
@@ -217,7 +221,7 @@ private fun ExpertBookingScreenPRev() {
         perHourCharge = 50.04f,
         expertAvailability = ExpertAvailability(
             timezone = "Asia/Kolkata", schedule = listOf(Schedule(
-                com.example.talenta.data.model.DateSlot(
+                DateSlot(
                     startDateTime = "2023-10-01T00:00:00Z", endDateTime = "2023-11-10T00:00:00Z"
                 ), TimeSlot(
                     start = "15:00", end = "17:00"
