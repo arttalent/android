@@ -20,10 +20,14 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.MonthNames
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toJavaLocalTime
 import kotlinx.datetime.toKotlinLocalTime
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
 
@@ -31,10 +35,8 @@ sealed class BookingActions {
     data class OnDateSelected(val date: LocalDate) : BookingActions()
     data object ResetError : BookingActions()
     data class OnTimeSelected(val time: LocalTime?) : BookingActions()
-    data class InitData(val expertDetails: User, val selectedServiceId:String) : BookingActions()
+    data class InitData(val expertDetails: User, val selectedServiceId: String) : BookingActions()
     data object CreateBooking : BookingActions()
-    object ResetBookingState : BookingActions()
-    object DismissBottomSheet : BookingActions()
 }
 
 data class BookingStates(
@@ -43,11 +45,9 @@ data class BookingStates(
     val selectedTime: LocalTime? = null,
     val timeSlotBySelectedDate: List<String> = emptyList(),
     val isLoading: Boolean = false,
-    val selectedService :Service ? = null,
+    val selectedService: Service? = null,
     val errorMessage: String? = null,
-    val isBookingSuccessful: Boolean? = null,
-    val showBottomSheet: Boolean = false,
-    val bookingError: String? = null
+    val onBookingComplete: Boolean = false,
 )
 
 @HiltViewModel
@@ -108,40 +108,15 @@ class BookingViewModel @Inject constructor(
             BookingActions.CreateBooking -> {
                 createInitialBookingFromArtist()
             }
-
-            is BookingActions.ResetBookingState -> {
-                _uiStates.value = _uiStates.value.copy(
-                    isBookingSuccessful = null,
-                    bookingError = null,
-                    showBottomSheet = false
-                )
-            }
-
-            is BookingActions.DismissBottomSheet -> {
-                _uiStates.value = _uiStates.value.copy(
-                    selectedTime = null,
-                    showBottomSheet = false
-                )
-            }
-
-            is BookingActions.OnTimeSelected -> {
-                _uiStates.value = _uiStates.value.copy(
-                    selectedTime = action.time,
-                    showBottomSheet = action.time != null
-                )
-            }
-
-            is BookingActions.CreateBooking -> {
-                createInitialBookingFromArtist()
-            }
         }
     }
 
     private fun createInitialBookingFromArtist() {
         val time = uiStates.value.selectedTime
         val date = uiStates.value.selectedDate
+        val timeZone = uiStates.value.selectedService?.expertAvailability?.timezone ?: "UTC"
         val localInstant =
-            time?.let { date?.atTime(it)?.toInstant(TimeZone.currentSystemDefault()) }
+            time?.let { date?.atTime(it)?.toInstant(TimeZone.of(timeZone)) }
         val startTime = localInstant?.format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
 
         viewModelScope.launch {
@@ -164,7 +139,7 @@ class BookingViewModel @Inject constructor(
                         _uiStates.update {
                             it.copy(
                                 isLoading = false,
-                                isBookingSuccessful = true
+                                onBookingComplete = true,
                             )
                         }
                     }
@@ -184,19 +159,23 @@ class BookingViewModel @Inject constructor(
     }
 
 
-
-
 }
 
 fun ExpertAvailability.getDateTimeSlotsMap(day: Int, month: Int, year: Int): TimeSlot? {
     val dateTime = LocalDateTime(year, month, day, 0, 0, 0)
-    var dateTimeSlot:TimeSlot ? = null
+    var dateTimeSlot: TimeSlot? = null
     schedule.forEach {
         val dateSlot = it.dateSlot
         val timeSlot = it.timeSlot
         val startDateTime = dateSlot.localStartDateTime().toJavaLocalDateTime()
         val endDateTime = dateSlot.localEndDateTime().toJavaLocalDateTime()
-        if (dateTime.toJavaLocalDateTime().isAfter(startDateTime) && dateTime.toJavaLocalDateTime().isBefore(endDateTime)) {
+        val startDateIsAfterOrEqual =
+            dateTime.toJavaLocalDateTime().isAfter(startDateTime) || dateTime.toJavaLocalDateTime()
+                .isEqual(startDateTime)
+        val endDateIsAfterOrEqual =
+            dateTime.toJavaLocalDateTime().isBefore(endDateTime) || dateTime.toJavaLocalDateTime()
+                .isEqual(endDateTime)
+        if (startDateIsAfterOrEqual && endDateIsAfterOrEqual) {
             dateTimeSlot = timeSlot
         }
     }
@@ -205,8 +184,7 @@ fun ExpertAvailability.getDateTimeSlotsMap(day: Int, month: Int, year: Int): Tim
 
 fun TimeSlot.getTimeSlots(): List<String> {
     val startTime = LocalTime.parse(start)
-    val safeEnd = if (end == "24:00") "00:00" else end
-    val endTime = LocalTime.parse(safeEnd)
+    val endTime = LocalTime.parse(end)
     val timeSlots = mutableListOf<String>()
     var currentTime = startTime
 
@@ -216,3 +194,24 @@ fun TimeSlot.getTimeSlots(): List<String> {
     }
     return timeSlots
 }
+
+fun convertIntoLocalDateTime(date: LocalDate?, hr: Int, min: Int,expertTimeZone: String): String{
+    if (date == null) return "Invalid Date"
+    val localDateTime = date.atTime(hr,min)
+    val isoTime =  localDateTime.toInstant(TimeZone.of(expertTimeZone))
+    val localTime = isoTime.toLocalDateTime(TimeZone.currentSystemDefault())
+    val formatter = LocalDateTime.Format {
+        dayOfMonth(Padding.ZERO)
+        char(' ')
+        monthName(MonthNames.ENGLISH_ABBREVIATED)
+        char('/')
+        year(Padding.ZERO)
+        char(' ')
+        amPmHour(Padding.ZERO)
+        char(':')
+        minute(Padding.ZERO)
+        amPmMarker(am = "AM", pm = "PM")
+    }
+    return localTime.format(formatter)
+}
+

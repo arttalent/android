@@ -404,7 +404,7 @@ fun TimeDropdown(
             ) {
                 // Generate time options
                 for (hour in 0..23) {
-                    for (minute in listOf(0, 30)) {
+                    for (minute in listOf(0)) {
                         val formattedHour = if (hour < 10) "0$hour" else "$hour"
                         val formattedMinute = if (minute == 0) "00" else "$minute"
                         val timeString = "$formattedHour:$formattedMinute"
@@ -417,17 +417,6 @@ fun TimeDropdown(
                             }
                         )
                     }
-                }
-
-                // Add 24:00 for end time
-                if (includeEndOfDay) {
-                    DropdownMenuItem(
-                        text = { Text("24:00") },
-                        onClick = {
-                            onTimeSelected("24:00")
-                            dropdownExpanded = false
-                        }
-                    )
                 }
             }
         }

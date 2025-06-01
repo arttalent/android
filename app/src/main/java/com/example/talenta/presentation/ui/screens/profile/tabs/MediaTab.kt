@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
@@ -56,9 +55,6 @@ fun MediaContent(
     val uiStates by viewModel.profileState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     Box {
-        Fab(modifier = Modifier.align(Alignment.BottomEnd).padding(10.dp)) {
-            showDialog = true
-        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -115,28 +111,27 @@ fun MediaContent(
             // Show upload status
             val uploadMediaState = uiStates.uploadMediaState
             when (uploadMediaState) {
-                is UploadMediaState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.padding(16.dp),
-                            color = colorResource(R.color.royal_blue)
-                        )
-                    }
-                }
-
                 is UploadMediaState.Error -> {
                     Text(
                         text = "Upload failed: ${uploadMediaState.message}",
                         color = Color.Red,
                         modifier = Modifier.padding(16.dp)
                     )
+                    showDialog = false
                 }
 
-                else -> {} // No indication needed for Success or Idle states
+                is UploadMediaState.Success -> {
+                    showDialog = false
+                }
+
+                else -> {}
             }
+        }
+
+        Fab(modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(10.dp)) {
+            showDialog = true
         }
     }
 
