@@ -269,6 +269,12 @@ private fun BasicInfoSection(viewModel: EditProfileViewModel) {
             value = state.lastName,
             onValueChange = { viewModel.updateField("lastName", it) }
         )
+        Field(
+            header = "Skills",
+            hint = "Ex: Acting, Singing, Dancing",
+            value = state.skills.joinToString(", "),
+            onValueChange = { viewModel.updateField("skills", it) }
+        )
     }
 }
 

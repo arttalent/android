@@ -8,6 +8,7 @@ import com.example.talenta.data.model.Role
 import com.example.talenta.utils.FirestoreResult
 import com.example.talenta.utils.safeFirebaseCall
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.Query.Direction
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Named
@@ -48,7 +49,7 @@ class BookingRepository @Inject constructor(
             val field = if (role == Role.ARTIST) Booking::artistId.name else Booking::expertId.name
             val snapshot = bookingCollection
                 .whereEqualTo(field, userId)
-                .orderBy(Booking::createdAt.name)
+                .orderBy(Booking::createdAt.name, Direction.DESCENDING)
                 .get().await()
             val bookings = snapshot.documents.mapNotNull { it.toObject(Booking::class.java) }
             bookings

@@ -114,8 +114,9 @@ class BookingViewModel @Inject constructor(
     private fun createInitialBookingFromArtist() {
         val time = uiStates.value.selectedTime
         val date = uiStates.value.selectedDate
+        val timeZone = uiStates.value.selectedService?.expertAvailability?.timezone ?: "UTC"
         val localInstant =
-            time?.let { date?.atTime(it)?.toInstant(TimeZone.currentSystemDefault()) }
+            time?.let { date?.atTime(it)?.toInstant(TimeZone.of(timeZone)) }
         val startTime = localInstant?.format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
 
         viewModelScope.launch {
