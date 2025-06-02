@@ -32,6 +32,19 @@ data class User(
         get() = "$firstName $lastName"
 }
 
+enum class Profession {
+    MOVIE_DIRECTOR, SINGER, MOVIE_ACTOR, DANCER
+}
+
+fun Profession.getTitle(): String {
+    return when (this) {
+        Profession.MOVIE_DIRECTOR -> "Movie Director"
+        Profession.SINGER -> "Singer"
+        Profession.MOVIE_ACTOR -> "Movie Actor"
+        Profession.DANCER -> "Dancer"
+    }
+}
+
 @Serializable
 data class SponsorDetails(
     val sponsorType: SponsorType = SponsorType.INDIVIDUAL,
