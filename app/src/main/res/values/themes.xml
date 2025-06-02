@@ -2,8 +2,9 @@
 <resources>
 
     <style name="Theme.CustomSplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/artist</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/img</item>
         <item name="postSplashScreenTheme">@style/Theme.TalentA</item>
+        <item name="backgroundColor">@color/white</item>
     </style>
 
     <style name="Theme.TalentA" parent="android:Theme.Material.Light.NoActionBar" />
