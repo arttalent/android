@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen
+package com.example.talenta.presentation.expertAvailabilitySchedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,9 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen.CreateServiceComponents.CreateServiceContent
+import com.example.talenta.presentation.expertAvailabilitySchedule.components.CreateServiceContent
 import com.example.talenta.ui.theme.TalentATheme
 import com.example.talenta.utils.showToast
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +63,7 @@ fun CreateServiceScreen(
         LaunchedEffect(error) {
             // You can show a snackbar or toast here
             // For now, we'll just clear it after showing
-            kotlinx.coroutines.delay(3000)
+            delay(3000)
             viewModel.clearError()
         }
     }

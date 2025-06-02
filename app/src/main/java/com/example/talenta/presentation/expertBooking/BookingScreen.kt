@@ -94,7 +94,7 @@ fun ExpertBookingScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = selectedDate.value.toPrettyString(),
+                    text = selectedDate.value?.toPrettyString().toString(),
                     color = Color.Black,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
@@ -138,7 +138,7 @@ fun ExpertBookingScreen(
                     .align(Alignment.BottomCenter),
                 expertName = uiState.expertDetails?.firstName + " " + uiState.expertDetails?.lastName,
                 formattedDateTime = convertIntoLocalDateTime(
-                    date = selectedDate.value.toKotlinLocalDate(),
+                    date = selectedDate.value?.toKotlinLocalDate(),
                     hr = uiState.selectedTime.hour,
                     min = uiState.selectedTime.minute,
                     expertTimeZone = uiState.selectedService?.expertAvailability?.timezone ?: "UTC"
@@ -191,7 +191,8 @@ fun TimeSlotsRow(
     }
 }
 
-fun LocalDate.toPrettyString(): String {
+fun LocalDate?.toPrettyString(): String {
+    if (this == null) return ""
     val dayOfWeek = this.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
     val dayOfMonth = this.dayOfMonth
     val suffix = when {

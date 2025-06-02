@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen
+package com.example.talenta.presentation.expertAvailabilitySchedule
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.Padding
@@ -24,8 +24,8 @@ import javax.inject.Inject
 data class CreateServiceUiState(
     val selectedServiceType: ServiceType? = null,
     val hourlyPay: String = "",
-    val selectedStartDate: LocalDateTime? = null,
-    val selectedEndDate: LocalDateTime? = null,
+    val selectedStartDate: LocalDate? = null,
+    val selectedEndDate: LocalDate? = null,
     val selectedStartTime: String = "00:00",
     val selectedEndTime: String = "24:00",
     val selectedTimezone: String = TimeZone.currentSystemDefault().id,
@@ -53,7 +53,7 @@ class CreateServiceViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(hourlyPay = filteredPay)
     }
 
-    fun updateSelectedDates(startDate: LocalDateTime?, endDate: LocalDateTime?) {
+    fun updateSelectedDates(startDate: LocalDate?, endDate: LocalDate?) {
         _uiState.value = _uiState.value.copy(
             selectedStartDate = startDate,
             selectedEndDate = endDate
@@ -115,9 +115,9 @@ class CreateServiceViewModel @Inject constructor(
         return endTotalMinutes > startTotalMinutes
     }
 
-    private fun createDateTimeString(localDateTime:LocalDateTime?): String {
+    private fun createDateTimeString(localDateTime: LocalDate?): String {
         // Convert milliseconds to LocalDate
-        val formatter = LocalDateTime.Format {
+        val formatter = LocalDate.Format {
             dayOfMonth(Padding.ZERO)
             char('/')
             monthNumber(Padding.ZERO)

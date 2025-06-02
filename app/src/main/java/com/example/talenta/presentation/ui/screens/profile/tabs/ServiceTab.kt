@@ -36,7 +36,9 @@ import com.example.talenta.ui.theme.TalentATheme
 @Composable
 fun ServiceTab(
     user: User,
-    navigateToCreateService: () -> Unit = { /* No-op */ }
+    navigateToCreateService: () -> Unit = { },
+    onDeleteService: (String) -> Unit = { },
+    onEditServiceClick: (Service) -> Unit = { }
 ) {
     Box(
         modifier = Modifier
@@ -51,7 +53,11 @@ fun ServiceTab(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(user.expertService ?: emptyList()) { service ->
-                ExpertProfileServiceCard(service = service)
+                ExpertProfileServiceCard(
+                    service = service,
+                    onDelete = { onDeleteService(service.serviceId ?: "") },
+                    onEditClick = { onEditServiceClick(service) },
+                )
             }
         }
 
@@ -66,7 +72,12 @@ fun ServiceTab(
 
 
 @Composable
-fun ExpertProfileServiceCard(modifier: Modifier = Modifier, service: Service) {
+fun ExpertProfileServiceCard(
+    modifier: Modifier = Modifier,
+    service: Service,
+    onDelete: () -> Unit,
+    onEditClick: () -> Unit
+) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
@@ -99,7 +110,7 @@ fun ExpertProfileServiceCard(modifier: Modifier = Modifier, service: Service) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Button(
-                    onClick = { /* Handle booking */ },
+                    onClick = onDelete,
                     modifier = Modifier.weight(1f),
                     shape = MaterialTheme.shapes.small,
                     colors = ButtonDefaults.buttonColors(
@@ -112,7 +123,7 @@ fun ExpertProfileServiceCard(modifier: Modifier = Modifier, service: Service) {
                     )
                 }
                 Button(
-                    onClick = { /* Handle booking */ },
+                    onClick = onEditClick,
                     modifier = Modifier.weight(1f),
                     shape = MaterialTheme.shapes.small,
                     colors = ButtonDefaults.buttonColors(
@@ -141,7 +152,9 @@ private fun ExpertProfileServiceCardPReview() {
                 serviceTitle = ServiceType.LIVE_ASSESSMENT.getTitle(),
                 perHourCharge = 50.0f,
                 serviceType = ServiceType.LIVE_ASSESSMENT,
-            )
+            ),
+            onDelete = { /* No-op */ },
+            onEditClick = { /* No-op */ }
         )
     }
 }

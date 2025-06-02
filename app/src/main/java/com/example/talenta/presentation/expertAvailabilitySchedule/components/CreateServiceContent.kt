@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen.CreateServiceComponents
+package com.example.talenta.presentation.expertAvailabilitySchedule.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen.CreateServiceUiState
-import com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen.CreateServiceViewModel
-import com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen.SaveButton
+import com.example.talenta.presentation.expertAvailabilitySchedule.CreateServiceUiState
+import com.example.talenta.presentation.expertAvailabilitySchedule.CreateServiceViewModel
+import com.example.talenta.presentation.expertAvailabilitySchedule.SaveButton
 
 @Composable
 fun CreateServiceContent(
@@ -49,8 +49,6 @@ fun CreateServiceContent(
 
         // Availability Section
         AvailabilitySection(
-            selectedStartDate = uiState.selectedStartDate,
-            selectedEndDate = uiState.selectedEndDate,
             selectedStartTime = uiState.selectedStartTime,
             selectedEndTime = uiState.selectedEndTime,
             onDatesSelected = viewModel::updateSelectedDates,
