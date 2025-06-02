@@ -124,6 +124,19 @@ class ExpertRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteService(serviceId: String): FirestoreResult<Unit> {
+        val userId = userPreferences.getUserData()?.id ?: ""
+        val oldServices = userPreferences.getUserData()?.expertService ?: emptyList()
+        val newServices = oldServices.filterNot { it.serviceId == serviceId }
+
+        return safeFirebaseCall {
+            userCollection.document(userId)
+                .update(mapOf(User::expertService.name to newServices))
+                .await()
+            Unit
+        }
+    }
+
     suspend fun uploadMedia(
         imageUri: Uri,
         description: String,

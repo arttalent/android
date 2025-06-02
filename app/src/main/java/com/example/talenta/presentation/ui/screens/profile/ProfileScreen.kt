@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,8 +33,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.talenta.R
 import com.example.talenta.data.model.Role
+import com.example.talenta.data.model.Service
 import com.example.talenta.data.model.User
 import com.example.talenta.presentation.ui.screens.profile.tabs.DetailsTab
 import com.example.talenta.presentation.ui.screens.profile.tabs.MediaContent
@@ -60,12 +64,12 @@ import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
 fun ProfileScreen(
     onEditProfileClick: () -> Unit,
     navigateToCreateService: () -> Unit,
+    onEditService: (Service) -> Unit,
     onLogoutClick: () -> Unit,
     viewModel: ArtistProfileViewModel = hiltViewModel(),
-    selectedTabIndex: Int,
-    onTabSelected: (Int) -> Unit
 ) {
     val royalBlue = colorResource(R.color.royal_blue)
+    var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
     // Collect the profile state
     val profileState by viewModel.profileState.collectAsState()
@@ -231,7 +235,7 @@ fun ProfileScreen(
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTabIndex == index,
-                        onClick = { onTabSelected(index) },
+                        onClick = { selectedTabIndex = index },
                         text = {
                             Text(
                                 text = title,
@@ -247,13 +251,42 @@ fun ProfileScreen(
                 0 -> DetailsTab(artist)
                 1 -> MediaContent(viewModel)
                 2 -> ReviewsTab()
-                3 -> ServiceTab(artist) {
-                    navigateToCreateService()
-                }
+                3 -> ServiceTab(
+                    artist,
+                    navigateToCreateService = navigateToCreateService,
+                    onEditServiceClick = onEditService,
+                    onDeleteService = { service ->
+                        viewModel.deleteService(service)
+                    }
+                )
             }
 
         }
+
+        if (profileState.isLoading)
+        {
+            LoadingDialog()
+        }
     }
+}
+
+@Composable
+fun LoadingDialog() {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = {},
+        confirmButton = {},
+        title = null,
+        text = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+    )
 }
 
 

@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen.CreateServiceComponents
+package com.example.talenta.presentation.expertAvailabilitySchedule.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -15,15 +15,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toKotlinLocalDate
 
 @Composable
 fun AvailabilitySection(
-    selectedStartDate: LocalDateTime?,
-    selectedEndDate: LocalDateTime?,
     selectedStartTime: String,
     selectedEndTime: String,
-    onDatesSelected: (LocalDateTime?, LocalDateTime?) -> Unit,
+    onDatesSelected: (LocalDate?, LocalDate?) -> Unit,
     onStartTimeSelected: (String) -> Unit,
     onEndTimeSelected: (String) -> Unit
 ) {
@@ -46,11 +45,12 @@ fun AvailabilitySection(
     ) {
         Column {
             // Calendar Section
-            CalendarSection(
-                selectedStartDate = selectedStartDate,
-                selectedEndDate = selectedEndDate,
-                onDatesSelected = onDatesSelected
-            )
+            CalendarSection { selectedStartTime, selectedEndTime ->
+                onDatesSelected(
+                    selectedStartTime?.toKotlinLocalDate(),
+                    selectedEndTime?.toKotlinLocalDate()
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

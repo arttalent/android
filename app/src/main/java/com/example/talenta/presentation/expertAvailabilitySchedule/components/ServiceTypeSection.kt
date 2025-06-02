@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen.CreateServiceComponents
+package com.example.talenta.presentation.expertAvailabilitySchedule.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

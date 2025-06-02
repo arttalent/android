@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
@@ -185,11 +186,25 @@ fun getAvailableDates(schedule: List<Schedule>?): List<Pair<Int, Int>> {
 }
 
 
-val LocalDateSaver = listSaver(
-    save = {
-        listOf(it.value.year, it.value.monthValue, it.value.dayOfMonth)
+val LocalDateSaver = listSaver<MutableState<LocalDate?>, Any>(
+    save = { state ->
+        state.value?.let { localDate ->
+            listOf(localDate.year, localDate.monthValue, localDate.dayOfMonth)
+        } ?: emptyList()
     },
-    restore = { (year, month, day) -> mutableStateOf(LocalDate.of(year, month, day)) }
+    restore = { list ->
+        if (list.isNotEmpty()) {
+            mutableStateOf(
+                LocalDate.of(
+                    list[0] as Int,
+                    list[1] as Int,
+                    list[2] as Int
+                )
+            )
+        } else {
+            mutableStateOf(null)
+        }
+    }
 )
 
 @Preview(showSystemUi = true, showBackground = true)
