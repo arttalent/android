@@ -1,15 +1,20 @@
 package com.example.talenta.presentation.expertBooking
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,6 +23,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -59,9 +66,23 @@ fun CustomCalender(
         getAvailableDates(schedule)
     }
     val selectedDay = rememberSaveable(saver = LocalDateSaver) {
-        mutableStateOf(LocalDate.now())
+        mutableStateOf(
+            LocalDate.now()
+        )
     }
+    LaunchedEffect(key1 = availableDaysAndMonth) {
+        if (availableDaysAndMonth.isNotEmpty()) {
+            selectedDay.value = LocalDate.of(
+                currentMonth.year,
+                availableDaysAndMonth.first().second,
+                availableDaysAndMonth.first().first
+            )
+            selectedDay.value?.let {
+                onDateChange(it)
+            }
+        }
 
+    }
 
     val state = rememberCalendarState(
         startMonth = startMonth,
@@ -70,39 +91,64 @@ fun CustomCalender(
         firstDayOfWeek = firstDayOfWeek
     )
 
-    HorizontalCalendar(
+    Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 16.dp),
-        state = state,
-        contentHeightMode = ContentHeightMode.Wrap,
-        calendarScrollPaged = true,
-        monthHeader = { it ->
-            Text(
-                text = it.yearMonth.month.name.capitalizeFirstLetter() + " " + it.yearMonth.year,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .align(Alignment.CenterHorizontally),
-                fontSize = 18.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.SemiBold
-            )
-            val daysOfWeek = it.weekDays.first().map { it.date.dayOfWeek }
-            CalendarHeader(daysOfWeek = daysOfWeek)
-        },
-        dayContent = {
-            CalendarDayButton(
-                text = it.date.dayOfMonth.toString(),
-                modifier = Modifier,
-                isSelected = selectedDay.value == it.date,
-                isEnabled = availableDaysAndMonth.any { pair ->
-                    pair.first == it.date.dayOfMonth && pair.second == it.date.monthValue
-                },
-            ) {
-                selectedDay.value = it.date
-                onDateChange(it.date)
-            }
-        })
+            .padding(16.dp)
+            .shadow(8.dp, RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        HorizontalCalendar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            state = state,
+            contentHeightMode = ContentHeightMode.Wrap,
+            calendarScrollPaged = true,
+            monthHeader = { it ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                                )
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                ) {
+                    Text(
+                        text = it.yearMonth.month.name.capitalizeFirstLetter() + " " + it.yearMonth.year,
+                        modifier = Modifier.align(Alignment.Center),
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                val daysOfWeek = it.weekDays.first().map { it.date.dayOfWeek }
+                CalendarHeader(daysOfWeek = daysOfWeek)
+            },
+            dayContent = {
+                CalendarDayButton(
+                    text = it.date.dayOfMonth.toString(),
+                    modifier = Modifier,
+                    isSelected = selectedDay.value == it.date,
+                    isEnabled = availableDaysAndMonth.any { pair ->
+                        pair.first == it.date.dayOfMonth && pair.second == it.date.monthValue
+                    },
+                ) {
+                    selectedDay.value = it.date
+                    onDateChange(it.date)
+                }
+            })
+    }
 }
 
 @Composable
@@ -113,49 +159,91 @@ fun CalendarDayButton(
     isEnabled: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        Color.Transparent
-    }
+    val backgroundColor = when {
+        isSelected -> Brush.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.primary,
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+            )
+        )
 
-    val textColor = if (isSelected) {
-        Color.White
-    } else {
-        Color.Black
-    }
-    TextButton(
-        onClick = onClick,
-        modifier = modifier
-            .clip(CircleShape)
-            .padding(horizontal = 4.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = backgroundColor, contentColor = textColor,
-            disabledContainerColor = Color.Transparent,
-            disabledContentColor = Color.LightGray
-        ),
-        enabled = isEnabled
-    ) {
-        Text(
-            text = text, modifier = Modifier
+        isEnabled -> Brush.linearGradient(
+            colors = listOf(
+                Color.Transparent,
+                Color.Transparent
+            )
+        )
+
+        else -> Brush.linearGradient(
+            colors = listOf(
+                Color.Transparent,
+                Color.Transparent
+            )
         )
     }
 
+    val textColor = when {
+        isSelected -> Color.White
+        isEnabled -> MaterialTheme.colorScheme.onSurface
+        else -> Color.LightGray
+    }
+    Box(
+        modifier = modifier
+            .padding(2.dp)
+    ) {
+        TextButton(
+            onClick = onClick,
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(backgroundColor)
+                .then(
+                    if (isSelected) {
+                        Modifier.shadow(4.dp, CircleShape)
+                    } else Modifier
+                ),
+            colors = ButtonDefaults.textButtonColors(
+                containerColor = Color.Transparent,
+                contentColor = textColor,
+                disabledContainerColor = Color.Transparent,
+                disabledContentColor = Color.LightGray
+            ),
+            enabled = isEnabled
+        ) {
+            Text(
+                text = text,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                fontSize = 14.sp
+            )
+        }
+    }
 }
 
 @Composable
 fun CalendarHeader(daysOfWeek: List<DayOfWeek>) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(vertical = 16.dp, horizontal = 8.dp),
     ) {
         for (dayOfWeek in daysOfWeek) {
-            Text(
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                fontSize = 14.sp,
-                text = dayOfWeek.displayText(),
-            )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    textAlign = TextAlign.Center,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    text = dayOfWeek.displayText().uppercase(),
+                )
+            }
         }
     }
 }
@@ -184,7 +272,6 @@ fun getAvailableDates(schedule: List<Schedule>?): List<Pair<Int, Int>> {
     }
     return availableDates
 }
-
 
 val LocalDateSaver = listSaver<MutableState<LocalDate?>, Any>(
     save = { state ->

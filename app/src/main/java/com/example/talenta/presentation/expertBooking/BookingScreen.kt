@@ -1,5 +1,11 @@
 package com.example.talenta.presentation.expertBooking
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,25 +13,44 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.talenta.R
 import com.example.talenta.data.model.DateSlot
 import com.example.talenta.data.model.ExpertAvailability
 import com.example.talenta.data.model.Schedule
@@ -34,6 +59,7 @@ import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.model.User
 import com.example.talenta.ui.theme.TalentATheme
+import com.example.talenta.utils.toDp
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
@@ -42,7 +68,7 @@ import java.util.Locale
 
 @Composable
 fun ExpertBooking(
-    expertDetails: User, selectedServiceId: String, onBookingDone:()-> Unit
+    expertDetails: User, selectedServiceId: String, onBookingDone: () -> Unit
 ) {
     val viewModel = hiltViewModel<BookingViewModel>()
     val uiState = viewModel.uiStates.collectAsState().value
@@ -65,7 +91,6 @@ fun ExpertBooking(
     )
 }
 
-
 @Composable
 fun ExpertBookingScreen(
     modifier: Modifier = Modifier, uiState: BookingStates, action: (BookingActions) -> Unit
@@ -73,54 +98,150 @@ fun ExpertBookingScreen(
     val selectedDate = rememberSaveable(saver = LocalDateSaver) {
         mutableStateOf(LocalDate.now())
     }
-    Box {
-        Column(Modifier.padding(top = 10.dp)) {
+
+    val density = LocalDensity.current
+    val bottomSheetSize = remember {
+        mutableStateOf(Size.Zero)
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.surface,
+                        MaterialTheme.colorScheme.background
+                    )
+                )
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState())
+        ) {
+            // Calendar Section
             CustomCalender(
                 expertAvailability = uiState.selectedService?.expertAvailability
             ) {
                 selectedDate.value = it
                 action(BookingActions.OnDateSelected(it.toKotlinLocalDate()))
             }
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                color = Color.LightGray.copy(alpha = 0.5f),
-                thickness = 2.dp
-            )
-            Row(
+
+            // Elegant Divider
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
-                Text(
-                    text = selectedDate.value?.toPrettyString().toString(),
-                    color = Color.Black,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = uiState.selectedService?.expertAvailability?.timezone ?: "UTC",
-                    color = Color.Black,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                    thickness = 1.dp
                 )
             }
+
+            // Date and Timezone Info Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .shadow(4.dp, RoundedCornerShape(16.dp)),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.calendar),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.padding(4.dp))
+                        Text(
+                            text = selectedDate.value?.toPrettyString().toString(),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.calendar),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.padding(4.dp))
+                        Text(
+                            text = uiState.selectedService?.expertAvailability?.timezone ?: "UTC",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             val timeSlotsByDate = uiState.timeSlotBySelectedDate
             if (timeSlotsByDate.isEmpty()) {
                 LaunchedEffect(Unit) {
                     action(BookingActions.OnTimeSelected(null))
                 }
-                Text(
-                    text = "No time slots available",
+
+                // Empty State Card
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp),
-                    color = Color.Black,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.calendar),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "No time slots available",
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "Please select another date",
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                }
             } else {
                 TimeSlotsRow(
                     modifier = Modifier.padding(bottom = 16.dp),
@@ -129,18 +250,29 @@ fun ExpertBookingScreen(
                     action = action
                 )
             }
+
+            if (uiState.selectedTime != null){
+                Spacer(modifier = Modifier.height(bottomSheetSize.value.height.toDp(density) + 16.dp))
+            }
+
         }
 
-        if (uiState.selectedTime != null) {
+        // Animated Bottom Sheet
+        AnimatedVisibility(
+            visible = uiState.selectedTime != null,
+            enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+            exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
             BookingBottomSheet(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter),
+                modifier = Modifier.fillMaxWidth().onSizeChanged{
+                    bottomSheetSize.value = it.toSize()
+                },
                 expertName = uiState.expertDetails?.firstName + " " + uiState.expertDetails?.lastName,
                 formattedDateTime = convertIntoLocalDateTime(
                     date = selectedDate.value?.toKotlinLocalDate(),
-                    hr = uiState.selectedTime.hour,
-                    min = uiState.selectedTime.minute,
+                    hr = uiState.selectedTime?.hour ?: 0,
+                    min = uiState.selectedTime?.minute ?: 0,
                     expertTimeZone = uiState.selectedService?.expertAvailability?.timezone ?: "UTC"
                 ),
                 fees = "$${uiState.selectedService?.perHourCharge}",
@@ -150,9 +282,7 @@ fun ExpertBookingScreen(
                 }
             )
         }
-
     }
-
 }
 
 @Composable
@@ -162,31 +292,55 @@ fun TimeSlotsRow(
     timeSlots: List<String>,
     action: (BookingActions) -> Unit
 ) {
-    FlowRow(
+    Card(
         modifier = modifier
-            .scrollable(
-                orientation = Orientation.Vertical,
-                state = rememberScrollState(),
-            )
             .fillMaxWidth()
-            .fillMaxHeight(
-            )
             .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        maxItemsInEachRow = 3,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        timeSlots.forEach { time ->
-            val selected = selectedTime?.let {
-                it.hour == stringToLocalTime(time).hour && it.minute == stringToLocalTime(time).minute
-            } == true
-            DateSlot(
-                modifier = Modifier.fillMaxWidth(0.26f),
-                text = time,
-                selected = selected,
-                enabled = true,
-                onClick = {
-                    action(BookingActions.OnTimeSelected(stringToLocalTime(time)))
-                })
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Available Time Slots",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            FlowRow(
+                modifier = Modifier
+                    .scrollable(
+                        orientation = Orientation.Vertical,
+                        state = rememberScrollState(),
+                    )
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                maxItemsInEachRow = 3,
+            ) {
+                timeSlots.forEach { time ->
+                    val selected = selectedTime?.let {
+                        it.hour == stringToLocalTime(time).hour && it.minute == stringToLocalTime(
+                            time
+                        ).minute
+                    } == true
+                    DateSlot(
+                        modifier = Modifier.fillMaxWidth(0.28f),
+                        text = time,
+                        selected = selected,
+                        enabled = true,
+                        onClick = {
+                            action(BookingActions.OnTimeSelected(stringToLocalTime(time)))
+                        })
+                }
+            }
         }
     }
 }
@@ -202,7 +356,7 @@ fun LocalDate?.toPrettyString(): String {
         dayOfMonth % 10 == 3 -> "rd"
         else -> "th"
     }
-    val month = this.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
+    val month = this.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())
     return "$dayOfWeek, ${dayOfMonth}$suffix $month"
 }
 
@@ -221,13 +375,15 @@ private fun ExpertBookingScreenPRev() {
         serviceType = ServiceType.VIDEO_ASSESSMENT,
         perHourCharge = 50.04f,
         expertAvailability = ExpertAvailability(
-            timezone = "Asia/Kolkata", schedule = listOf(Schedule(
-                DateSlot(
-                    startDateTime = "2023-10-01T00:00:00Z", endDateTime = "2023-11-10T00:00:00Z"
-                ), TimeSlot(
-                    start = "15:00", end = "17:00"
+            timezone = "Asia/Kolkata", schedule = listOf(
+                Schedule(
+                    DateSlot(
+                        startDateTime = "2023-10-01T00:00:00Z", endDateTime = "2023-11-10T00:00:00Z"
+                    ), TimeSlot(
+                        start = "15:00", end = "17:00"
+                    )
                 )
-            ))
+            )
         )
     )
     TalentATheme {
