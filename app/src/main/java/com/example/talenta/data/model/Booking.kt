@@ -89,3 +89,10 @@ data class Feedback(
 ) {}
 
 class Report // To be defined later
+
+
+data class LocalBooking(
+    val booking: Booking,
+    val expertDetails: User? = null,
+    val artistDetails: User? = null,
+)

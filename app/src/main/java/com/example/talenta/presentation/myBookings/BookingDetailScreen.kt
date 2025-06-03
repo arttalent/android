@@ -1,6 +1,5 @@
 package com.example.talenta.presentation.myBookings
 
-import com.example.talenta.presentation.myBookings.components.BookingDetailCard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,9 +15,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.talenta.data.model.Booking
 import com.example.talenta.data.model.User
+import com.example.talenta.presentation.myBookings.components.BookingDetailCard
+import com.example.talenta.ui.theme.TalentATheme
+import com.example.talenta.utils.FakeModels
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,18 +54,32 @@ fun BookingDetailScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             BookingDetailCard(
                 booking = booking,
                 user = user,
-                showAcceptReject = showAcceptReject,
-                onAcceptClick = onAcceptClick,
-                onRejectClick = onRejectClick,
                 onViewProfileClick = onViewProfileClick
             )
+
+            when( )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun BookingDetailsPrev() {
+    TalentATheme {
+        BookingDetailScreen(
+            booking = FakeModels.fakeBooking,
+            user = FakeModels.fakeExpertUser,
+            showAcceptReject = true,
+            onBackClick = {},
+            onAcceptClick = {},
+            onRejectClick = {},
+            onViewProfileClick = {}
+        )
     }
 }
