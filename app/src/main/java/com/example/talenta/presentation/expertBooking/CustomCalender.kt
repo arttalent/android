@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
@@ -15,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,7 +66,22 @@ fun CustomCalender(
         getAvailableDates(schedule)
     }
     val selectedDay = rememberSaveable(saver = LocalDateSaver) {
-        mutableStateOf(LocalDate.now())
+        mutableStateOf(
+            LocalDate.now()
+        )
+    }
+    LaunchedEffect(key1 = availableDaysAndMonth) {
+        if (availableDaysAndMonth.isNotEmpty()) {
+            selectedDay.value = LocalDate.of(
+                currentMonth.year,
+                availableDaysAndMonth.first().second,
+                availableDaysAndMonth.first().first
+            )
+            selectedDay.value?.let {
+                onDateChange(it)
+            }
+        }
+
     }
 
     val state = rememberCalendarState(
@@ -151,12 +166,14 @@ fun CalendarDayButton(
                 MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
             )
         )
+
         isEnabled -> Brush.linearGradient(
             colors = listOf(
                 Color.Transparent,
                 Color.Transparent
             )
         )
+
         else -> Brush.linearGradient(
             colors = listOf(
                 Color.Transparent,
@@ -170,16 +187,13 @@ fun CalendarDayButton(
         isEnabled -> MaterialTheme.colorScheme.onSurface
         else -> Color.LightGray
     }
-
     Box(
         modifier = modifier
-            .size(44.dp)
             .padding(2.dp)
     ) {
         TextButton(
             onClick = onClick,
             modifier = Modifier
-                .size(40.dp)
                 .clip(CircleShape)
                 .background(backgroundColor)
                 .then(
