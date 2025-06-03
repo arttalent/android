@@ -12,12 +12,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.talenta.data.model.LocalBooking
 import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Graphs.appNavGraph
 import com.example.talenta.navigation.Graphs.authNavGraph
 import com.example.talenta.navigation.Routes.Route
+import com.example.talenta.navigation.navTypes.LocalBookingNavType
 import com.example.talenta.navigation.navTypes.UserNavType
 import com.example.talenta.presentation.expertBooking.ExpertBooking
+import com.example.talenta.presentation.myBookings.BookingDetails
 import com.example.talenta.presentation.myBookings.MyBookingsScreen
 import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
 import kotlin.reflect.typeOf
@@ -35,11 +38,11 @@ fun LoadingScreen() {
 fun AppNavigation(isLoggedIn: Boolean) {
     val navController = rememberNavController()
 
-    Scaffold (
+    Scaffold(
         bottomBar = {
             BottomNavBar(navController = navController)
         }
-    ){ padding ->
+    ) { padding ->
 
         NavHost(
             navController = navController,
@@ -61,6 +64,15 @@ fun AppNavigation(isLoggedIn: Boolean) {
                 MyBookingsScreen()
             }
 
+            composable<Route.BookingDetails>(
+                typeMap = mapOf(typeOf<LocalBooking>() to LocalBookingNavType)
+            ) { backStackEntry ->
+                val args = backStackEntry.toRoute<Route.BookingDetails>()
+                BookingDetails(
+                    localBooking = args.localBooking
+                )
+
+            }
             composable<Route.ExpertBookingScreen>(
                 typeMap = mapOf(typeOf<User>() to UserNavType)
             ) { backStackEntry ->

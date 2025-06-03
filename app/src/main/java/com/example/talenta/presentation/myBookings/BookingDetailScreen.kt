@@ -18,10 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.talenta.data.model.Booking
+import com.example.talenta.data.model.LocalBooking
 import com.example.talenta.data.model.User
 import com.example.talenta.presentation.myBookings.components.BookingDetailCard
 import com.example.talenta.ui.theme.TalentATheme
 import com.example.talenta.utils.FakeModels
+
+@Composable
+fun BookingDetails(modifier: Modifier = Modifier,localBooking: LocalBooking) {
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +69,7 @@ fun BookingDetailScreen(
                 onViewProfileClick = onViewProfileClick
             )
 
-            when( )
+
         }
     }
 }

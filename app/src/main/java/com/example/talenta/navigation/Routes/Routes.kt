@@ -1,5 +1,6 @@
 package com.example.talenta.navigation.Routes
 
+import com.example.talenta.data.model.LocalBooking
 import com.example.talenta.data.model.Role
 import com.example.talenta.data.model.User
 import kotlinx.serialization.Serializable
@@ -84,6 +85,11 @@ sealed class Route() {
 
     @Serializable
     data object ExpertCreateServiceScreen : Route()
+
+    @Serializable
+    data class BookingDetails(
+        val localBooking: LocalBooking
+    ) : Route()
 
 
 }

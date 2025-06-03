@@ -7,7 +7,9 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Booking(
     val bookingId: String = "",
     val expertId: String = "",
@@ -88,9 +90,10 @@ data class Feedback(
     val timestamp: String = "" // UTC ISO 8601
 ) {}
 
+@Serializable
 class Report // To be defined later
 
-
+@Serializable
 data class LocalBooking(
     val booking: Booking,
     val expertDetails: User? = null,
