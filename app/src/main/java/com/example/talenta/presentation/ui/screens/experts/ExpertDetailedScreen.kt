@@ -48,7 +48,7 @@ import coil.compose.AsyncImage
 import com.example.talenta.R
 import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Routes.Route
-import com.example.talenta.presentation.ui.screens.experts.tabs.MediaContent
+import com.example.talenta.presentation.ui.screens.experts.tabs.MediaTabForExpert
 import com.example.talenta.presentation.ui.screens.experts.tabs.ProfileContent
 import com.example.talenta.presentation.ui.screens.experts.tabs.ServicesContent
 import com.example.talenta.presentation.viewmodels.ExpertViewModel
@@ -78,7 +78,7 @@ fun ExpertDetailedScreen(
         // Content based on selected tab
         when (selectedTab) {
             0 -> ProfileContent(expert.id)
-            1 -> MediaContent()
+            1 -> MediaTabForExpert()
             2 -> ServicesContent(expert) { serviceId ->
                 navController.navigate(
                     Route.ExpertBookingScreen(

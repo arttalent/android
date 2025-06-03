@@ -255,7 +255,7 @@ private fun AwardsSection(expert: User?) {
     val certificates = expert?.professionalData?.certificatesList
 
     if (certificates.isNullOrEmpty()) {
-        EnhancedAwardItem(
+        AwardItem(
             title = "No Certificates Available",
             subtitle = "Expert has not uploaded any certificates yet",
             imageUrl = null,
@@ -266,7 +266,7 @@ private fun AwardsSection(expert: User?) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             certificates.forEach { certificate ->
-                EnhancedAwardItem(
+                AwardItem(
                     title = certificate.description.ifBlank { "Certificate" },
                     subtitle = certificate.description.ifBlank { "No description available" },
                     imageUrl = certificate.imageUrl.ifBlank { null },
@@ -327,7 +327,7 @@ private fun EnhancedInfoSection(
 }
 
 @Composable
-private fun EnhancedAwardItem(title: String, subtitle: String, imageUrl: String?, isEmpty: Boolean = false) {
+private fun AwardItem(title: String, subtitle: String, imageUrl: String?, isEmpty: Boolean = false) {
     var isExpanded by remember { mutableStateOf(false) }
 
     Card(

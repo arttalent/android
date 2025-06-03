@@ -55,7 +55,7 @@ import com.example.talenta.data.model.Role
 import com.example.talenta.data.model.Service
 import com.example.talenta.data.model.User
 import com.example.talenta.presentation.ui.screens.profile.tabs.DetailsTab
-import com.example.talenta.presentation.ui.screens.profile.tabs.MediaContent
+import com.example.talenta.presentation.ui.screens.profile.tabs.MediaTabForArtist
 import com.example.talenta.presentation.ui.screens.profile.tabs.ReviewsTab
 import com.example.talenta.presentation.ui.screens.profile.tabs.ServiceTab
 import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
@@ -249,7 +249,7 @@ fun ProfileScreen(
             // Content based on selected tab
             when (selectedTabIndex) {
                 0 -> DetailsTab(artist)
-                1 -> MediaContent(viewModel)
+                1 -> MediaTabForArtist(viewModel)
                 2 -> ReviewsTab()
                 3 -> ServiceTab(
                     artist,

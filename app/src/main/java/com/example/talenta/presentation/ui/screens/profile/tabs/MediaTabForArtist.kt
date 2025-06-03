@@ -49,7 +49,7 @@ import com.example.talenta.presentation.viewmodels.ArtistProfileViewModel
 import com.example.talenta.presentation.viewmodels.UploadMediaState
 
 @Composable
-fun MediaContent(
+fun MediaTabForArtist(
     viewModel: ArtistProfileViewModel,
 ) {
     val uiStates by viewModel.profileState.collectAsState()
