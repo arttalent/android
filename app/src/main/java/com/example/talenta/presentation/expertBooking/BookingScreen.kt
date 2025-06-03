@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -33,18 +33,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.talenta.R
 import com.example.talenta.data.model.DateSlot
@@ -55,6 +59,7 @@ import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.model.User
 import com.example.talenta.ui.theme.TalentATheme
+import com.example.talenta.utils.toDp
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
@@ -63,7 +68,7 @@ import java.util.Locale
 
 @Composable
 fun ExpertBooking(
-    expertDetails: User, selectedServiceId: String, onBookingDone:()-> Unit
+    expertDetails: User, selectedServiceId: String, onBookingDone: () -> Unit
 ) {
     val viewModel = hiltViewModel<BookingViewModel>()
     val uiState = viewModel.uiStates.collectAsState().value
@@ -94,6 +99,11 @@ fun ExpertBookingScreen(
         mutableStateOf(LocalDate.now())
     }
 
+    val density = LocalDensity.current
+    val bottomSheetSize = remember {
+        mutableStateOf(Size.Zero)
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -106,7 +116,11 @@ fun ExpertBookingScreen(
                 )
             )
     ) {
-        Column(modifier = Modifier.padding(top = 10.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState())
+        ) {
             // Calendar Section
             CustomCalender(
                 expertAvailability = uiState.selectedService?.expertAvailability
@@ -167,7 +181,7 @@ fun ExpertBookingScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.time),
+                            painter = painterResource(R.drawable.calendar),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.size(20.dp)
@@ -236,6 +250,11 @@ fun ExpertBookingScreen(
                     action = action
                 )
             }
+
+            if (uiState.selectedTime != null){
+                Spacer(modifier = Modifier.height(bottomSheetSize.value.height.toDp(density) + 16.dp))
+            }
+
         }
 
         // Animated Bottom Sheet
@@ -246,7 +265,9 @@ fun ExpertBookingScreen(
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             BookingBottomSheet(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().onSizeChanged{
+                    bottomSheetSize.value = it.toSize()
+                },
                 expertName = uiState.expertDetails?.firstName + " " + uiState.expertDetails?.lastName,
                 formattedDateTime = convertIntoLocalDateTime(
                     date = selectedDate.value?.toKotlinLocalDate(),
@@ -306,7 +327,9 @@ fun TimeSlotsRow(
             ) {
                 timeSlots.forEach { time ->
                     val selected = selectedTime?.let {
-                        it.hour == stringToLocalTime(time).hour && it.minute == stringToLocalTime(time).minute
+                        it.hour == stringToLocalTime(time).hour && it.minute == stringToLocalTime(
+                            time
+                        ).minute
                     } == true
                     DateSlot(
                         modifier = Modifier.fillMaxWidth(0.28f),
@@ -352,13 +375,15 @@ private fun ExpertBookingScreenPRev() {
         serviceType = ServiceType.VIDEO_ASSESSMENT,
         perHourCharge = 50.04f,
         expertAvailability = ExpertAvailability(
-            timezone = "Asia/Kolkata", schedule = listOf(Schedule(
-                DateSlot(
-                    startDateTime = "2023-10-01T00:00:00Z", endDateTime = "2023-11-10T00:00:00Z"
-                ), TimeSlot(
-                    start = "15:00", end = "17:00"
+            timezone = "Asia/Kolkata", schedule = listOf(
+                Schedule(
+                    DateSlot(
+                        startDateTime = "2023-10-01T00:00:00Z", endDateTime = "2023-11-10T00:00:00Z"
+                    ), TimeSlot(
+                        start = "15:00", end = "17:00"
+                    )
                 )
-            ))
+            )
         )
     )
     TalentATheme {
