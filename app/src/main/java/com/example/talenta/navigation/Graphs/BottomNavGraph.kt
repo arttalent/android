@@ -19,6 +19,9 @@ import com.example.talenta.presentation.ui.screens.ReportScreen
 import com.example.talenta.presentation.ui.screens.experts.ExpertDetailedScreen
 import com.example.talenta.presentation.ui.screens.experts.ExpertsScreen
 import com.example.talenta.presentation.ui.screens.profile.ProfileScreen
+import com.example.talenta.presentation.ui.screens.sponsor.components.SponsorApplicationScreen
+import com.example.talenta.presentation.ui.screens.sponsor.components.SponsorArtistScreen
+import com.example.talenta.presentation.ui.screens.sponsor.components.SponsorExpertScreen
 import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.appNavGraph(navController: NavHostController) {
@@ -29,13 +32,14 @@ fun NavGraphBuilder.appNavGraph(navController: NavHostController) {
             DashBoard()
         }
 
-        composable<Route.SponsorApplication> {
-            DashBoard()
-        }
 
-        composable<Route.SponsorProfile> {
-            DashBoard()
-        }
+        // Sponsor Nav
+
+        composable<Route.SponsorApplication> { SponsorApplicationScreen() }
+        composable<Route.SponsorExpert> { SponsorExpertScreen(navController) }
+        composable<Route.SponsorArtist> { SponsorArtistScreen(navController) }
+        composable<Route.SponsorProfile> { }
+
 
 
         composable<Route.Experts> {
@@ -45,13 +49,13 @@ fun NavGraphBuilder.appNavGraph(navController: NavHostController) {
 
         }
 
-
         composable<Route.ExpertDetail>(
             typeMap = mapOf(typeOf<User>() to UserNavType)
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<Route.ExpertDetail>()
             ExpertDetailedScreen(navController, args.expert)
         }
+
 //        composable<Route.ServiceTab> {
 //            HostScreen(navController) { ServiceTab() }
 //        }
@@ -67,8 +71,7 @@ fun NavGraphBuilder.appNavGraph(navController: NavHostController) {
         composable<Route.CreateServiceScreen> {
             CreateServiceScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onServiceCreated = { navController.navigate(Route.Dashboard) }
-            )
+                onServiceCreated = { navController.navigate(Route.Dashboard) })
         }
 
 
@@ -86,10 +89,7 @@ fun NavGraphBuilder.appNavGraph(navController: NavHostController) {
                 },
                 navigateToCreateService = {
                     navController.navigate(Route.CreateServiceScreen)
-                }
-            )
+                })
         }
-
-
     }
 }

@@ -66,12 +66,14 @@ fun TimeSlot(
                 MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
             )
         )
+
         enabled -> Brush.linearGradient(
             colors = listOf(
                 Color.White,
                 Color(0xFFF8F9FF)
             )
         )
+
         else -> Brush.linearGradient(
             colors = listOf(
                 Color.Gray.copy(alpha = 0.1f),
@@ -111,7 +113,7 @@ fun TimeSlot(
             horizontalArrangement = Arrangement.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.time),
+                painter = painterResource(id = R.drawable.edit),
                 contentDescription = null,
                 tint = textColor,
                 modifier = Modifier.size(16.dp)
@@ -207,7 +209,7 @@ fun BookingBottomSheet(
                 ) {
                     // Expert info
                     BookingDetailRow(
-                        painter =  painterResource(id = R.drawable.experts),
+                        painter = painterResource(id = R.drawable.experts),
                         label = "Expert",
                         value = expertName,
                         iconTint = MaterialTheme.colorScheme.primary
@@ -227,7 +229,7 @@ fun BookingBottomSheet(
 
                     // Time info
                     BookingDetailRow(
-                        painter = painterResource(id = R.drawable.time),
+                        painter = painterResource(id = R.drawable.edit), // time file not found so used this for temporary
                         label = "Time",
                         value = time,
                         iconTint = Color(0xFFFF9800)

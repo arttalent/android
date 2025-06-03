@@ -15,7 +15,11 @@ class HostViewModel @Inject constructor(
     private val preferences: UserPreferences
 ) : ViewModel() {
 
-    val userFlow = preferences.getUserDataFlow().stateIn<User?>(scope = viewModelScope, initialValue = null, started = SharingStarted.WhileSubscribed())
+    val userFlow = preferences.getUserDataFlow().stateIn<User?>(
+        scope = viewModelScope,
+        initialValue = null,
+        started = SharingStarted.WhileSubscribed()
+    )
 
 }
 

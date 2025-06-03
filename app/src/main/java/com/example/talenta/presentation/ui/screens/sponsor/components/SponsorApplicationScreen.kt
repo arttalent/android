@@ -7,17 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.talenta.presentation.ui.screens.sponsor.SponsorViewModel
 
 @Composable
-fun SponsorDashboardScreen(
-    viewModel: SponsorViewModel = hiltViewModel()
-) {
-
+fun SponsorApplicationScreen() {
     Box(
         modifier = Modifier.padding(30.dp)
     ) {
-        Text(text = "Sponsor Dashboard", fontWeight = FontWeight.Bold)
+        Text(text = "Sponsor Applications", fontWeight = FontWeight.Bold)
     }
+
 }

@@ -7,16 +7,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class GetUserUseCase @Inject constructor(private val sponsorRepository: SponsorRepository) {
-
+class GetExpertUseCase @Inject constructor(private val sponsorRepository: SponsorRepository) {
     operator fun invoke(): Flow<FirestoreResult<List<User>>> = flow {
         emit(FirestoreResult.Loading)
 
-        when (val result = sponsorRepository.fetchUser()) {
+        when (val result = sponsorRepository.fetchExpert()) {
             else -> {
-                val users = result.data
-                if (users != null) {
-                    emit(FirestoreResult.Success<List<User>>(users))
+                val expert = result.data
+                if (expert != null) {
+                    emit(FirestoreResult.Success<List<User>>(expert))
                 } else {
                     emit(FirestoreResult.Error(Exception("Data type mismatch")))
                 }

@@ -65,25 +65,36 @@ sealed class Route() {
     @Serializable
     object EditProfile : Route()
 
+    @Serializable
+    data class ExpertDetail(val expert: User) : Route()
+
+    data class SponsorDetails(val id: String?) : Route()
+
+    @Serializable
+    data class ExpertAvailabilitySetScreen(val expertId: String) : Route()
+
+    @Serializable
+    data class ExpertBookingScreen(val expert: User, val selectedServiceId: String) : Route()
+
+    @Serializable
+    data object ExpertCreateServiceScreen : Route()
+
+
+    // sponsor
+    @Serializable
+    object SponsorDashboard : Route()
+
+    @Serializable
+    object SponsorExpert : Route()
+
+    @Serializable
+    object SponsorArtist : Route()
 
     @Serializable
     object SponsorApplication : Route()
 
     @Serializable
     object SponsorProfile : Route()
-
-
-    @Serializable
-    data class ExpertDetail(val expert: User) : Route()
-
-    @Serializable
-    data class ExpertAvailabilitySetScreen(val expertId: String) : Route()
-
-    @Serializable
-    data class ExpertBookingScreen(val expert: User, val selectedServiceId:String) : Route()
-
-    @Serializable
-    data object ExpertCreateServiceScreen : Route()
 
 
 }
