@@ -42,6 +42,7 @@ data class Booking(
             char(' ')
             year()
             char(' ')
+            char('\n')
             amPmHour()
             char(':')
             minute()

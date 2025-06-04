@@ -46,6 +46,7 @@ import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.model.User
 import com.example.talenta.data.model.getTitle
+import com.example.talenta.ui.theme.TalentATheme
 
 @Composable
 fun BookingListCard(
@@ -136,14 +137,13 @@ fun BookingListCard(
                 }
 
                 // Rate
-                if (currentUser?.isArtist == true) {
-                    Text(
-                        text = "$${selectedService?.perHourCharge}/hr",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = colorResource(R.color.royal_blue)
-                    )
-                }
+                Text(
+                    text = "$${selectedService?.perHourCharge}/hr",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = colorResource(R.color.royal_blue)
+                )
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -184,7 +184,11 @@ fun BookingListCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Time and date
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Absolute.SpaceAround
+                ) {
                     // Time
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -193,7 +197,7 @@ fun BookingListCard(
                         Icon(
                             painter = painterResource(R.drawable.star_outline),
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp),
+                            modifier = Modifier.size(22.dp),
                             tint = Color.Gray
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -209,7 +213,7 @@ fun BookingListCard(
                         Icon(
                             painter = painterResource(R.drawable.calendar),
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp),
+                            modifier = Modifier.size(30.dp),
                             tint = Color.Gray
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -219,20 +223,22 @@ fun BookingListCard(
                             color = Color.Gray
                         )
                     }
+
+
+                    // Status chip
+                    BookingStatusChip(bookingStatus = booking.status)
                 }
 
-                // Status chip
-                BookingStatusChip(bookingStatus = booking.status)
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = "id:pixel_4a", showSystemUi = true)
 @Composable
 private fun BookingListCardPreview() {
     val fakeUser = User(
-        id = "U1",
+        id = "E1",
         firstName = "John",
         lastName = "Doe",
         profilePicture = "",
@@ -241,8 +247,8 @@ private fun BookingListCardPreview() {
         expertService = listOf(
             Service(
                 serviceId = "S1",
-                serviceType = ServiceType.TRAINING,
-                serviceTitle = ServiceType.TRAINING.getTitle(),
+                serviceType = ServiceType.VIDEO_ASSESSMENT,
+                serviceTitle = ServiceType.VIDEO_ASSESSMENT.getTitle(),
                 perHourCharge = 50f,
                 isActive = true,
                 expertAvailability = ExpertAvailability(
@@ -263,18 +269,44 @@ private fun BookingListCardPreview() {
             )
         )
     )
-    BookingListCard(
-        booking = Booking(
-            bookingId = "B1234",
-            expertId = "E1",
-            artistId = "A1",
-            serviceId = "S1",
-            scheduledStartTime = "2025-06-01T10:00:00Z",
-            timeInHrs = 2
-        ),
-        currentUser = fakeUser,
-        user = fakeUser
-    )
+    TalentATheme {
+        BookingListCard(
+            booking = Booking(
+                bookingId = "B1234",
+                expertId = "E1",
+                artistId = "A1",
+                serviceId = "S1",
+                scheduledStartTime = "2025-06-01T10:00:00Z",
+                timeInHrs = 2
+            ),
+            currentUser = fakeUser.copy(
+                expertService = listOf(
+                    Service(
+                        serviceId = "S1",
+                        serviceType = ServiceType.VIDEO_ASSESSMENT,
+                        serviceTitle = ServiceType.VIDEO_ASSESSMENT.getTitle(),
+                        perHourCharge = 50f,
+                        isActive = true,
+                        expertAvailability = ExpertAvailability(
+                            timezone = "Asia/Kolkata",
+                            schedule = listOf(
+                                Schedule(
+                                    DateSlot(
+                                        startDateTime = "2025-06-01T10:00:00Z",
+                                        endDateTime = "2025-06-01T12:00:00Z"
+                                    ), TimeSlot(
+                                        start = "10:00",
+                                        end = "12:00"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            user = fakeUser.copy(id = "E1"),
+        )
+    }
 
 
 }

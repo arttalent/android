@@ -55,12 +55,42 @@ class BookingRepository @Inject constructor(
             bookings
         }
 
+    suspend fun getBookingsById(bookingId: String): FirestoreResult<Booking?> =
+        safeFirebaseCall {
+            val snapshot = bookingCollection
+                .whereEqualTo(Booking::bookingId.name, bookingId)
+                .get().await()
+            val bookings = snapshot.documents.mapNotNull { it.toObject(Booking::class.java) }
+            bookings.firstOrNull()
+        }
+
     suspend fun updateBookingStatus(
         bookingId: String, newStatus: BookingStatus
     ): FirestoreResult<Unit> = safeFirebaseCall {
         bookingCollection.document(bookingId).update(
             Booking::status.name, newStatus.name,
             Booking::updatedAt.name, System.currentTimeMillis()
+        ).await()
+        FirestoreResult.Success(Unit)
+    }
+
+    suspend fun updatePaymentStatus(
+        bookingId: String, newStatus: PaymentStatus
+    ): FirestoreResult<Unit> = safeFirebaseCall {
+        bookingCollection.document(bookingId).update(
+            Booking::paymentStatus.name, newStatus.name,
+            Booking::updatedAt.name, System.currentTimeMillis()
+        ).await()
+        FirestoreResult.Success(Unit)
+    }
+
+    suspend fun changeStartDateTime(
+        bookingId: String, newStartDateTime: String
+    ): FirestoreResult<Unit> = safeFirebaseCall {
+        bookingCollection.document(bookingId).update(
+            Booking::scheduledStartTime.name, newStartDateTime,
+            Booking::updatedAt.name, System.currentTimeMillis(),
+            Booking::status.name, BookingStatus.RESCHEDULED
         ).await()
         FirestoreResult.Success(Unit)
     }

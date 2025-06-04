@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.myBookings.components
+package com.example.talenta.presentation.bookingDetails
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -179,7 +179,7 @@ fun BookingDetailCard(
                         Icon(
                             painter = painterResource(R.drawable.calendar),
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp),
+                            modifier = Modifier.size(38.dp),
                             tint = Color.Gray
                         )
                         Spacer(modifier = Modifier.width(4.dp))

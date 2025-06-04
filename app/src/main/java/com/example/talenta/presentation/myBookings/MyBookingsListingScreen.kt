@@ -31,18 +31,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.talenta.R
+import com.example.talenta.data.model.BookingStatus
+import com.example.talenta.data.model.LocalBooking
+import com.example.talenta.data.model.PaymentStatus
 import com.example.talenta.presentation.myBookings.components.BookingListCard
+import com.example.talenta.ui.theme.TalentATheme
+import com.example.talenta.utils.FakeModels
+
+@Composable
+fun MyBookings(
+    onBookingCardClick: (localBooking: LocalBooking) -> Unit,
+) {
+    val viewModel: MyBookingsViewModel = hiltViewModel()
+    val uiStates by viewModel.states.collectAsStateWithLifecycle()
+    MyBookingsScreen(
+        onBookingCardClick = onBookingCardClick,
+        uiStates = uiStates
+    )
+}
 
 @Composable
 fun MyBookingsScreen(
-    viewModel: MyBookingsViewModel = hiltViewModel()
+    onBookingCardClick: (localBooking: LocalBooking) -> Unit,
+    uiStates: MyBookingStates
 ) {
-    val uiStates = viewModel.states.collectAsStateWithLifecycle().value
     var searchQuery by remember { mutableStateOf("") }
 
     val filteredBookings = remember(searchQuery, uiStates.bookings, uiStates.users) {
@@ -59,7 +77,7 @@ fun MyBookingsScreen(
                     it.firstName.lowercase().contains(query) ||
                             it.lastName.lowercase().contains(query) ||
                             fullName.contains(query)
-                } ?: false
+                } == true
             }
         }
     }
@@ -137,7 +155,17 @@ fun MyBookingsScreen(
                         booking = booking,
                         user = user,
                         currentUser = uiStates.currentUser,
-                        onCardClick = {}
+                        onCardClick = {
+                            val artist = if (isArtist == true) uiStates.currentUser else user
+                            val expert = if (isArtist == true) user else uiStates.currentUser
+                            onBookingCardClick(
+                                LocalBooking(
+                                    booking = booking,
+                                    artistDetails = artist,
+                                    expertDetails = expert
+                                )
+                            )
+                        }
                     )
                 }
             }
@@ -145,8 +173,41 @@ fun MyBookingsScreen(
     }
 }
 
-//@Preview(showSystemUi = true, showBackground = true)
-//@Composable
-//private fun MyBookingsScreenPreiview() {
-//    MyBookingsScreen()
-//}
+@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_4")
+@Composable
+private fun MyBookingsScreenPreview() {
+    TalentATheme {
+        MyBookingsScreen(
+            onBookingCardClick = {},
+            uiStates = MyBookingStates(
+                bookings = listOf(
+                    FakeModels.fakeBooking.copy(
+                        paymentStatus = PaymentStatus.NOT_PAID,
+                        status = BookingStatus.ACCEPTED
+                    ),
+                    FakeModels.fakeBooking.copy(
+                        paymentStatus = PaymentStatus.NOT_PAID,
+                        status = BookingStatus.REJECTED
+                    ),
+                    FakeModels.fakeBooking.copy(
+                        paymentStatus = PaymentStatus.PAID,
+                        status = BookingStatus.ACCEPTED
+                    ),
+                    FakeModels.fakeBooking.copy(
+                        paymentStatus = PaymentStatus.NOT_PAID,
+                        status = BookingStatus.RESCHEDULED
+                    ),
+                ),
+                users = listOf(
+                    FakeModels.fakeExpertUser,
+
+                    FakeModels.fakeExpertUser.copy(
+                        firstName = "John",
+                        lastName = "Doe"
+                    )
+                ),
+                currentUser = FakeModels.fakeUserArtist,
+            )
+        )
+    }
+}

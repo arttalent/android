@@ -9,7 +9,6 @@ import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.navigation.navTypes.UserNavType
 import com.example.talenta.presentation.expertAvailabilitySchedule.CreateServiceScreen
-import com.example.talenta.presentation.myBookings.MyBookingsScreen
 import com.example.talenta.presentation.ui.screens.DashBoard
 import com.example.talenta.presentation.ui.screens.ReportScreen
 import com.example.talenta.presentation.ui.screens.experts.ExpertDetailedScreen
@@ -45,14 +44,6 @@ fun NavGraphBuilder.appNavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<Route.ExpertDetail>()
             ExpertDetailedScreen(navController, args.expert)
-        }
-//        composable<Route.ServiceTab> {
-//            HostScreen(navController) { ServiceTab() }
-//        }
-
-
-        composable<Route.MyBookings> {
-            MyBookingsScreen()
         }
 
         composable<Route.Notice> {

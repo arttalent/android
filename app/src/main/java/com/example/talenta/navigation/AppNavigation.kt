@@ -19,9 +19,9 @@ import com.example.talenta.navigation.Graphs.authNavGraph
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.navigation.navTypes.LocalBookingNavType
 import com.example.talenta.navigation.navTypes.UserNavType
+import com.example.talenta.presentation.bookingDetails.BookingDetails
 import com.example.talenta.presentation.expertBooking.ExpertBooking
-import com.example.talenta.presentation.myBookings.BookingDetails
-import com.example.talenta.presentation.myBookings.MyBookingsScreen
+import com.example.talenta.presentation.myBookings.MyBookings
 import com.example.talenta.presentation.ui.screens.profile.EditProfileScreen
 import kotlin.reflect.typeOf
 
@@ -61,7 +61,9 @@ fun AppNavigation(isLoggedIn: Boolean) {
                 )
             }
             composable<Route.MyBookings> {
-                MyBookingsScreen()
+                MyBookings { localBooking ->
+                    navController.navigate(Route.BookingDetails(localBooking))
+                }
             }
 
             composable<Route.BookingDetails>(
@@ -69,7 +71,11 @@ fun AppNavigation(isLoggedIn: Boolean) {
             ) { backStackEntry ->
                 val args = backStackEntry.toRoute<Route.BookingDetails>()
                 BookingDetails(
-                    localBooking = args.localBooking
+                    localBooking = args.localBooking,
+                    onBackClick = { navController.popBackStack() },
+                    onProfileClick = { user ->
+                        navController.navigate(Route.ExpertDetail(user))
+                    }
                 )
 
             }
@@ -81,7 +87,9 @@ fun AppNavigation(isLoggedIn: Boolean) {
                     expertDetails = args.expert,
                     selectedServiceId = args.selectedServiceId,
                     onBookingDone = {
-                        navController.navigate(Route.MyBookings)
+                        navController.navigate(Route.MyBookings){
+                            popUpTo(Route.MyBookings) { inclusive = true }
+                        }
                     }
                 )
             }

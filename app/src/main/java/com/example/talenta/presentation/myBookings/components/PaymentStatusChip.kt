@@ -130,7 +130,7 @@ fun BookingStatusChip(
     ) {
         Text(
             text = statusText,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
             fontSize = 12.sp,
             color = textColor
         )

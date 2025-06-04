@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.myBookings
+package com.example.talenta.presentation.bookingDetails
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,29 +17,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.talenta.data.model.Booking
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.talenta.data.model.LocalBooking
 import com.example.talenta.data.model.User
-import com.example.talenta.presentation.myBookings.components.BookingDetailCard
 import com.example.talenta.ui.theme.TalentATheme
 import com.example.talenta.utils.FakeModels
 
 @Composable
-fun BookingDetails(modifier: Modifier = Modifier,localBooking: LocalBooking) {
+fun BookingDetails(
+    localBooking: LocalBooking,
+    onBackClick: () -> Unit,
+    onProfileClick: (User) -> Unit
+) {
+    val viewmodel = hiltViewModel<BookingDetailsViewmodel>()
+    val uiStates = viewmodel.uiStates.collectAsStateWithLifecycle()
+
+    BookingDetailScreen(
+        uiStates = uiStates.value,
+        onActions = viewmodel::onAction,
+        onBackClick = { viewmodel.onAction(BookingDetailsActions.ResetError) },
+    )
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingDetailScreen(
-    booking: Booking,
-    user: User,
-    showAcceptReject: Boolean = false,
+    uiStates: BookingDetailsState,
+    onActions: (BookingDetailsActions) -> Unit,
     onBackClick: () -> Unit = {},
-    onAcceptClick: () -> Unit = {},
-    onRejectClick: () -> Unit = {},
-    onViewProfileClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onViewProfileClick: (User) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -57,16 +65,20 @@ fun BookingDetailScreen(
         }
     ) { paddingValues ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            val user = uiStates.user ?: return@Column
+            val booking = uiStates.booking ?: return@Column
             BookingDetailCard(
                 booking = booking,
                 user = user,
-                onViewProfileClick = onViewProfileClick
+                onViewProfileClick = {
+                    onViewProfileClick(user)
+                }
             )
 
 
@@ -79,12 +91,13 @@ fun BookingDetailScreen(
 private fun BookingDetailsPrev() {
     TalentATheme {
         BookingDetailScreen(
-            booking = FakeModels.fakeBooking,
-            user = FakeModels.fakeExpertUser,
-            showAcceptReject = true,
+            uiStates = BookingDetailsState(
+                booking = FakeModels.fakeBooking,
+                user = FakeModels.fakeExpertUser,
+                currentUser = FakeModels.fakeUserArtist
+            ),
+            onActions = {},
             onBackClick = {},
-            onAcceptClick = {},
-            onRejectClick = {},
             onViewProfileClick = {}
         )
     }
