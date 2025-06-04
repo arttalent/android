@@ -27,7 +27,7 @@ data class BookingDetailsState(
 )
 
 sealed class BookingDetailsActions {
-    data class InitData(val booking: Booking, val user: User, val currentUser: User) :
+    data class InitData(val booking: Booking, val expertDetails: User, val artistDetails: User) :
         BookingDetailsActions()
 
     object ResetError : BookingDetailsActions()
@@ -53,11 +53,23 @@ class BookingDetailsViewmodel @Inject constructor(
     fun onAction(action: BookingDetailsActions) {
         when (action) {
             is BookingDetailsActions.InitData -> {
-                _uiStates.value = _uiStates.value.copy(
-                    booking = action.booking,
-                    user = action.user,
-                    currentUser = action.currentUser
-                )
+                viewModelScope.launch {
+                    val currentUser = userPreferences.getUserData()
+                    val user = if (currentUser?.id == action.artistDetails.id) {
+                        action.expertDetails
+                    } else {
+                        action.artistDetails
+                    }
+
+                    _uiStates.update {
+                        it.copy(
+                            booking = action.booking,
+                            user = user,
+                            currentUser = currentUser
+                        )
+                    }
+                }
+
             }
 
             BookingDetailsActions.ResetError -> {

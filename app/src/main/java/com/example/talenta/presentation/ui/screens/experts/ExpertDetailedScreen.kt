@@ -42,9 +42,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.talenta.R
 import com.example.talenta.data.model.User
 import com.example.talenta.navigation.Routes.Route
@@ -57,8 +56,6 @@ import com.example.talenta.presentation.viewmodels.ExpertViewModel
 fun ExpertDetailedScreen(
     navController: NavController, expert: User
 ) {
-
-
     var selectedTab by remember { mutableIntStateOf(0) }
 
     Column(
@@ -68,7 +65,7 @@ fun ExpertDetailedScreen(
     ) {
 
         TopBar(navController)
-        ProfileSection(expertId = expert.id)
+        ProfileSection(expert = expert)
         SocialMediaSection()
         RatingSection(expert.id)
 
@@ -77,7 +74,7 @@ fun ExpertDetailedScreen(
 
         // Content based on selected tab
         when (selectedTab) {
-            0 -> ProfileContent(expert.id)
+            0 -> ProfileContent(expert)
             1 -> MediaTabForExpert()
             2 -> ServicesContent(expert) { serviceId ->
                 navController.navigate(
@@ -109,21 +106,8 @@ private fun TopBar(navController: NavController) {
 
 @Composable
 fun ProfileSection(
-    expertId: String?, viewModel: ExpertViewModel = hiltViewModel()
+    expert: User?
 ) {
-    val expert by viewModel.expert.collectAsStateWithLifecycle()
-
-
-
-    if (expertId.isNullOrEmpty()) {
-        Text("Error: No Expert ID provided")
-        return
-    }
-
-    LaunchedEffect(expertId) {
-        viewModel.getExpertById(expertId)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -131,17 +115,14 @@ fun ProfileSection(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Profile Picture
-
-
-        AsyncImage(
-            model = expert?.profilePicture,
+        val painter = rememberAsyncImagePainter(model = expert?.profilePicture)
+        Image(
+            painter = painter,
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop,
-            placeholder = painterResource(R.drawable.placeholder),
-            error = painterResource(R.drawable.placeholder)
         )
 
         Spacer(modifier = Modifier.height(8.dp))

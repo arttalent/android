@@ -14,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,11 +33,23 @@ fun BookingDetails(
 ) {
     val viewmodel = hiltViewModel<BookingDetailsViewmodel>()
     val uiStates = viewmodel.uiStates.collectAsStateWithLifecycle()
+    LaunchedEffect(
+        key1 = Unit
+    ) {
+        viewmodel.onAction(
+            BookingDetailsActions.InitData(
+                booking = localBooking.booking,
+                expertDetails = localBooking.expertDetails?: User(),
+                artistDetails = localBooking.artistDetails?: User()
+            )
+        )
+    }
 
     BookingDetailScreen(
         uiStates = uiStates.value,
         onActions = viewmodel::onAction,
-        onBackClick = { viewmodel.onAction(BookingDetailsActions.ResetError) },
+        onBackClick = onBackClick,
+        onViewProfileClick = onProfileClick
     )
 
 }

@@ -30,7 +30,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,22 +46,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.talenta.R
 import com.example.talenta.data.model.User
-import com.example.talenta.presentation.viewmodels.ExpertViewModel
 
 @Composable
-fun ProfileContent(expertId: String?, viewModel: ExpertViewModel = hiltViewModel()) {
-    LaunchedEffect(expertId) {
-        if (expertId != null) {
-            viewModel.getExpertById(expertId)
-        }
-    }
-
-    val expert by viewModel.expert.collectAsStateWithLifecycle()
+fun ProfileContent(expert: User?) {
     val scrollState = rememberScrollState()
 
     Box(
@@ -134,39 +123,56 @@ private fun AboutSection(expert: User?) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                if (expert != null) {
-                    Text(
-                        text = expert.bio.bioData,
-                        fontSize = 15.sp,
-                        lineHeight = 22.sp,
-                        color = Color(0xFF495057),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                Text(
+                    text = expert.bio.bioData,
+                    fontSize = 15.sp,
+                    lineHeight = 22.sp,
+                    color = Color(0xFF495057),
+                    style = MaterialTheme.typography.bodyMedium
+                )
 
                 // Add location if available
-                if (expert != null) {
-                    if (expert.bio.city.isNotBlank() || expert.bio.country.isNotBlank()) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "📍",
-                                fontSize = 16.sp
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = buildString {
-                                    if (expert != null) {
-                                        if (expert.bio.city.isNotBlank()) append(expert.bio.city)
+                if (expert.bio.city.isNotBlank() || expert.bio.country.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "📍",
+                            fontSize = 16.sp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = buildString {
+                                if (expert != null) {
+                                    if (expert.bio.city.isNotBlank()) append(expert.bio.city)
 
-                                        if (expert.bio.city.isNotBlank() && expert.bio.country.isNotBlank()) append(
-                                            ", "
-                                        )
-                                        if (expert.bio.country.isNotBlank()) append(expert.bio.country)
-                                    }
-                                },
+                                    if (expert.bio.city.isNotBlank() && expert.bio.country.isNotBlank()) append(
+                                        ", "
+                                    )
+                                    if (expert.bio.country.isNotBlank()) append(expert.bio.country)
+                                }
+                            },
+                            fontSize = 14.sp,
+                            color = Color(0xFF6C757D),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+
+                if (expert.bio.language.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "🌐",
+                            fontSize = 16.sp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        if (expert != null) {
+                            Text(
+                                text = expert.bio.language,
                                 fontSize = 14.sp,
                                 color = Color(0xFF6C757D),
                                 style = MaterialTheme.typography.bodySmall
@@ -175,29 +181,6 @@ private fun AboutSection(expert: User?) {
                     }
                 }
 
-                // Add language if available
-                if (expert != null) {
-                    if (expert.bio.language.isNotBlank()) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "🌐",
-                                fontSize = 16.sp
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            if (expert != null) {
-                                Text(
-                                    text = expert.bio.language,
-                                    fontSize = 14.sp,
-                                    color = Color(0xFF6C757D),
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -276,6 +259,7 @@ private fun AwardsSection(expert: User?) {
         }
     }
 }
+
 @Composable
 private fun EnhancedInfoSection(
     icon: String,
@@ -327,7 +311,12 @@ private fun EnhancedInfoSection(
 }
 
 @Composable
-private fun AwardItem(title: String, subtitle: String, imageUrl: String?, isEmpty: Boolean = false) {
+private fun AwardItem(
+    title: String,
+    subtitle: String,
+    imageUrl: String?,
+    isEmpty: Boolean = false
+) {
     var isExpanded by remember { mutableStateOf(false) }
 
     Card(
