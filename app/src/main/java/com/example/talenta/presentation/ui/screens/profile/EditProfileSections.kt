@@ -73,6 +73,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.talenta.R
 import com.example.talenta.data.model.Certificate
+import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.state.EditProfileEvent
 import com.example.talenta.presentation.state.EditProfileState
 import com.example.talenta.presentation.viewmodels.EditProfileViewModel
@@ -108,7 +109,9 @@ fun EditProfileScreen(
                     "Profile updated successfully",
                     Toast.LENGTH_SHORT
                 ).show()
-                navController.navigateUp()
+                navController.navigate(Route.Profile){
+                    popUpTo(Route.EditProfile) { inclusive = true }
+                }
             }
 
             is EditProfileEvent.ShowError -> {

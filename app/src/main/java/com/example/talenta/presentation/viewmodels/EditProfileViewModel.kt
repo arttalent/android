@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.talenta.data.model.Certificate
 import com.example.talenta.data.repository.EditProfileRepository
+import com.example.talenta.data.repository.ExpertRepository
 import com.example.talenta.presentation.state.EditProfileEvent
 import com.example.talenta.presentation.state.EditProfileState
 import com.example.talenta.utils.FirestoreResult
@@ -15,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
@@ -22,8 +24,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-    private val repository: EditProfileRepository
-) : ViewModel() {
+    private val repository: EditProfileRepository,
+    private val expertRepository: ExpertRepository,
+
+    ) : ViewModel() {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -39,6 +43,14 @@ class EditProfileViewModel @Inject constructor(
 
     init {
         fetchUserData()
+    }
+
+    fun fetchArtistProfile(onComplete: () -> Unit = {}) {
+        viewModelScope.launch {
+            expertRepository.getCurrentUserProfile(true).collectLatest {
+                onComplete()
+            }
+        }
     }
 
     private fun fetchUserData() {
@@ -162,7 +174,8 @@ class EditProfileViewModel @Inject constructor(
                 _state.value = currentState.copy(certificatesList = updatedCertificates)
                 _event.value = EditProfileEvent.CertificateOperationSuccess
             } catch (e: Exception) {
-                _event.value = EditProfileEvent.ShowError(e.message ?: "Failed to delete certificate")
+                _event.value =
+                    EditProfileEvent.ShowError(e.message ?: "Failed to delete certificate")
             }
         }
     }
@@ -213,8 +226,11 @@ class EditProfileViewModel @Inject constructor(
 
                 repository.updateUserData(userId, updatedUser)
 
-                _event.value = EditProfileEvent.ShowSuccessMessage
-                _state.value = currentState
+                fetchArtistProfile {
+                    _event.value = EditProfileEvent.ShowSuccessMessage
+                    _state.value = currentState
+                }
+
             } catch (e: Exception) {
                 _state.value = EditProfileState.Error(e.message ?: "Unknown error occurred")
                 _event.value = EditProfileEvent.ShowError(e.message ?: "Failed to save profile")
