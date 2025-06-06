@@ -64,8 +64,7 @@ fun BookingBottomSheet(
                     .width(40.dp)
                     .height(4.dp)
                     .background(
-                        color = Color.Transparent,
-                        shape = RoundedCornerShape(2.dp)
+                        color = Color.Transparent, shape = RoundedCornerShape(2.dp)
                     )
                     .align(Alignment.CenterHorizontally)
             )
@@ -94,9 +93,11 @@ fun BookingBottomSheet(
                 ) {
                     // Expert Row
                     BookingDetailRow(
+//<<<<<<< HEAD
+//                        painter = painterResource(id = R.drawable.experts),
+//=======
                         painter = painterResource(R.drawable.experts),
-                        label = "Expert",
-                        value = expertName.ifEmpty { "John Doe" }
+                        label = "Expert", value = expertName.ifEmpty { "John Doe" }
                     )
 
                     // Date & Time Row
@@ -119,24 +120,19 @@ fun BookingBottomSheet(
 
             // Confirm Button
             Button(
-                onClick = onConfirmClick,
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !loading,
-                shape = RoundedCornerShape(12.dp),
+                onClick = onConfirmClick, modifier = Modifier.fillMaxWidth(),
+                enabled = !loading, shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 if (loading) {
                     CircularProgressIndicator(
-                        color = Color.White,
-                        modifier = Modifier.size(20.dp)
+                        color = Color.White, modifier = Modifier.size(20.dp)
                     )
                 } else {
                     Text(
-                        text = "Confirm Booking",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp
+                        text = "Confirm Booking", fontWeight = FontWeight.SemiBold, fontSize = 16.sp
                     )
                 }
             }
@@ -146,18 +142,14 @@ fun BookingBottomSheet(
 
 @Composable
 private fun BookingDetailRow(
-    painter: Painter,
-    label: String,
-    value: String
+    painter: Painter, label: String, value: String
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            painter = painter,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            painter = painter, contentDescription = null, tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )
 
@@ -188,8 +180,7 @@ private fun BookingBottomSheetPreview() {
             formattedDateTime = "Dec 15, 2024 at 3:00 PM",
             fees = "$45",
             loading = false,
-            onConfirmClick = {}
-        )
+            onConfirmClick = {})
     }
 }
 

@@ -73,6 +73,7 @@ fun ExpertDetailedScreen(
         RatingSection(expert.id)
 
         TabSection(
+            isExpert = expert.isExpert,
             selectedTab = selectedTab, onTabSelected = { selectedTab = it })
 
         // Content based on selected tab
@@ -85,9 +86,9 @@ fun ExpertDetailedScreen(
                         expert = expert, selectedServiceId = serviceId
                     )
                 )
+                }
             }
         }
-    }
 }
 
 @Composable
@@ -262,9 +263,10 @@ private fun RatingItem(
 
 @Composable
 private fun TabSection(
-    selectedTab: Int, onTabSelected: (Int) -> Unit
+    isExpert: Boolean, selectedTab: Int, onTabSelected: (Int) -> Unit
 ) {
     val tabs = listOf("Details", "Media", "Services")
+    val availableTabs = if (isExpert) tabs else tabs.dropLast(1)
     val royalBlue = colorResource(R.color.royal_blue)
 
     OutlinedCard(
@@ -273,7 +275,7 @@ private fun TabSection(
             .padding(horizontal = 10.dp)
     ) {
         TabRow(
-            selectedTabIndex = selectedTab,
+            selectedTabIndex = selectedTab.coerceAtMost(availableTabs.lastIndex),
             modifier = Modifier.fillMaxWidth(),
             containerColor = Color.Transparent,
             contentColor = royalBlue,
@@ -283,7 +285,7 @@ private fun TabSection(
                     color = royalBlue
                 )
             }) {
-            tabs.forEachIndexed { index, title ->
+            availableTabs.forEachIndexed { index, title ->
                 Tab(selected = selectedTab == index, onClick = { onTabSelected(index) }, text = {
                     Text(
                         text = title,

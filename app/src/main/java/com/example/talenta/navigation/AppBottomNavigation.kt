@@ -51,7 +51,11 @@ import com.example.talenta.presentation.ui.screens.HostViewModel
 import com.example.talenta.presentation.ui.screens.isEqualTo
 
 @Composable
-fun BottomNavBar(modifier: Modifier = Modifier, viewModel: HostViewModel = hiltViewModel(), navController: NavController) {
+fun BottomNavBar(
+    modifier: Modifier = Modifier,
+    viewModel: HostViewModel = hiltViewModel(),
+    navController: NavController
+) {
     val user = viewModel.userFlow.collectAsState()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination
 
@@ -61,8 +65,7 @@ fun BottomNavBar(modifier: Modifier = Modifier, viewModel: HostViewModel = hiltV
         }
     }
 
-    if (shouldShowBottomNav)
-    {
+    if (shouldShowBottomNav) {
         when (user.value?.role) {
             Role.EXPERT -> AppBottomNavForExpert(navController = navController)
             Role.ARTIST -> AppBottomNavigationForArtist(navController = navController)
@@ -112,6 +115,7 @@ fun AppBottomNavForExpert(navController: NavController) {
         }
     }
 }
+
 @Composable
 fun AppBottomNavigationForArtist(navController: NavController) {
     val items = listOf(
@@ -237,12 +241,12 @@ private fun BottomNavChip(
     }
 }
 
-
-
 @Composable
 fun AppBottomNavigationForSponsor(navController: NavController) {
     val items = listOf(
         BottomNavRouteSponsor.SponsorDashBoard,
+        BottomNavRouteSponsor.SponsorArtist,
+        BottomNavRouteSponsor.SponsorExpert,
         BottomNavRouteSponsor.SponsorApplication,
         BottomNavRouteSponsor.SponsorProfile
     )
@@ -282,7 +286,10 @@ val listOfRoutesToShowBottomNav = listOf(
     Route.MyBookings,
     Route.Experts,
     Route.Profile,
-    Route.SponsorProfile,
+    //Sponsor
+    Route.SponsorDashboard,
     Route.SponsorApplication,
     Route.SponsorProfile,
+    Route.SponsorExpert,
+    Route.SponsorArtist
 )

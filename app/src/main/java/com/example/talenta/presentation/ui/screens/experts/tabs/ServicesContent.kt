@@ -26,8 +26,7 @@ import com.example.talenta.data.model.User
 
 @Composable
 fun ServicesContent(
-    expertDetails: User,
-    onBookingClick: (String) -> Unit = { /* No-op */ }
+    expertDetails: User, onBookingClick: (String) -> Unit = { /* No-op */ }
 ) {
     Column(
         modifier = Modifier
@@ -40,18 +39,15 @@ fun ServicesContent(
                 title = service.serviceTitle,
                 price = "$${service.perHourCharge}/hr",
                 onBookingClick = {
-                    onBookingClick(service.serviceId ?:"")
-                }
-            )
+                    onBookingClick(service.serviceId ?: "")
+                })
         }
     }
 }
 
 @Composable
 private fun ServiceCard(
-    title: String,
-    price: String,
-    onBookingClick: () -> Unit = { /* No-op */ }
+    title: String, price: String, onBookingClick: () -> Unit = { /* No-op */ }
 ) {
     OutlinedCard(
         modifier = Modifier
@@ -65,13 +61,10 @@ private fun ServiceCard(
                 .padding(16.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp
                 )
                 Text(
                     text = price,
@@ -84,9 +77,7 @@ private fun ServiceCard(
             Button(
                 onClick = {
                     onBookingClick()
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
+                }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.royal_blue),
                 )
             ) {

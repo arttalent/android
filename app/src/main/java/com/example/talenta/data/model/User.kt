@@ -1,11 +1,9 @@
 package com.example.talenta.data.model
 
-import com.google.firebase.firestore.IgnoreExtraProperties
 import kotlinx.serialization.Serializable
 
 // we have to add the genre field in the user class, as genre is completely different from the skills, as well as instruments
 @Serializable
-@IgnoreExtraProperties
 data class User(
     val id: String? = null,
     val firstName: String = "",
@@ -21,7 +19,7 @@ data class User(
     val professionalData: ProfessionalData = ProfessionalData(),
     val sponsorDetails: SponsorDetails? = null,
     val expertService: List<Service>? = null,
-){
+) {
     val isArtist: Boolean
         get() = role == Role.ARTIST
 
@@ -51,8 +49,7 @@ data class SponsorDetails(
     val profileInterests: List<String> = emptyList(),
     val companyName: String = "",
     val address: String = ""
-){}
-
+)
 
 
 @Serializable
@@ -83,7 +80,7 @@ data class ProfessionalData(
     val skills: List<String> = emptyList(),
     val certifications: List<String> = emptyList(),
     val certificatesList: List<Certificate> = emptyList(),
-){}
+)
 
 // for the skill we can use the enum class
 enum class Skill {
@@ -97,7 +94,7 @@ data class Bio(
     val bioData: String = "",
     val language: String = "",
     val socialMediaLinks: SocialMediaLinks = SocialMediaLinks(),
-){}
+)
 
 @Serializable
 data class PhysicalAttributes(
@@ -107,7 +104,7 @@ data class PhysicalAttributes(
     val age: Int = 0,
     val ethnicity: Ethnicity? = null,
     val color: String = "",
-){}
+)
 
 @Serializable
 data class Media(
@@ -115,7 +112,7 @@ data class Media(
     val type: MediaType? = null,
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
-){}
+)
 
 @Serializable
 enum class MediaType {
@@ -129,7 +126,7 @@ data class SocialMediaLinks(
     val instagram: String = "",
     val linkedin: String = "",
     val twitter: String = "",
-){}
+)
 
 
 // we should add a title as well for the certificate i think
@@ -139,7 +136,7 @@ data class Certificate(
     val imageUrl: String = "",
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
-){}
+)
 
 
 // Data classes for media items
@@ -148,7 +145,7 @@ data class Photo(
     val imageUrl: String = "",
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
-){}
+)
 
 
 data class Video(
@@ -157,10 +154,4 @@ data class Video(
     val thumbnailUrl: String = "",
     val description: String = "",
     val timestamp: Long = System.currentTimeMillis()
-){}
-
-
-
-
-
-
+)

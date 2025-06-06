@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.talenta.data.model.Role
+import com.example.talenta.presentation.ui.screens.sponsor.components.SponsorDashboardScreen
 
 @Composable
 fun DashBoard(
@@ -26,6 +27,7 @@ fun DashBoard(
                 Text("Home Screen For Expert", fontWeight = FontWeight.Bold)
             }
         }
+
         Role.ARTIST -> {
             Box(
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -33,20 +35,19 @@ fun DashBoard(
                 Text("Home Screen For Artist", fontWeight = FontWeight.Bold)
             }
         }
+
         Role.SPONSOR -> {
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) {
-                Text("Home Screen For Expert", fontWeight = FontWeight.Bold)
-            }
+            SponsorDashboardScreen()
         }
+
         Role.FAN -> {
             Box(
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
-                Text("Home Screen For Expert", fontWeight = FontWeight.Bold)
+                Text("Home Screen For Fan", fontWeight = FontWeight.Bold)
             }
         }
+
         null -> {
 
         }
