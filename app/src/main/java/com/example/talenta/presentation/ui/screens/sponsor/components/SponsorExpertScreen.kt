@@ -36,11 +36,11 @@ fun SponsorExpertScreen(
         CircularProgressIndicator()
     }
     LaunchedEffect(searchedUsers.error) {
-        showMessage(context, searchedUsers.error)
+//        showMessage(context, searchedUsers.error)
     }
 
     LaunchedEffect(expert.error) {
-        showMessage(context, expert.error)
+//        showMessage(context, expert.error)
     }
 
 

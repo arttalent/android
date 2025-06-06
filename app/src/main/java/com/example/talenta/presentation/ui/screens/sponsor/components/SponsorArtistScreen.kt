@@ -35,11 +35,11 @@ fun SponsorArtistScreen(
         CircularProgressIndicator()
     }
     LaunchedEffect(searchedUsers.error) {
-        showMessage(context, searchedUsers.error)
+//        showMessage(context, searchedUsers.error)
     }
 
     LaunchedEffect(artist.error) {
-        showMessage(context, artist.error)
+//        showMessage(context, artist.error)
     }
 
 
