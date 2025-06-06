@@ -1,5 +1,7 @@
 package com.example.talenta.presentation.ui.screens.profile.tabs
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,18 +36,28 @@ import com.example.talenta.ui.theme.TalentATheme
 @Composable
 fun ServiceTab(
     user: User,
-    navigateToCreateService: () -> Unit = { /* No-op */ }
+    navigateToCreateService: () -> Unit = { },
+    onDeleteService: (String) -> Unit = { },
+    onEditServiceClick: (Service) -> Unit = { }
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
     ) {
-        Column(
+        LazyColumn(
+            modifier = Modifier.scrollable(
+                state = rememberScrollState(),
+                orientation = Orientation.Vertical
+            ),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            user.expertService?.forEach { service ->
-                ExpertProfileServiceCard(service = service)
+            items(user.expertService ?: emptyList()) { service ->
+                ExpertProfileServiceCard(
+                    service = service,
+                    onDelete = { onDeleteService(service.serviceId ?: "") },
+                    onEditClick = { onEditServiceClick(service) },
+                )
             }
         }
 
@@ -51,14 +66,18 @@ fun ServiceTab(
         ) {
             navigateToCreateService()
         }
-
     }
 
 }
 
 
 @Composable
-fun ExpertProfileServiceCard(modifier: Modifier = Modifier, service: Service) {
+fun ExpertProfileServiceCard(
+    modifier: Modifier = Modifier,
+    service: Service,
+    onDelete: () -> Unit,
+    onEditClick: () -> Unit
+) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
@@ -91,7 +110,7 @@ fun ExpertProfileServiceCard(modifier: Modifier = Modifier, service: Service) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Button(
-                    onClick = { /* Handle booking */ },
+                    onClick = onDelete,
                     modifier = Modifier.weight(1f),
                     shape = MaterialTheme.shapes.small,
                     colors = ButtonDefaults.buttonColors(
@@ -104,7 +123,7 @@ fun ExpertProfileServiceCard(modifier: Modifier = Modifier, service: Service) {
                     )
                 }
                 Button(
-                    onClick = { /* Handle booking */ },
+                    onClick = onEditClick,
                     modifier = Modifier.weight(1f),
                     shape = MaterialTheme.shapes.small,
                     colors = ButtonDefaults.buttonColors(
@@ -133,7 +152,9 @@ private fun ExpertProfileServiceCardPReview() {
                 serviceTitle = ServiceType.LIVE_ASSESSMENT.getTitle(),
                 perHourCharge = 50.0f,
                 serviceType = ServiceType.LIVE_ASSESSMENT,
-            )
+            ),
+            onDelete = { /* No-op */ },
+            onEditClick = { /* No-op */ }
         )
     }
 }

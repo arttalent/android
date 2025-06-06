@@ -140,7 +140,7 @@ fun AppBottomNavigationForArtist(navController: NavController) {
                 brush = Brush.horizontalGradient(
                     colors = listOf(
                         Color(0xFF667EEA),
-                        Color(0xFF764BA2)
+                        Color(0xFF667EEA)
 
                     )
                 ),

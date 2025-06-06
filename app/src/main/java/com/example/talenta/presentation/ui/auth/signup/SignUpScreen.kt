@@ -48,7 +48,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.talenta.data.model.Profession
 import com.example.talenta.data.model.Role
+import com.example.talenta.data.model.getTitle
 import com.example.talenta.navigation.Routes.Route
 import com.example.talenta.presentation.viewmodels.AuthUiActions
 import com.example.talenta.presentation.viewmodels.SignUpEvents
@@ -265,11 +267,14 @@ fun SignUpScreen(
                     // Enhanced Sign Up Button
                     Button(
                         onClick = {
-                            viewModel.handleAction(AuthUiActions.SignUp)
+                            if (!uiState.isLoading) {
+                                viewModel.handleAction(AuthUiActions.SignUp)
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
+                            .height(56.dp)
+                        ,
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
@@ -310,7 +315,7 @@ private fun SectionHeader(title: String) {
             fontWeight = FontWeight.Bold
         ),
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 6.dp)
     )
 }
 
@@ -431,31 +436,10 @@ private fun ProfessionSelectionDialog(
     onDismiss: () -> Unit
 ) {
     val professions = listOf(
-        "Musician" to "🎵",
-        "Singer" to "🎤",
-        "Music Producer" to "🎛️",
-        "Music Teacher" to "👨‍🏫",
-        "Sound Engineer" to "🔊",
-        "Composer" to "🎼",
-        "Music Therapist" to "🎶",
-        "DJ" to "🎧",
-        "Music Director" to "🎭",
-        "Instrumentalist" to "🎸",
-        "Vocalist" to "🎵",
-        "Music Arranger" to "📝",
-        "Audio Engineer" to "🎚️",
-        "Music Journalist" to "📰",
-        "Concert Performer" to "🎪",
-        "Studio Musician" to "🏠",
-        "Music Conductor" to "🎼",
-        "Lyricist" to "✍️",
-        "Music Critic" to "📋",
-        "Band Leader" to "👑",
-        "Session Musician" to "🎹",
-        "Music Technician" to "🔧",
-        "Music Promoter" to "📢",
-        "Record Label Owner" to "💿",
-        "Other" to "🎨"
+        Profession.SINGER  to "🎤",
+        Profession.DANCER to "💃",
+        Profession.MOVIE_ACTOR  to "🎭",
+        Profession.MOVIE_DIRECTOR to "💿",
     )
 
     androidx.compose.ui.window.Dialog(
@@ -503,10 +487,10 @@ private fun ProfessionSelectionDialog(
                 ) {
                     professions.forEach { (profession, emoji) ->
                         ProfessionItem(
-                            profession = profession,
+                            profession = profession.getTitle(),
                             emoji = emoji,
-                            isSelected = profession == selectedProfession,
-                            onClick = { onProfessionSelected(profession) }
+                            isSelected = profession.getTitle() == selectedProfession,
+                            onClick = { onProfessionSelected(profession.getTitle()) }
                         )
                     }
                 }

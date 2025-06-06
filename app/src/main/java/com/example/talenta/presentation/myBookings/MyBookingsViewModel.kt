@@ -20,7 +20,7 @@ data class MyBookingStates(
     val isLoading: Boolean = false,
     val bookings: List<Booking> = emptyList(),
     val users: List<User> = emptyList(),
-    val currentUser : User? = null,
+    val currentUser: User? = null,
     val error: String? = null
 )
 
@@ -60,7 +60,7 @@ class MyBookingsViewModel @Inject constructor(
             val userId = userPreferences.getUserData()?.id ?: return@launch
             val role = userPreferences.getUserData()?.role ?: return@launch
 
-            val response = bookingRepository.getBookingsForUser(userId, role.toString())
+            val response = bookingRepository.getBookingsForUser(userId, role)
             when (response) {
                 is FirestoreResult.Success -> {
                     val role = userPreferences.getUserData()?.role ?: return@launch

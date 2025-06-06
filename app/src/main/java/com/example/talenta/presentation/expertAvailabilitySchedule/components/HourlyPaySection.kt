@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen.CreateServiceComponents
+package com.example.talenta.presentation.expertAvailabilitySchedule.components
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth

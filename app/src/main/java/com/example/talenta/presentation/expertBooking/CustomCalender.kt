@@ -1,21 +1,21 @@
 package com.example.talenta.presentation.expertBooking
 
-
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
@@ -23,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +50,7 @@ import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 
+
 @Composable
 fun CustomCalender(
     expertAvailability: ExpertAvailability?,
@@ -57,14 +59,29 @@ fun CustomCalender(
 ) {
     val schedule = expertAvailability?.schedule
     val currentMonth = remember { YearMonth.now() }
-    val startMonth = remember { currentMonth }
-    val endMonth = remember { currentMonth.plusMonths(12) }
+    val startMonth = remember { currentMonth } // Adjust as needed
+    val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
     val firstDayOfWeek = remember { firstDayOfWeekFromLocale() }
     val availableDaysAndMonth = remember(schedule) {
         getAvailableDates(schedule)
     }
     val selectedDay = rememberSaveable(saver = LocalDateSaver) {
-        mutableStateOf(LocalDate.now())
+        mutableStateOf(
+            LocalDate.now()
+        )
+    }
+    LaunchedEffect(key1 = availableDaysAndMonth) {
+        if (availableDaysAndMonth.isNotEmpty()) {
+            selectedDay.value = LocalDate.of(
+                currentMonth.year,
+                availableDaysAndMonth.first().second,
+                availableDaysAndMonth.first().first
+            )
+            selectedDay.value?.let {
+                onDateChange(it)
+            }
+        }
+
     }
 
     val state = rememberCalendarState(
@@ -74,55 +91,64 @@ fun CustomCalender(
         firstDayOfWeek = firstDayOfWeek
     )
 
-    HorizontalCalendar(
-        modifier = modifier.fillMaxWidth(),
-        state = state,
-        contentHeightMode = ContentHeightMode.Wrap,
-        calendarScrollPaged = true,
-        monthHeader = { calendarMonth ->
-            // Month header with gradient background
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-                            )
-                        ),
-                        shape = RoundedCornerShape(12.dp)
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .shadow(8.dp, RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        HorizontalCalendar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            state = state,
+            contentHeightMode = ContentHeightMode.Wrap,
+            calendarScrollPaged = true,
+            monthHeader = { it ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                                )
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                ) {
+                    Text(
+                        text = it.yearMonth.month.name.capitalizeFirstLetter() + " " + it.yearMonth.year,
+                        modifier = Modifier.align(Alignment.Center),
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
                     )
-                    .padding(vertical = 12.dp)
-            ) {
-                Text(
-                    text = calendarMonth.yearMonth.month.name.capitalizeFirstLetter() + " " + calendarMonth.yearMonth.year,
-                    modifier = Modifier.align(Alignment.Center),
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            val daysOfWeek = calendarMonth.weekDays.first().map { it.date.dayOfWeek }
-            EnhancedCalendarHeader(daysOfWeek = daysOfWeek)
-        },
-        dayContent = { calendarDay ->
-            val isAvailable = availableDaysAndMonth.any { pair ->
-                pair.first == calendarDay.date.dayOfMonth && pair.second == calendarDay.date.monthValue
-            }
-
-            CalendarDayButton(
-                text = calendarDay.date.dayOfMonth.toString(),
-                isSelected = selectedDay.value == calendarDay.date,
-                isEnabled = isAvailable,
-                isToday = calendarDay.date == LocalDate.now()
-            ) {
-                selectedDay.value = calendarDay.date
-                onDateChange(calendarDay.date)
-            }
-        }
-    )
+                }
+                val daysOfWeek = it.weekDays.first().map { it.date.dayOfWeek }
+                CalendarHeader(daysOfWeek = daysOfWeek)
+            },
+            dayContent = {
+                CalendarDayButton(
+                    text = it.date.dayOfMonth.toString(),
+                    modifier = Modifier,
+                    isSelected = selectedDay.value == it.date,
+                    isEnabled = availableDaysAndMonth.any { pair ->
+                        pair.first == it.date.dayOfMonth && pair.second == it.date.monthValue
+                    },
+                ) {
+                    selectedDay.value = it.date
+                    onDateChange(it.date)
+                }
+            })
+    }
 }
 
 @Composable
@@ -131,81 +157,91 @@ fun CalendarDayButton(
     text: String,
     isSelected: Boolean,
     isEnabled: Boolean,
-    isToday: Boolean,
     onClick: () -> Unit
 ) {
     val backgroundColor = when {
-        isSelected -> MaterialTheme.colorScheme.primary
-        isToday -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-        isEnabled -> Color.Transparent
-        else -> Color.Transparent
+        isSelected -> Brush.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.primary,
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+            )
+        )
+
+        isEnabled -> Brush.linearGradient(
+            colors = listOf(
+                Color.Transparent,
+                Color.Transparent
+            )
+        )
+
+        else -> Brush.linearGradient(
+            colors = listOf(
+                Color.Transparent,
+                Color.Transparent
+            )
+        )
     }
 
     val textColor = when {
         isSelected -> Color.White
-        isToday && !isSelected -> MaterialTheme.colorScheme.primary
-        isEnabled -> Color.Black
+        isEnabled -> MaterialTheme.colorScheme.onSurface
         else -> Color.LightGray
     }
-
-    val borderColor = when {
-        isSelected -> MaterialTheme.colorScheme.primary
-        isToday -> MaterialTheme.colorScheme.primary
-        isEnabled -> Color.Transparent
-        else -> Color.Transparent
-    }
-
-    TextButton(
-        onClick = onClick,
+    Box(
         modifier = modifier
-            .size(40.dp)
-            .clip(CircleShape)
-            .background(backgroundColor)
-            .border(
-                width = if (isToday && !isSelected) 1.dp else 0.dp,
-                color = borderColor,
-                shape = CircleShape
-            ),
-        colors = ButtonDefaults.textButtonColors(
-            containerColor = Color.Transparent,
-            contentColor = textColor,
-            disabledContainerColor = Color.Transparent,
-            disabledContentColor = Color.LightGray
-        ),
-        enabled = isEnabled
+            .padding(2.dp)
     ) {
-        Text(
-            text = text,
-            fontSize = 14.sp,
-            fontWeight = if (isSelected || isToday) FontWeight.SemiBold else FontWeight.Normal
-        )
+        TextButton(
+            onClick = onClick,
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(backgroundColor)
+                .then(
+                    if (isSelected) {
+                        Modifier.shadow(4.dp, CircleShape)
+                    } else Modifier
+                ),
+            colors = ButtonDefaults.textButtonColors(
+                containerColor = Color.Transparent,
+                contentColor = textColor,
+                disabledContainerColor = Color.Transparent,
+                disabledContentColor = Color.LightGray
+            ),
+            enabled = isEnabled
+        ) {
+            Text(
+                text = text,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                fontSize = 14.sp
+            )
+        }
     }
 }
 
 @Composable
-fun EnhancedCalendarHeader(daysOfWeek: List<DayOfWeek>) {
+fun CalendarHeader(daysOfWeek: List<DayOfWeek>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+            .padding(vertical = 16.dp, horizontal = 8.dp),
     ) {
         for (dayOfWeek in daysOfWeek) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .weight(1f)
                     .background(
-                        color = Color.Gray.copy(alpha = 0.1f),
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(vertical = 8.dp)
             ) {
                 Text(
-                    text = dayOfWeek.displayText(narrow = true),
+                    modifier = Modifier.align(Alignment.Center),
+                    textAlign = TextAlign.Center,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    text = dayOfWeek.displayText().uppercase(),
                 )
             }
         }
@@ -221,12 +257,15 @@ fun DayOfWeek.displayText(uppercase: Boolean = false, narrow: Boolean = false): 
 
 fun getAvailableDates(schedule: List<Schedule>?): List<Pair<Int, Int>> {
     val availableDates = mutableListOf<Pair<Int, Int>>()
-    schedule?.forEach { scheduleItem ->
-        val startDate = scheduleItem.dateSlot.localStartDateTime()
-        val endDate = scheduleItem.dateSlot.localEndDateTime()
-        val days = startDate.toJavaLocalDateTime().until(endDate.toJavaLocalDateTime(), ChronoUnit.DAYS)
+    schedule?.forEach {
+        val startDate = it.dateSlot.localStartDateTime()
+        val endDate = it.dateSlot.localEndDateTime()
+        val days =
+            startDate.toJavaLocalDateTime().until(endDate.toJavaLocalDateTime(), ChronoUnit.DAYS)
         val availability = (0..days).map { offset ->
-            val currentDate = startDate.toJavaLocalDateTime().plus(Period.ofDays(offset.toInt()))
+            val currentDate = startDate.toJavaLocalDateTime().plus(
+                Period.ofDays(offset.toInt())
+            )
             currentDate.dayOfMonth to currentDate.monthValue
         }
         availableDates.addAll(availability)
@@ -234,14 +273,30 @@ fun getAvailableDates(schedule: List<Schedule>?): List<Pair<Int, Int>> {
     return availableDates
 }
 
-val LocalDateSaver = listSaver(
-    save = { listOf(it.value.year, it.value.monthValue, it.value.dayOfMonth) },
-    restore = { (year, month, day) -> mutableStateOf(LocalDate.of(year, month, day)) }
+val LocalDateSaver = listSaver<MutableState<LocalDate?>, Any>(
+    save = { state ->
+        state.value?.let { localDate ->
+            listOf(localDate.year, localDate.monthValue, localDate.dayOfMonth)
+        } ?: emptyList()
+    },
+    restore = { list ->
+        if (list.isNotEmpty()) {
+            mutableStateOf(
+                LocalDate.of(
+                    list[0] as Int,
+                    list[1] as Int,
+                    list[2] as Int
+                )
+            )
+        } else {
+            mutableStateOf(null)
+        }
+    }
 )
 
-@Preview(showBackground = true)
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
-private fun CalendarPreview() {
+private fun CustomCalendarScreenPreview() {
     TalentATheme {
         Box(
             modifier = Modifier
@@ -255,17 +310,17 @@ private fun CalendarPreview() {
                         Schedule(
                             DateSlot(
                                 startDateTime = "2023-10-05T00:00:00Z",
-                                endDateTime = "2023-12-07T00:00:00Z"
-                            ),
-                            TimeSlot(
+                                endDateTime = "2023-15-07T00:00:00Z"
+                            ), TimeSlot(
                                 start = "15:00",
                                 end = "17:00"
                             )
                         )
                     )
                 ),
-            ) { selectedDate ->
-                println("Selected date: $selectedDate")
+            ) {
+                // Handle date change
+                println("Selected date: $it")
             }
         }
     }

@@ -46,7 +46,6 @@ import com.example.talenta.data.model.ServiceType
 import com.example.talenta.data.model.TimeSlot
 import com.example.talenta.data.model.User
 import com.example.talenta.data.model.getTitle
-import com.example.talenta.utils.formatIsoToFormatterDateTime
 
 @Composable
 fun BookingListCard(
@@ -215,7 +214,7 @@ fun BookingListCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = formatIsoToFormatterDateTime(booking.scheduledStartTime),
+                            text = booking.prettyStartDateTime(),
                             fontSize = 14.sp,
                             color = Color.Gray
                         )

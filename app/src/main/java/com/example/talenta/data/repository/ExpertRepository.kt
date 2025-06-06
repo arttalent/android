@@ -29,8 +29,6 @@ import javax.inject.Singleton
 class ExpertRepository @Inject constructor(
     @Named("users")
     private val userCollection: CollectionReference,
-    @Named("expertAvailability")
-    private val expertAvailabilityCollection: CollectionReference,
     private val storage: FirebaseStorage,
     private val userPreferences: UserPreferences,
 ) {
@@ -97,15 +95,6 @@ class ExpertRepository @Inject constructor(
         }
     }
 
-
-    suspend fun getExpertAvailability(expertId: String): FirestoreResult<ExpertAvailability?> =
-        withContext(Dispatchers.IO) {
-            safeFirebaseCall {
-                val snapshot = expertAvailabilityCollection.document(expertId).get().await()
-                snapshot.toObject(ExpertAvailability::class.java)
-            }
-        }
-
     suspend fun createExpertService(
         perHrPrice: Float,
         serviceType: ServiceType,
@@ -130,6 +119,19 @@ class ExpertRepository @Inject constructor(
         safeFirebaseCall {
             userCollection.document(expertId)
                 .update(mapOf(User::expertService.name to serviceList))
+                .await()
+            Unit
+        }
+    }
+
+    suspend fun deleteService(serviceId: String): FirestoreResult<Unit> {
+        val userId = userPreferences.getUserData()?.id ?: ""
+        val oldServices = userPreferences.getUserData()?.expertService ?: emptyList()
+        val newServices = oldServices.filterNot { it.serviceId == serviceId }
+
+        return safeFirebaseCall {
+            userCollection.document(userId)
+                .update(mapOf(User::expertService.name to newServices))
                 .await()
             Unit
         }

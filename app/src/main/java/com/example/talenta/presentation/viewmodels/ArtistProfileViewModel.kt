@@ -11,6 +11,7 @@ import com.example.talenta.data.repository.ExpertRepository
 import com.example.talenta.utils.FirestoreResult
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,7 +61,7 @@ class ArtistProfileViewModel @Inject constructor(
     fun fetchArtistProfile() {
         viewModelScope.launch {
             expertRepository.getCurrentUserProfile(true).collectLatest {
-                Log.d("TAG", "fetchArtistProfile: "+it)
+                Log.d("TAG", "fetchArtistProfile: " + it)
                 it?.let { user ->
                     _profileState.update { state ->
                         state.copy(
@@ -136,6 +137,10 @@ class ArtistProfileViewModel @Inject constructor(
                 _profileState.update {
                     it.copy(uploadMediaState = UploadMediaState.Success)
                 }
+                delay(500)
+                _profileState.update {
+                    it.copy(uploadMediaState = UploadMediaState.None)
+                }
             }
         }
     }
@@ -147,6 +152,30 @@ class ArtistProfileViewModel @Inject constructor(
                 repository.deleteMedia(mediaId, isVideo)
             } catch (e: Exception) {
                 // Handling error (e.g., show a Toast or update UI state)
+            }
+        }
+    }
+
+    fun deleteService(serviceId: String) {
+        _profileState.update {
+            it.copy(isLoading = true)
+        }
+        viewModelScope.launch {
+            val result = expertRepository.deleteService(serviceId)
+
+            when (result) {
+                is FirestoreResult.Failure -> {
+                    _profileState.update {
+                        it.copy(isLoading = false, error = result.errorMessage)
+                    }
+                }
+
+                is FirestoreResult.Success -> {
+                    fetchArtistProfile()
+                    _profileState.update {
+                        it.copy(isLoading = false)
+                    }
+                }
             }
         }
     }

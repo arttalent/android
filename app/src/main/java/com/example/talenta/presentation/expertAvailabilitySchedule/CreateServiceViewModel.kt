@@ -1,4 +1,4 @@
-package com.example.talenta.presentation.expertAvailabilitySchedule.ServiceScreen
+package com.example.talenta.presentation.expertAvailabilitySchedule
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,16 +14,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.format
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 import javax.inject.Inject
 
 data class CreateServiceUiState(
     val selectedServiceType: ServiceType? = null,
     val hourlyPay: String = "",
-    val selectedStartDate: LocalDateTime? = null,
-    val selectedEndDate: LocalDateTime? = null,
+    val selectedStartDate: LocalDate? = null,
+    val selectedEndDate: LocalDate? = null,
     val selectedStartTime: String = "00:00",
     val selectedEndTime: String = "24:00",
     val selectedTimezone: String = TimeZone.currentSystemDefault().id,
@@ -51,7 +53,7 @@ class CreateServiceViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(hourlyPay = filteredPay)
     }
 
-    fun updateSelectedDates(startDate: LocalDateTime?, endDate: LocalDateTime?) {
+    fun updateSelectedDates(startDate: LocalDate?, endDate: LocalDate?) {
         _uiState.value = _uiState.value.copy(
             selectedStartDate = startDate,
             selectedEndDate = endDate
@@ -81,7 +83,7 @@ class CreateServiceViewModel @Inject constructor(
             currentState.hourlyPay.toFloat() <= 0 -> "Hourly pay must be greater than 0"
             currentState.selectedStartDate == null -> "Please select start date"
             currentState.selectedEndDate == null -> "Please select end date"
-            currentState.selectedStartDate!! > currentState.selectedEndDate!! -> "End date must be after start date"
+            currentState.selectedStartDate > currentState.selectedEndDate -> "End date must be after start date"
             !isValidTimeRange(
                 currentState.selectedStartTime,
                 currentState.selectedEndTime
@@ -113,12 +115,18 @@ class CreateServiceViewModel @Inject constructor(
         return endTotalMinutes > startTotalMinutes
     }
 
-    private fun createDateTimeString(localDateTime:LocalDateTime, timezone: String): String {
+    private fun createDateTimeString(localDateTime: LocalDate?): String {
         // Convert milliseconds to LocalDate
-
+        val formatter = LocalDate.Format {
+            dayOfMonth(Padding.ZERO)
+            char('/')
+            monthNumber(Padding.ZERO)
+            char('/')
+            year(Padding.ZERO)
+        }
         // Convert to UTC Instant and return ISO string
-        val utcInstant = localDateTime.toInstant(TimeZone.of(timezone))
-        return utcInstant.toString()
+        val utcInstant = localDateTime?.format(formatter)
+        return utcInstant?:"NoDateTime"
     }
 
     private fun createService() {
@@ -136,13 +144,11 @@ class CreateServiceViewModel @Inject constructor(
 
                 // Create DateSlot with UTC ISO 8601 format
                 val startDateTime = createDateTimeString(
-                    currentState.selectedStartDate!!,
-                    currentState.selectedTimezone
+                    currentState.selectedStartDate!!
                 )
 
                 val endDateTime = createDateTimeString(
-                    currentState.selectedEndDate!!,
-                    currentState.selectedTimezone
+                    currentState.selectedEndDate!!
                 )
 
                 val dateSlot = DateSlot(
